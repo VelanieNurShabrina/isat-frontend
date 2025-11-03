@@ -6,7 +6,16 @@ export default function RealtimeSignal({ apiBase }) {
   const fetchSignal = async () => {
     try {
       const res = await fetch(`${apiBase}/signal`);
-      const json = await res.json();
+      const text = await res.text();
+
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch {
+        console.error("Response bukan JSON:", text);
+        return;
+      }
+
       setSignal(json);
     } catch (e) {
       console.error("Failed to fetch signal:", e);

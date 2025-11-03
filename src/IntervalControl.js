@@ -1,23 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 export default function IntervalControl({ apiBase, onIntervalChange }) {
   const [interval, setIntervalValue] = useState(10);
   const [loading, setLoading] = useState(false);
-
-  const fetchInterval = async () => {
-    try {
-      const res = await fetch(`${apiBase}/config/interval`);
-      const json = await res.json();
-      setIntervalValue(json.interval);
-      if (onIntervalChange) onIntervalChange(json.interval);
-    } catch (err) {
-      console.error("Gagal ambil interval:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchInterval();
-  }, []);
 
   const handleChange = async (e) => {
     const newInterval = e.target.value;
@@ -25,14 +10,25 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
     setLoading(true);
     try {
       const res = await fetch(`${apiBase}/config/interval?interval=${newInterval}`);
-      const json = await res.json();
+      const text = await res.text();
+
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch {
+        console.error("Response bukan JSON:", text);
+        alert("Server tidak mengembalikan JSON valid");
+        return;
+      }
+
       if (json.status === "ok") {
         alert(`Interval berhasil diubah menjadi ${newInterval} detik`);
-        if (onIntervalChange) onIntervalChange(newInterval);
+        if (onIntervalChange) onIntervalChange(Number(newInterval));
       } else {
         alert("Gagal ubah interval: " + json.message);
       }
     } catch (err) {
+      console.error("Gagal koneksi ke server:", err);
       alert("Terjadi kesalahan koneksi ke server");
     } finally {
       setLoading(false);

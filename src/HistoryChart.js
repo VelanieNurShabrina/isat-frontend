@@ -18,30 +18,39 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
   const [isFiltered, setIsFiltered] = useState(false);
 
   const fetchHistory = async () => {
-    try {
-      let url = `${apiBase}/history?limit=200`;
+  try {
+    let url = `${apiBase}/history?limit=200`;
 
-      if (isFiltered && startTime && endTime) {
-        const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
-        const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
-        url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=200`;
-      }
-
-      const res = await fetch(url);
-      const json = await res.json();
-
-      const mapped = json.data.map((d) => ({
-        time: new Date(d.timestamp * 1000),
-        rssi: d.rssi,
-        dbm: d.dbm,
-      }));
-
-      setData(mapped);
-      setLastUpdate(new Date());
-    } catch (e) {
-      console.error("Failed to fetch history:", e);
+    if (isFiltered && startTime && endTime) {
+      const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
+      const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
+      url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=200`;
     }
-  };
+
+    const res = await fetch(url);
+    const text = await res.text();
+
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch {
+      console.error("Response bukan JSON:", text);
+      return;
+    }
+
+    const mapped = json.data.map((d) => ({
+      time: new Date(d.timestamp * 1000),
+      rssi: d.rssi,
+      dbm: d.dbm,
+    }));
+
+    setData(mapped);
+    setLastUpdate(new Date());
+  } catch (e) {
+    console.error("Failed to fetch history:", e);
+  }
+};
+
 
   useEffect(() => {
     if (!isFiltered) {
