@@ -4,8 +4,8 @@ import RealtimeSignal from "./RealtimeSignal";
 import IntervalControl from "./IntervalControl";
 
 function App() {
-  const localBase = "http://192.168.100.135:5000"; // Raspberry API
-  const cloudBase = "https://isat-backend-production.up.railway.app"; // Railway Cloud
+  // Semua API diarahkan ke Railway (HTTPS aman)
+  const apiBase = "https://isat-backend-production.up.railway.app";
 
   const [interval, setInterval] = useState(10);
 
@@ -14,12 +14,14 @@ function App() {
       <h2>📡 IsatPhone Signal Dashboard</h2>
       <p>Signal values: RSSI (bars), dBm (power), BER (bit error rate)</p>
 
-      <IntervalControl apiBase={localBase} onIntervalChange={setInterval} />
+      {/* Interval & Realtime sama-sama ambil dari Railway */}
+      <IntervalControl apiBase={apiBase} onIntervalChange={setInterval} />
 
-      <RealtimeSignal apiBase={localBase} />
+      <RealtimeSignal apiBase={apiBase} />
 
       <div style={{ marginTop: 20 }}>
-        <HistoryChart apiBase={cloudBase} refreshInterval={interval} />
+        {/* Grafik history juga ambil dari Railway */}
+        <HistoryChart apiBase={apiBase} refreshInterval={interval} />
       </div>
     </div>
   );
