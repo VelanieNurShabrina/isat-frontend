@@ -18,39 +18,43 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
   const [isFiltered, setIsFiltered] = useState(false);
 
   const fetchHistory = async () => {
-  try {
-    let url = `${apiBase}/history?limit=200`;
-
-    if (isFiltered && startTime && endTime) {
-      const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
-      const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
-      url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=200`;
-    }
-
-    const res = await fetch(url);
-    const text = await res.text();
-
-    let json;
     try {
-      json = JSON.parse(text);
-    } catch {
-      console.error("Response bukan JSON:", text);
-      return;
+      let url = `${apiBase}/history?limit=200`;
+      if (isFiltered && startTime && endTime) {
+        const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
+        const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
+        url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=200`;
+      }
+
+      const res = await fetch(url);
+      const text = await res.text();
+
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch {
+        console.error("⚠️ Response bukan JSON:", text);
+        return;
+      }
+
+      if (!json.data || !Array.isArray(json.data)) {
+        console.warn("⚠️ Data tidak valid:", json);
+        return;
+      }
+
+      const mapped = json.data.map((d) => ({
+        time: new Date(d.timestamp * 1000),
+        rssi: d.rssi,
+        dbm: d.dbm,
+      }));
+
+      setData(mapped);
+      setLastUpdate(new Date());
+      console.log("✅ Data history:", mapped.length, "entri");
+    } catch (e) {
+      console.error("❌ Gagal fetch history:", e);
     }
-
-    const mapped = json.data.map((d) => ({
-      time: new Date(d.timestamp * 1000),
-      rssi: d.rssi,
-      dbm: d.dbm,
-    }));
-
-    setData(mapped);
-    setLastUpdate(new Date());
-  } catch (e) {
-    console.error("Failed to fetch history:", e);
-  }
-};
-
+  };
 
   useEffect(() => {
     if (!isFiltered) {
@@ -159,7 +163,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
           <YAxis
             yAxisId="right"
             orientation="right"
-            domain={[-140, -100]}
+            domain={[-140, -60]}
             label={{
               value: "dBm (signal strength)",
               angle: 90,
@@ -183,8 +187,8 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             }}
           />
           <Legend verticalAlign="top" height={36} />
-          <Line yAxisId="left" type="monotone" dataKey="rssi" stroke="#8884d8" strokeWidth={2} dot={false} name="RSSI" activeDot={{ r: 4 }} />
-          <Line yAxisId="right" type="monotone" dataKey="dbm" stroke="#82ca9d" strokeWidth={2} dot={false} name="dBm" activeDot={{ r: 4 }} />
+          <Line yAxisId="left" type="monotone" dataKey="rssi" stroke="#8884d8" strokeWidth={2} dot={false} name="RSSI" />
+          <Line yAxisId="right" type="monotone" dataKey="dbm" stroke="#82ca9d" strokeWidth={2} dot={false} name="dBm" />
         </LineChart>
       </ResponsiveContainer>
 

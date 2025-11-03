@@ -12,13 +12,18 @@ export default function RealtimeSignal({ apiBase }) {
       try {
         json = JSON.parse(text);
       } catch {
-        console.error("Response bukan JSON:", text);
+        console.error("⚠️ Response bukan JSON:", text);
         return;
       }
 
-      setSignal(json);
+      if (json && json.rssi !== undefined) {
+        setSignal(json);
+        console.log("📡 Signal diterima:", json);
+      } else {
+        console.warn("⚠️ Format signal tidak sesuai:", json);
+      }
     } catch (e) {
-      console.error("Failed to fetch signal:", e);
+      console.error("❌ Gagal fetch signal:", e);
     }
   };
 
