@@ -5,7 +5,7 @@ import IntervalControl from "./IntervalControl";
 
 function App() {
   // 🔹 Gunakan ngrok (Raspberry lokal) untuk API utama
-  const apiBase = " https://nonrelated-spirometrical-ashley.ngrok-free.dev";
+  const apiBase = "https://nonrelated-spirometrical-ashley.ngrok-free.dev";
 
   // 🔹 Interval refresh data (default 10 detik)
   const [interval, setInterval] = useState(10);
