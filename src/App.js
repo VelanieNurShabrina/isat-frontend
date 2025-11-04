@@ -5,7 +5,7 @@ import IntervalControl from "./IntervalControl";
 
 function App() {
   // 🔹 URL backend Flask kamu (pastikan aktif)
-  const apiBase = "https://nonrelated-spirometrical-ashley.ngrok-free.dev";
+  const apiBase = " https://weddings-producing-plenty-navy.trycloudflare.com";
 
   // 🔹 Interval polling (detik)
   const [interval, setInterval] = useState(10);
