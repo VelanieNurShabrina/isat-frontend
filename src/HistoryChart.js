@@ -163,7 +163,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
           <YAxis
             yAxisId="right"
             orientation="right"
-            domain={[-140, -60]}
+            domain={[-60, -140]}
             label={{
               value: "dBm (signal strength)",
               angle: 90,
