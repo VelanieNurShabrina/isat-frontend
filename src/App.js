@@ -4,10 +4,11 @@ import RealtimeSignal from "./RealtimeSignal";
 import IntervalControl from "./IntervalControl";
 
 function App() {
-  // 🔹 URL backend Flask kamu (pastikan aktif)
-  const apiBase = " https://weddings-producing-plenty-navy.trycloudflare.com";
+  // 🔹 Pilih API otomatis berdasarkan lokasi
+  const apiBase = window.location.hostname.includes("localhost") || window.location.hostname.startsWith("192.")
+    ? "http://192.168.100.135:5000" // 👉 Ganti IP ini sesuai IP Raspberry Pi kamu
+    : "https://isat-backend-production.up.railway.app"; // Railway (cloud)
 
-  // 🔹 Interval polling (detik)
   const [interval, setInterval] = useState(10);
 
   return (
@@ -15,13 +16,13 @@ function App() {
       <h2>📡 IsatPhone Signal Dashboard</h2>
       <p>Signal values: RSSI (bars), dBm (power), BER (bit error rate)</p>
 
-      {/* Kontrol interval polling */}
-      <IntervalControl apiBase={apiBase} onIntervalChange={setInterval} />
+      <p style={{ color: "#777", fontSize: 13 }}>
+        🌐 Mode: {apiBase.includes("railway") ? "Cloud (Railway)" : "Local (Raspberry Pi)"}
+      </p>
 
-      {/* Data realtime signal */}
+      <IntervalControl apiBase={apiBase} onIntervalChange={setInterval} />
       <RealtimeSignal apiBase={apiBase} />
 
-      {/* Grafik history */}
       <div style={{ marginTop: 20 }}>
         <HistoryChart apiBase={apiBase} refreshInterval={interval} />
       </div>

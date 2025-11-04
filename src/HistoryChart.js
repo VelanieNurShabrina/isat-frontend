@@ -132,7 +132,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
           <YAxis
             yAxisId="right"
             orientation="right"
-            domain={[-140, -100]}   // gunakan range negatif asli
+            domain={[-140, -60]}   // gunakan range negatif asli
             allowDataOverflow={true}       // balik orientasi → -60 di atas, -140 di bawah
             label={{ value: "dBm (signal strength)", angle: 90, position: "insideRight" }}
             stroke="#82ca9d"
