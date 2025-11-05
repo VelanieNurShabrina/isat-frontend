@@ -42,14 +42,13 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
         return;
       }
 
-      // **PENTING**: jangan balik ( * -1 ). Gunakan nilai dbm asli dari backend (negatif).
+      // ✅ Konversi timestamp UTC → WIB (+7 jam)
       const mapped = json.data.map((d) => ({
-        time: new Date(d.timestamp * 1000),
+        time: new Date(d.timestamp * 1000), // Raspberry sudah pakai WIB, jadi jangan tambah offset
         rssi: d.rssi,
-        dbm: d.dbm, // tetap negatif, misal -123.5
+        dbm: d.dbm,
       }));
 
-      // debug cepat
       console.log("Mapped sample:", mapped.slice(0, 5));
 
       setData(mapped);
@@ -70,12 +69,14 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
     }
   }, [refreshInterval, isFiltered, startTime, endTime]);
 
+  // ✅ Format jam sesuai WIB
   const timeFormatter = (time) =>
-    new Intl.DateTimeFormat("en-US", {
+    new Intl.DateTimeFormat("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hour12: false,
+      timeZone: "Asia/Jakarta", // pastikan pakai WIB
     }).format(time);
 
   const handleFilter = () => {
@@ -132,8 +133,8 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
           <YAxis
             yAxisId="right"
             orientation="right"
-            domain={[-140, -60]}   // gunakan range negatif asli
-            allowDataOverflow={true}       // balik orientasi → -60 di atas, -140 di bawah
+            domain={[-140, -60]}
+            allowDataOverflow={true}
             label={{ value: "dBm (signal strength)", angle: 90, position: "insideRight" }}
             stroke="#82ca9d"
           />
@@ -153,7 +154,9 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
 
       {lastUpdate && (
         <p style={{ fontSize: 12, color: "#777", marginTop: 10 }}>
-          {isFiltered ? "⏱️ Showing filtered data (no auto-refresh)" : `⏱️ Updated every ${refreshInterval} seconds — Last update: ${lastUpdate.toLocaleTimeString()}`}
+          {isFiltered
+            ? "⏱️ Showing filtered data (no auto-refresh)"
+            : `⏱️ Updated every ${refreshInterval} seconds — Last update (WIB): ${lastUpdate.toLocaleTimeString("id-ID", { hour12: false })}`}
         </p>
       )}
     </div>
