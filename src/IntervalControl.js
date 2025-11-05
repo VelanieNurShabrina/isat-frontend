@@ -5,9 +5,17 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
   const [loading, setLoading] = useState(false);
 
   const handleChange = async (e) => {
-    const newInterval = e.target.value;
+    const newInterval = parseInt(e.target.value);
+
+    // 🚫 Jangan kirim request ke Railway
+    if (apiBase.includes("railway")) {
+      alert("⚠️ Interval tidak bisa diubah di mode Cloud (Railway). Jalankan di Raspberry Pi untuk mengatur polling.");
+      return;
+    }
+
     setIntervalValue(newInterval);
     setLoading(true);
+
     try {
       const res = await fetch(`${apiBase}/config/interval?interval=${newInterval}`);
       const text = await res.text();
@@ -22,13 +30,14 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
       }
 
       if (json.status === "ok") {
-        alert(`Interval berhasil diubah menjadi ${newInterval} detik`);
-        if (onIntervalChange) onIntervalChange(Number(newInterval));
+        alert(`✅ Interval berhasil diubah menjadi ${newInterval} detik`);
+        if (onIntervalChange) onIntervalChange(newInterval);
+        console.log(`✅ Interval berhasil diubah ke ${newInterval} detik`);
       } else {
-        alert("Gagal ubah interval: " + json.message);
+        alert("⚠️ Gagal ubah interval: " + (json.message || "Tidak diketahui"));
       }
     } catch (err) {
-      console.error("Gagal koneksi ke server:", err);
+      console.error("❌ Gagal koneksi ke server:", err);
       alert("Terjadi kesalahan koneksi ke server");
     } finally {
       setLoading(false);
