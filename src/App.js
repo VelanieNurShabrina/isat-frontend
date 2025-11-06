@@ -8,7 +8,7 @@ function App() {
   const apiBase = "https://isat-backend-production.up.railway.app";
 
   // 🔹 Raspberry via Cloudflare Tunnel khusus untuk interval
-  const tunnelBase = "https://nonrelated-spirometrical-ashley.ngrok-free.app";
+  const tunnelBase = "ttps://cliff-private-noticed-res.trycloudflare.com";
 
 
   const [interval, setInterval] = useState(10);
