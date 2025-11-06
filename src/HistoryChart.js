@@ -18,64 +18,65 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
   const [isFiltered, setIsFiltered] = useState(false);
 
   const fetchHistory = async () => {
-  try {
-    let url = `${apiBase}/history?limit=200`;
-    if (isFiltered && startTime && endTime) {
-      const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
-      const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
-      url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=200`;
-    }
-
-    const res = await fetch(url);
-    const text = await res.text();
-
-    let json;
     try {
-      json = JSON.parse(text);
-    } catch {
-      console.error("⚠️ Response bukan JSON:", text);
-      return;
+      let url = `${apiBase}/history?limit=300`;
+
+      if (isFiltered && startTime && endTime) {
+        const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
+        const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
+        url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=500`;
+      }
+
+      const res = await fetch(url);
+      const json = await res.json();
+
+      if (!json.data || !Array.isArray(json.data)) return;
+
+      // ✅ Urutkan data berdasarkan timestamp (lama → baru)
+      const sorted = [...json.data].sort((a, b) => a.timestamp - b.timestamp);
+
+      // ✅ Map data dengan konversi waktu
+      const mapped = sorted.map((d) => ({
+        time: new Date(d.timestamp * 1000),
+        rssi: d.rssi,
+        dbm: d.dbm,
+      }));
+
+      // ✅ Ambil hanya 200 data terakhir biar performa bagus
+      const latestData = mapped.slice(-200);
+
+      // ✅ Paksa React rerender
+      setData([...latestData]);
+      setLastUpdate(new Date());
+
+      console.log(
+        "✅ Data updated:",
+        latestData.length,
+        "entries. Latest at:",
+        latestData[latestData.length - 1]?.time.toLocaleTimeString("id-ID", {
+          hour12: false,
+        })
+      );
+    } catch (e) {
+      console.error("❌ Gagal fetch history:", e);
     }
-
-    if (!json.data || !Array.isArray(json.data)) {
-      console.warn("⚠️ Data tidak valid:", json);
-      return;
-    }
-
-    // ✅ Timestamp tanpa offset tambahan
-    const mapped = json.data.map((d) => ({
-      time: new Date(d.timestamp * 1000),
-      rssi: d.rssi,
-      dbm: d.dbm,
-    }));
-
-    // ✅ Paksa React rerender (array baru)
-    setData([...mapped]);
-    setLastUpdate(new Date());
-    console.log("✅ Data history:", mapped.length, "entri");
-  } catch (e) {
-    console.error("❌ Gagal fetch history:", e);
-  }
-};
+  };
 
   useEffect(() => {
+    fetchHistory(); // ambil pertama kali
     if (!isFiltered) {
-      fetchHistory();
       const interval = setInterval(fetchHistory, refreshInterval * 1000);
       return () => clearInterval(interval);
-    } else {
-      fetchHistory();
     }
-  }, [refreshInterval, isFiltered, startTime, endTime]);
+  }, [refreshInterval, isFiltered]);
 
-  // ✅ Format jam sesuai WIB
   const timeFormatter = (time) =>
     new Intl.DateTimeFormat("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hour12: false,
-      timeZone: "Asia/Jakarta", // pastikan pakai WIB
+      timeZone: "Asia/Jakarta",
     }).format(time);
 
   const handleFilter = () => {
@@ -115,26 +116,45 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             onChange={(e) => setEndTime(e.target.value)}
           />
         </label>
-        <button onClick={handleFilter} style={{ padding: "6px 10px" }}>Show</button>
-        <button onClick={handleReset} style={{ padding: "6px 10px" }}>Reset</button>
+        <button onClick={handleFilter} style={{ padding: "6px 10px" }}>
+          Show
+        </button>
+        <button onClick={handleReset} style={{ padding: "6px 10px" }}>
+          Reset
+        </button>
       </div>
 
-      <ResponsiveContainer width="100%" height={400}key={lastUpdate}>
-        <LineChart data={data} margin={{ top: 10, right: 50, left: 0, bottom: 5 }}>
+      <ResponsiveContainer width="100%" height={400} key={lastUpdate}>
+        <LineChart
+          data={data}
+          margin={{ top: 10, right: 50, left: 0, bottom: 5 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
-          <XAxis dataKey="time" tickFormatter={timeFormatter} stroke="#666" minTickGap={60} />
+          <XAxis
+            dataKey="time"
+            tickFormatter={timeFormatter}
+            stroke="#666"
+            minTickGap={60}
+          />
           <YAxis
             yAxisId="left"
             domain={[0, 55]}
-            label={{ value: "RSSI (bars)", angle: -90, position: "insideLeft" }}
+            label={{
+              value: "RSSI (bars)",
+              angle: -90,
+              position: "insideLeft",
+            }}
             stroke="#8884d8"
           />
           <YAxis
             yAxisId="right"
             orientation="right"
             domain={[-140, -60]}
-            allowDataOverflow={true}
-            label={{ value: "dBm (signal strength)", angle: 90, position: "insideRight" }}
+            label={{
+              value: "dBm (signal strength)",
+              angle: 90,
+              position: "insideRight",
+            }}
             stroke="#82ca9d"
           />
           <Tooltip
@@ -146,8 +166,24 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             labelFormatter={(label) => `Time: ${timeFormatter(label)}`}
           />
           <Legend verticalAlign="top" height={36} />
-          <Line yAxisId="left" type="monotone" dataKey="rssi" stroke="#8884d8" strokeWidth={2} dot={false} name="RSSI" />
-          <Line yAxisId="right" type="monotone" dataKey="dbm" stroke="#82ca9d" strokeWidth={2} dot={false} name="dBm" />
+          <Line
+            yAxisId="left"
+            type="monotone"
+            dataKey="rssi"
+            stroke="#8884d8"
+            strokeWidth={2}
+            dot={false}
+            name="RSSI"
+          />
+          <Line
+            yAxisId="right"
+            type="monotone"
+            dataKey="dbm"
+            stroke="#82ca9d"
+            strokeWidth={2}
+            dot={false}
+            name="dBm"
+          />
         </LineChart>
       </ResponsiveContainer>
 
@@ -155,7 +191,10 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
         <p style={{ fontSize: 12, color: "#777", marginTop: 10 }}>
           {isFiltered
             ? "⏱️ Showing filtered data (no auto-refresh)"
-            : `⏱️ Updated every ${refreshInterval} seconds — Last update (WIB): ${lastUpdate.toLocaleTimeString("id-ID", { hour12: false })}`}
+            : `⏱️ Updated every ${refreshInterval} seconds — Last update (WIB): ${lastUpdate.toLocaleTimeString(
+                "id-ID",
+                { hour12: false }
+              )}`}
         </p>
       )}
     </div>
