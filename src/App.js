@@ -4,8 +4,11 @@ import RealtimeSignal from "./RealtimeSignal";
 import IntervalControl from "./IntervalControl";
 
 function App() {
-  // 🔹 Pakai backend Railway dulu untuk realtime dan chart
+  // 🔹 Railway untuk data realtime & chart
   const apiBase = "https://isat-backend-production.up.railway.app";
+
+  // 🔹 Raspberry via Cloudflare Tunnel khusus untuk interval
+  const tunnelBase = "https://pty-fuji-can-diagram.trycloudflare.com";
 
   const [interval, setInterval] = useState(10);
 
@@ -15,15 +18,14 @@ function App() {
       <p>Signal values: RSSI (bars), dBm (power), BER (bit error rate)</p>
 
       <p style={{ color: "#777", fontSize: 13 }}>
-        🌐 Mode: Cloud (Railway)
+        🌐 Mode: Cloud (Railway) — interval dikontrol dari Raspberry
       </p>
 
-      {/* Dropdown interval sementara nonaktif (karena cloud tidak handle polling Raspberry) */}
-      <IntervalControl apiBase={apiBase} onIntervalChange={setInterval} />
+      {/* IntervalControl kirim ke Raspberry (bukan Railway) */}
+      <IntervalControl apiBase={tunnelBase} onIntervalChange={setInterval} />
 
-      {/* Realtime dari Railway */}
+      {/* Realtime & Chart tetap ambil dari Railway */}
       <RealtimeSignal apiBase={apiBase} />
-
       <div style={{ marginTop: 20 }}>
         <HistoryChart apiBase={apiBase} refreshInterval={interval} />
       </div>
