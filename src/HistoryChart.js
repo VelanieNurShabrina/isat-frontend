@@ -38,7 +38,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
       // ✅ Map data dengan konversi waktu
       const mapped = sorted.map((d) => ({
          time: new Date((d.timestamp - 25200) * 1000),
-        time: new Date(d.timestamp * 1000),
+    
         rssi: d.rssi,
         dbm: d.dbm,
       }));
