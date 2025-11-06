@@ -21,10 +21,11 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
 
     try {
       // ✅ Gunakan endpoint yang benar (/config?interval=...)
-      const res = await fetch(`${apiBase}/config?interval=${newInterval}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(`${apiBase}/config/interval?interval=${newInterval}`, {
+  method: "GET",
+  headers: { "Content-Type": "application/json" },
+});
+
 
       const text = await res.text();
 
