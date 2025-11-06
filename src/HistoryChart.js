@@ -18,46 +18,45 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
   const [isFiltered, setIsFiltered] = useState(false);
 
   const fetchHistory = async () => {
-    try {
-      let url = `${apiBase}/history?limit=200`;
-      if (isFiltered && startTime && endTime) {
-        const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
-        const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
-        url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=200`;
-      }
-
-      const res = await fetch(url);
-      const text = await res.text();
-
-      let json;
-      try {
-        json = JSON.parse(text);
-      } catch {
-        console.error("⚠️ Response bukan JSON:", text);
-        return;
-      }
-
-      if (!json.data || !Array.isArray(json.data)) {
-        console.warn("⚠️ Data tidak valid:", json);
-        return;
-      }
-
-      // ✅ Konversi timestamp UTC → WIB (+7 jam)
-      const mapped = json.data.map((d) => ({
-        time: new Date(d.timestamp * 1000), // Raspberry sudah pakai WIB, jadi jangan tambah offset
-        rssi: d.rssi,
-        dbm: d.dbm,
-      }));
-
-      console.log("Mapped sample:", mapped.slice(0, 5));
-
-      setData(mapped);
-      setLastUpdate(new Date());
-      console.log("✅ Data history:", mapped.length, "entri");
-    } catch (e) {
-      console.error("❌ Gagal fetch history:", e);
+  try {
+    let url = `${apiBase}/history?limit=200`;
+    if (isFiltered && startTime && endTime) {
+      const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
+      const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
+      url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=200`;
     }
-  };
+
+    const res = await fetch(url);
+    const text = await res.text();
+
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch {
+      console.error("⚠️ Response bukan JSON:", text);
+      return;
+    }
+
+    if (!json.data || !Array.isArray(json.data)) {
+      console.warn("⚠️ Data tidak valid:", json);
+      return;
+    }
+
+    // ✅ Timestamp tanpa offset tambahan
+    const mapped = json.data.map((d) => ({
+      time: new Date((d.timestamp + 0) * 1000),
+      rssi: d.rssi,
+      dbm: d.dbm,
+    }));
+
+    // ✅ Paksa React rerender (array baru)
+    setData([...mapped]);
+    setLastUpdate(new Date());
+    console.log("✅ Data history:", mapped.length, "entri");
+  } catch (e) {
+    console.error("❌ Gagal fetch history:", e);
+  }
+};
 
   useEffect(() => {
     if (!isFiltered) {
@@ -120,7 +119,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
         <button onClick={handleReset} style={{ padding: "6px 10px" }}>Reset</button>
       </div>
 
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={400}key={lastUpdate}>
         <LineChart data={data} margin={{ top: 10, right: 50, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
           <XAxis dataKey="time" tickFormatter={timeFormatter} stroke="#666" minTickGap={60} />
