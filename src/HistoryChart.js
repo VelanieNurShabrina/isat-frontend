@@ -44,7 +44,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
 
     // ✅ Timestamp tanpa offset tambahan
     const mapped = json.data.map((d) => ({
-      time: new Date((d.timestamp + 25200) * 1000), // +7 jam ke WIB
+      time: new Date(d.timestamp * 1000),
       rssi: d.rssi,
       dbm: d.dbm,
     }));
