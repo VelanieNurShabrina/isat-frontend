@@ -4,10 +4,8 @@ import RealtimeSignal from "./RealtimeSignal";
 import IntervalControl from "./IntervalControl";
 
 function App() {
-  // 🔹 Pilih API otomatis berdasarkan lokasi
-  const apiBase = window.location.hostname.includes("localhost") || window.location.hostname.startsWith("192.")
-    ? "http://192.168.100.135:5000" // 👉 Ganti IP ini sesuai IP Raspberry Pi kamu
-    : "https://isat-backend-production.up.railway.app"; // Railway (cloud)
+  // 🔹 Pakai backend Railway dulu untuk realtime dan chart
+  const apiBase = "https://isat-backend-production.up.railway.app";
 
   const [interval, setInterval] = useState(10);
 
@@ -17,10 +15,13 @@ function App() {
       <p>Signal values: RSSI (bars), dBm (power), BER (bit error rate)</p>
 
       <p style={{ color: "#777", fontSize: 13 }}>
-        🌐 Mode: {apiBase.includes("railway") ? "Cloud (Railway)" : "Local (Raspberry Pi)"}
+        🌐 Mode: Cloud (Railway)
       </p>
 
+      {/* Dropdown interval sementara nonaktif (karena cloud tidak handle polling Raspberry) */}
       <IntervalControl apiBase={apiBase} onIntervalChange={setInterval} />
+
+      {/* Realtime dari Railway */}
       <RealtimeSignal apiBase={apiBase} />
 
       <div style={{ marginTop: 20 }}>
