@@ -6,7 +6,7 @@ import CallControl from "./CallControl";
 
 function App() {
   const apiBase = "https://isat-backend-production.up.railway.app";
-  const tunnelBase = "https://universal-improvement-nodes-corp.trycloudflare.com";
+  const tunnelBase = " https://projected-december-achieve-recruiting.trycloudflare.com";
 
   const [interval, setInterval] = useState(10);
 
@@ -20,59 +20,41 @@ function App() {
         boxSizing: "border-box",
       }}
     >
+      {/* ===== Header ===== */}
       <h2 style={{ margin: "0 0 8px 0" }}>📡 IsatPhone Signal Dashboard</h2>
-      <p style={{ margin: "0 0 22px 0", color: "#555" }}>
+      <p style={{ margin: "0 0 24px 0", color: "#555" }}>
         Signal values: RSSI (bars), dBm (power), BER (bit error rate)
       </p>
 
-      {/* ===== Bagian kontrol atas ===== */}
+      {/* ===== Box IntervalControl di atas ===== */}
+      <div style={{ marginBottom: 20 }}>
+        <IntervalControl apiBase={tunnelBase} onIntervalChange={setInterval} />
+      </div>
+
+      {/* ===== Realtime Signal + Call Control sejajar ===== */}
       <div
         style={{
           display: "flex",
+          flexWrap: "wrap",
+          gap: 10, // 🔹 jarak antar box
           justifyContent: "flex-start",
           alignItems: "flex-start",
-          flexWrap: "wrap",
-          gap: 60, // 🔹 jarak horizontal antar box (lebih besar biar lega)
-          marginBottom: 30,
+          marginBottom: 30, // 🔹 jarak bawah ke grafik
         }}
       >
-        {/* Box IntervalControl */}
-        <div
-          style={{
-            width: 260,
-            minWidth: 200,
-            boxSizing: "border-box",
-            background: "transparent",
-            border: "none",
-            boxShadow: "none",
-          }}
-        >
-          <IntervalControl apiBase={tunnelBase} onIntervalChange={setInterval} />
+        {/* 🟦 Realtime Signal */}
+        <div style={{ flex: "1 1 300px", minWidth: 260 }}>
+          <RealtimeSignal apiBase={apiBase} />
         </div>
 
-        {/* Box CallControl */}
-        <div
-          style={{
-            width: 360,
-            minWidth: 260,
-            boxSizing: "border-box",
-            background: "transparent",
-            border: "none",
-            boxShadow: "none",
-            marginLeft: 20,
-          }}
-        >
+        {/* 📞 Call Control */}
+        <div style={{ flex: "1 1 300px", minWidth: 260 }}>
           <CallControl apiBase={tunnelBase} />
         </div>
       </div>
 
-      {/* ===== Realtime Signal ===== */}
-      <div style={{ marginBottom: 25 }}>
-        <RealtimeSignal apiBase={apiBase} />
-      </div>
-
-      {/* ===== History Chart ===== */}
-      <div>
+      {/* ===== Grafik History ===== */}
+      <div style={{ marginTop: 10 }}>
         <HistoryChart apiBase={apiBase} refreshInterval={interval} />
       </div>
 
