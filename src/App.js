@@ -78,7 +78,7 @@ function App() {
           textAlign: "center",
         }}
       >
-        ⏱ Updated automatically — Raspberry Pi & Isat backend synced
+        
       </footer>
     </div>
   );
