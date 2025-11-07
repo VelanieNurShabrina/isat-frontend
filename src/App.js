@@ -2,34 +2,77 @@ import React, { useState } from "react";
 import HistoryChart from "./HistoryChart";
 import RealtimeSignal from "./RealtimeSignal";
 import IntervalControl from "./IntervalControl";
+import CallControl from "./CallControl";
 
 function App() {
-  // 🔹 Railway untuk data realtime & chart
   const apiBase = "https://isat-backend-production.up.railway.app";
-
-  // 🔹 Raspberry via Cloudflare Tunnel khusus untuk interval
-  const tunnelBase = "https://cement-remix-accountability-london.trycloudflare.com";
-
+  const tunnelBase = "https://merry-thomas-charming-shaved.trycloudflare.com";
 
   const [interval, setInterval] = useState(10);
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>📡 IsatPhone Signal Dashboard</h2>
-      <p>Signal values: RSSI (bars), dBm (power), BER (bit error rate)</p>
-
-      <p style={{ color: "#777", fontSize: 13 }}>
-        🌐 Mode: Cloud (Railway) — interval dikontrol dari Raspberry
+    <div
+      style={{
+        padding: 20,
+        fontFamily: "Segoe UI, Roboto, Arial, sans-serif",
+        backgroundColor: "#fafafa",
+        minHeight: "100vh",
+        boxSizing: "border-box",
+      }}
+    >
+      <h2 style={{ margin: "0 0 6px 0" }}>📡 IsatPhone Signal Dashboard</h2>
+      <p style={{ margin: "0 0 18px 0", color: "#555" }}>
+        Signal values: RSSI (bars), dBm (power), BER (bit error rate)
       </p>
 
-      {/* IntervalControl kirim ke Raspberry (bukan Railway) */}
-      <IntervalControl apiBase={tunnelBase} onIntervalChange={setInterval} />
+      {/* ===== kontrol atas: interval (narrow) + call (medium) ===== */}
+      <div
+        style={{
+          display: "flex",
+          gap: 16,
+          marginBottom: 22,
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+        }}
+      >
+        {/* Interval kecil: sesuaikan width di sini */}
+        <div
+          style={{
+            width: 220,             // <<< ukuran kecil seperti gambar
+            minWidth: 180,
+            boxSizing: "border-box",
+          }}
+        >
+          <IntervalControl apiBase={tunnelBase} onIntervalChange={setInterval} />
+        </div>
 
-      {/* Realtime & Chart tetap ambil dari Railway */}
-      <RealtimeSignal apiBase={apiBase} />
-      <div style={{ marginTop: 20 }}>
+        {/* Call control lebih lebar */}
+        <div
+          style={{
+            width: 340,
+            minWidth: 240,
+            boxSizing: "border-box",
+          }}
+        >
+          <CallControl apiBase={tunnelBase} />
+        </div>
+
+        {/* Kalau nanti mau elemen lain di sebelah, bisa ditambahkan di sini */}
+      </div>
+
+      {/* ===== RealtimeSignal full-width di bawah kontrol ===== */}
+      <div style={{ marginBottom: 20 }}>
+        <RealtimeSignal apiBase={apiBase} />
+      </div>
+
+      {/* ===== History chart full-width ===== */}
+      <div>
         <HistoryChart apiBase={apiBase} refreshInterval={interval} />
       </div>
+
+      <footer style={{ marginTop: 36, color: "#888", fontSize: 12, textAlign: "center" }}>
+        ⏱ Updated automatically — Raspberry Pi & Isat backend synced
+      </footer>
     </div>
   );
 }
