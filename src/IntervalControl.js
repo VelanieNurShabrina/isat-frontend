@@ -8,7 +8,6 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
   const handleChange = async (e) => {
     const newInterval = parseInt(e.target.value);
 
-    // 🚫 Cegah ubah interval jika masih pakai Railway (bukan Pi)
     if (apiBase.includes("railway")) {
       setStatusMsg(
         "⚠️ Tidak bisa ubah interval di mode Cloud (Railway). Jalankan di Raspberry Pi untuk mengatur polling."
@@ -24,7 +23,6 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
     setStatusMsg("⏳ Mengubah interval...");
 
     try {
-      // ✅ Endpoint Flask: /config/interval?interval=xx
       const res = await fetch(`${apiBase}/config/interval?interval=${newInterval}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -44,7 +42,6 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
       if (json.status === "ok") {
         setStatusMsg(`✅ Interval berhasil diubah menjadi ${newInterval} detik`);
         if (onIntervalChange) onIntervalChange(newInterval);
-        console.log(`✅ Interval berhasil diubah ke ${newInterval} detik`);
       } else {
         setStatusMsg(
           `⚠️ Gagal ubah interval: ${json.msg || json.message || "Tidak diketahui"}`
@@ -53,7 +50,6 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
     } catch (err) {
       console.error("❌ Gagal koneksi ke Raspberry:", err);
       setStatusMsg("❌ Tidak bisa terhubung ke Raspberry (cek tunnel Cloudflare).");
-      alert("❌ Gagal terhubung ke Raspberry. Pastikan tunnel Cloudflare aktif.");
     } finally {
       setLoading(false);
     }
@@ -62,16 +58,25 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
   return (
     <div
       style={{
-        backgroundColor: "#fff",
-        padding: "12px 16px",
+        backgroundColor: "#f9f9f9",
+        padding: "10px 14px",
         borderRadius: 8,
         border: "1px solid #ddd",
-        display: "block",
         width: "100%",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+        boxSizing: "border-box",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+        maxWidth: "100%", // biar ngikut parent aja
+        overflowWrap: "break-word",
       }}
     >
-      <label style={{ fontWeight: "600", marginBottom: 6, display: "block" }}>
+      <label
+        style={{
+          fontWeight: 600,
+          marginBottom: 6,
+          display: "block",
+          fontSize: 14,
+        }}
+      >
         ⏱️ Signal Reading Interval:
       </label>
 
@@ -86,7 +91,8 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
           fontSize: 14,
           cursor: loading ? "not-allowed" : "pointer",
           width: "100%",
-          maxWidth: 180,
+          boxSizing: "border-box",
+          maxWidth: "100%",
         }}
       >
         <option value="5">5 Seconds</option>
@@ -100,8 +106,9 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
         <p
           style={{
             fontSize: 13,
-            marginTop: 10,
-            lineHeight: 1.3,
+            marginTop: 8,
+            lineHeight: 1.4,
+            maxWidth: "340px", // 💡 tambahin ini biar teks status ga bikin box molor
             color: statusMsg.startsWith("✅")
               ? "green"
               : statusMsg.startsWith("⚠️")

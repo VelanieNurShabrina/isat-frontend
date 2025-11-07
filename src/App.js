@@ -6,7 +6,7 @@ import CallControl from "./CallControl";
 
 function App() {
   const apiBase = "https://isat-backend-production.up.railway.app";
-  const tunnelBase = " https://projected-december-achieve-recruiting.trycloudflare.com";
+  const tunnelBase = "https://mens-independently-jokes-fever.trycloudflare.com";
 
   const [interval, setInterval] = useState(10);
 
@@ -27,8 +27,22 @@ function App() {
       </p>
 
       {/* ===== Box IntervalControl di atas ===== */}
-      <div style={{ marginBottom: 20 }}>
-        <IntervalControl apiBase={tunnelBase} onIntervalChange={setInterval} />
+      <div
+        style={{
+          marginBottom: 20,
+          display: "flex",
+          justifyContent: "flex-start",
+        }}
+      >
+        <div
+          style={{
+            width: 360,
+            minWidth: 320,
+            boxSizing: "border-box",
+          }}
+        >
+          <IntervalControl apiBase={tunnelBase} onIntervalChange={setInterval} />
+        </div>
       </div>
 
       {/* ===== Realtime Signal + Call Control sejajar ===== */}
@@ -36,19 +50,31 @@ function App() {
         style={{
           display: "flex",
           flexWrap: "wrap",
-          gap: 10, // 🔹 jarak antar box
+          gap: 14, // 🔹 jarak lebih rapat antar box
           justifyContent: "flex-start",
           alignItems: "flex-start",
-          marginBottom: 30, // 🔹 jarak bawah ke grafik
+          marginBottom: 30,
         }}
       >
         {/* 🟦 Realtime Signal */}
-        <div style={{ flex: "1 1 300px", minWidth: 260 }}>
+        <div
+          style={{
+            width: 360,
+            minWidth: 320,
+            boxSizing: "border-box",
+          }}
+        >
           <RealtimeSignal apiBase={apiBase} />
         </div>
 
         {/* 📞 Call Control */}
-        <div style={{ flex: "1 1 300px", minWidth: 260 }}>
+        <div
+          style={{
+            width: 360,
+            minWidth: 320,
+            boxSizing: "border-box",
+          }}
+        >
           <CallControl apiBase={tunnelBase} />
         </div>
       </div>
