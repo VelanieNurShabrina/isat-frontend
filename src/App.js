@@ -6,7 +6,7 @@ import CallControl from "./CallControl";
 
 function App() {
   const apiBase = "https://isat-backend-production.up.railway.app";
-  const tunnelBase = "https://mens-independently-jokes-fever.trycloudflare.com";
+  const tunnelBase = "https://mountains-antibodies-amy-super.trycloudflare.com";
 
   const [interval, setInterval] = useState(10);
 
@@ -93,7 +93,7 @@ function App() {
           textAlign: "center",
         }}
       >
-        ⏱ Updated automatically — Raspberry Pi & Isat backend synced
+        
       </footer>
     </div>
   );
