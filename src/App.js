@@ -6,7 +6,7 @@ import CallControl from "./CallControl";
 
 function App() {
   const apiBase = "https://isat-backend-production.up.railway.app";
-  const tunnelBase = "https://merry-thomas-charming-shaved.trycloudflare.com";
+  const tunnelBase = "https://yields-nowhere-had-rocky.trycloudflare.com";
 
   const [interval, setInterval] = useState(10);
 
