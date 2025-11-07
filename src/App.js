@@ -5,9 +5,10 @@ import IntervalControl from "./IntervalControl";
 import CallControl from "./CallControl";
 
 function App() {
+  // API backend cloud (Railway)
   const apiBase = "https://isat-backend-production.up.railway.app";
-  const tunnelBase = " https://universal-improvement-nodes-corp.trycloudflare.com";
-
+  // Tunnel langsung ke Raspberry Pi (ubah sesuai tunnel aktif kamu)
+  const tunnelBase = "https://universal-improvement-nodes-corp.trycloudflare.com";
 
   const [interval, setInterval] = useState(10);
 
@@ -32,46 +33,51 @@ function App() {
           display: "flex",
           gap: 16,
           marginBottom: 22,
-          alignItems: "flex-start",
+          alignItems: "flex-start", // biar isi kotak bisa memanjang ke bawah
           flexWrap: "wrap",
         }}
       >
-        {/* Interval kecil: sesuaikan width di sini */}
+        {/* Panel Interval */}
         <div
           style={{
-            width: 220,             // <<< ukuran kecil seperti gambar
-            minWidth: 180,
+            width: 260, // sedikit dilebarkan biar tulisan nggak terpotong
+            minWidth: 200,
             boxSizing: "border-box",
           }}
         >
           <IntervalControl apiBase={tunnelBase} onIntervalChange={setInterval} />
         </div>
 
-        {/* Call control lebih lebar */}
+        {/* Panel Call */}
         <div
           style={{
             width: 340,
-            minWidth: 240,
+            minWidth: 260,
             boxSizing: "border-box",
           }}
         >
           <CallControl apiBase={tunnelBase} />
         </div>
-
-        {/* Kalau nanti mau elemen lain di sebelah, bisa ditambahkan di sini */}
       </div>
 
-      {/* ===== RealtimeSignal full-width di bawah kontrol ===== */}
+      {/* ===== Realtime Signal full-width di bawah ===== */}
       <div style={{ marginBottom: 20 }}>
         <RealtimeSignal apiBase={apiBase} />
       </div>
 
-      {/* ===== History chart full-width ===== */}
+      {/* ===== History chart ===== */}
       <div>
         <HistoryChart apiBase={apiBase} refreshInterval={interval} />
       </div>
 
-      <footer style={{ marginTop: 36, color: "#888", fontSize: 12, textAlign: "center" }}>
+      <footer
+        style={{
+          marginTop: 36,
+          color: "#888",
+          fontSize: 12,
+          textAlign: "center",
+        }}
+      >
         ⏱ Updated automatically — Raspberry Pi & Isat backend synced
       </footer>
     </div>

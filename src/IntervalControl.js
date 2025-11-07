@@ -8,10 +8,14 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
   const handleChange = async (e) => {
     const newInterval = parseInt(e.target.value);
 
-    // 🚫 Cegah pengiriman request kalau masih pakai Railway
+    // 🚫 Cegah ubah interval jika masih pakai Railway (bukan Pi)
     if (apiBase.includes("railway")) {
-      setStatusMsg("⚠️ Tidak bisa ubah interval di mode Cloud (Railway). Jalankan di Raspberry Pi untuk mengatur polling.");
-      alert("⚠️ Interval tidak bisa diubah di mode Cloud (Railway). Jalankan di Raspberry Pi untuk mengatur polling.");
+      setStatusMsg(
+        "⚠️ Tidak bisa ubah interval di mode Cloud (Railway). Jalankan di Raspberry Pi untuk mengatur polling."
+      );
+      alert(
+        "⚠️ Interval tidak bisa diubah di mode Cloud (Railway). Jalankan di Raspberry Pi untuk mengatur polling."
+      );
       return;
     }
 
@@ -20,16 +24,15 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
     setStatusMsg("⏳ Mengubah interval...");
 
     try {
-      // ✅ Gunakan endpoint yang benar (/config?interval=...)
+      // ✅ Endpoint Flask: /config/interval?interval=xx
       const res = await fetch(`${apiBase}/config/interval?interval=${newInterval}`, {
-  method: "GET",
-  headers: { "Content-Type": "application/json" },
-});
-
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
 
       const text = await res.text();
-
       let json;
+
       try {
         json = JSON.parse(text);
       } catch {
@@ -43,7 +46,9 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
         if (onIntervalChange) onIntervalChange(newInterval);
         console.log(`✅ Interval berhasil diubah ke ${newInterval} detik`);
       } else {
-        setStatusMsg(`⚠️ Gagal ubah interval: ${json.msg || json.message || "Tidak diketahui"}`);
+        setStatusMsg(
+          `⚠️ Gagal ubah interval: ${json.msg || json.message || "Tidak diketahui"}`
+        );
       }
     } catch (err) {
       console.error("❌ Gagal koneksi ke Raspberry:", err);
@@ -57,29 +62,31 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
   return (
     <div
       style={{
-        marginBottom: 20,
-        backgroundColor: "#f9f9f9",
-        padding: "10px 15px",
+        backgroundColor: "#fff",
+        padding: "12px 16px",
         borderRadius: 8,
         border: "1px solid #ddd",
-        display: "inline-block",
-        minWidth: "300px",
+        display: "block",
+        width: "100%",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
       }}
     >
-      <label style={{ fontWeight: "600", marginRight: 10 }}>
+      <label style={{ fontWeight: "600", marginBottom: 6, display: "block" }}>
         ⏱️ Signal Reading Interval:
       </label>
+
       <select
         value={interval}
         onChange={handleChange}
         disabled={loading}
         style={{
-          padding: "5px 10px",
+          padding: "6px 10px",
           borderRadius: 6,
           border: "1px solid #ccc",
           fontSize: 14,
-          minWidth: "100px",
           cursor: loading ? "not-allowed" : "pointer",
+          width: "100%",
+          maxWidth: 180,
         }}
       >
         <option value="5">5 Seconds</option>
@@ -93,14 +100,17 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
         <p
           style={{
             fontSize: 13,
-            marginTop: 8,
+            marginTop: 10,
+            lineHeight: 1.3,
             color: statusMsg.startsWith("✅")
               ? "green"
               : statusMsg.startsWith("⚠️")
               ? "#d67b00"
               : statusMsg.startsWith("❌")
               ? "red"
-              : "#555",
+              : "#333",
+            wordWrap: "break-word",
+            whiteSpace: "normal",
           }}
         >
           {statusMsg}
