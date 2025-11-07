@@ -48,7 +48,7 @@ export default function CallControl({ apiBase }) {
   return (
     <div
       style={{
-        marginBottom: 20,
+       marginBottom: 30,
         padding: "15px",
         border: "1px solid #ccc",
         borderRadius: 8,
