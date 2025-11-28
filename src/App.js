@@ -81,7 +81,7 @@ function App() {
 
       {/* ===== Grafik History ===== */}
       <div style={{ marginTop: 10 }}>
-        <HistoryChart apiBase={apiBase} refreshInterval={interval} />
+        <HistoryChart apiBase={tunnelBase} refreshInterval={interval} />
       </div>
 
       {/* ===== Footer ===== */}
