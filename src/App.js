@@ -64,7 +64,7 @@ function App() {
             boxSizing: "border-box",
           }}
         >
-          <RealtimeSignal apiBase={apiBase} />
+          <RealtimeSignal apiBase={tunnelBase} />
         </div>
 
         {/* 📞 Call Control */}

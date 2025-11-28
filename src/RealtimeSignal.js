@@ -8,8 +8,7 @@ export default function RealtimeSignal({ apiBase }) {
     try {
       // 🔹 1️⃣ Coba ambil sinyal langsung dari Raspberry Pi
       const res = await fetch(`${apiBase}/signal`);
-      const text = await res.text();
-      const json = JSON.parse(text);
+      const json = await res.json();
 
       if (json && json.rssi !== undefined) {
         setSignal(json);

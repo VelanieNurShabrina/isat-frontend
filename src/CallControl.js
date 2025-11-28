@@ -6,20 +6,31 @@ export default function CallControl({ apiBase }) {
   const [statusMsg, setStatusMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const normalizeNumber = (num) => {
+    return num.startsWith("+") ? num : "+" + num;
+  };
+
   const handleCall = async () => {
     setLoading(true);
     setStatusMsg("📞 Memanggil nomor...");
 
     try {
-      const res = await fetch(
-        `${apiBase}/call?number=${encodeURIComponent(number)}&secs=${callSeconds}`
-      );
-      const data = await res.json();
+      const normalized = normalizeNumber(number);
 
-      if (data.status === "ok") {
-        setStatusMsg(`✅ Memanggil ${data.number} selama ${data.call_seconds} detik`);
+      const res = await fetch(
+        `${apiBase}/call?number=${encodeURIComponent(normalized)}&secs=${callSeconds}`
+      );
+
+      const json = await res.json();
+
+      if (json.status === "ok") {
+        setStatusMsg(
+          `✅ Memanggil ${json.number} selama ${json.call_seconds} detik`
+        );
       } else {
-        setStatusMsg(`⚠️ Gagal melakukan panggilan: ${data.msg || "Tidak diketahui"}`);
+        setStatusMsg(
+          `⚠️ Gagal melakukan panggilan: ${json.msg || "Tidak diketahui"}`
+        );
       }
     } catch (err) {
       console.error(err);
@@ -34,8 +45,13 @@ export default function CallControl({ apiBase }) {
     setStatusMsg("🛑 Mengakhiri panggilan...");
 
     try {
-      const res = await fetch(`${apiBase}/call?number=${encodeURIComponent(number)}&secs=0`);
-      const data = await res.json();
+      const normalized = normalizeNumber(number);
+
+      const res = await fetch(
+        `${apiBase}/call?number=${encodeURIComponent(normalized)}&secs=0`
+      );
+
+      await res.json();
       setStatusMsg("✅ Panggilan dihentikan.");
     } catch (err) {
       console.error(err);
@@ -48,7 +64,7 @@ export default function CallControl({ apiBase }) {
   return (
     <div
       style={{
-       marginBottom: 30,
+        marginBottom: 30,
         padding: "15px",
         border: "1px solid #ccc",
         borderRadius: 8,
@@ -123,7 +139,9 @@ export default function CallControl({ apiBase }) {
       </button>
 
       {statusMsg && (
-        <p style={{ marginTop: 10, fontSize: 14, color: "#333" }}>{statusMsg}</p>
+        <p style={{ marginTop: 10, fontSize: 14, color: "#333" }}>
+          {statusMsg}
+        </p>
       )}
     </div>
   );

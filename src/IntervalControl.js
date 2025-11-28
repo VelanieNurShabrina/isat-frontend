@@ -8,48 +8,31 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
   const handleChange = async (e) => {
     const newInterval = parseInt(e.target.value);
 
-    if (apiBase.includes("railway")) {
-      setStatusMsg(
-        "⚠️ Tidak bisa ubah interval di mode Cloud (Railway). Jalankan di Raspberry Pi untuk mengatur polling."
-      );
-      alert(
-        "⚠️ Interval tidak bisa diubah di mode Cloud (Railway). Jalankan di Raspberry Pi untuk mengatur polling."
-      );
-      return;
-    }
-
     setIntervalValue(newInterval);
     setLoading(true);
     setStatusMsg("⏳ Mengubah interval...");
 
     try {
-      const res = await fetch(`${apiBase}/config/interval?interval=${newInterval}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        `${apiBase}/config/interval?interval=${newInterval}`,
+        { method: "GET" }
+      );
 
-      const text = await res.text();
-      let json;
-
-      try {
-        json = JSON.parse(text);
-      } catch {
-        console.error("⚠️ Response bukan JSON:", text);
-        setStatusMsg("⚠️ Server tidak mengembalikan format JSON yang valid");
-        return;
-      }
+      const json = await res.json();
 
       if (json.status === "ok") {
         setStatusMsg(`✅ Interval berhasil diubah menjadi ${newInterval} detik`);
         if (onIntervalChange) onIntervalChange(newInterval);
       } else {
         setStatusMsg(
-          `⚠️ Gagal ubah interval: ${json.msg || json.message || "Tidak diketahui"}`
+          `⚠️ Gagal ubah interval: ${
+            json.msg || json.message || "Tidak diketahui"
+          }`
         );
       }
     } catch (err) {
       console.error("❌ Gagal koneksi ke Raspberry:", err);
-      setStatusMsg("❌ Tidak bisa terhubung ke Raspberry (cek tunnel Cloudflare).");
+      setStatusMsg("❌ Tidak bisa terhubung ke Raspberry (cek tunnel).");
     } finally {
       setLoading(false);
     }
@@ -65,8 +48,6 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
         width: "100%",
         boxSizing: "border-box",
         boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-        maxWidth: "100%", // biar ngikut parent aja
-        overflowWrap: "break-word",
       }}
     >
       <label
@@ -91,8 +72,6 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
           fontSize: 14,
           cursor: loading ? "not-allowed" : "pointer",
           width: "100%",
-          boxSizing: "border-box",
-          maxWidth: "100%",
         }}
       >
         <option value="5">5 Seconds</option>
@@ -107,8 +86,6 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
           style={{
             fontSize: 13,
             marginTop: 8,
-            lineHeight: 1.4,
-            maxWidth: "340px", // 💡 tambahin ini biar teks status ga bikin box molor
             color: statusMsg.startsWith("✅")
               ? "green"
               : statusMsg.startsWith("⚠️")
@@ -116,8 +93,6 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
               : statusMsg.startsWith("❌")
               ? "red"
               : "#333",
-            wordWrap: "break-word",
-            whiteSpace: "normal",
           }}
         >
           {statusMsg}
