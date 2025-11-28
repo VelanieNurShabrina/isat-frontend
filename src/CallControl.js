@@ -4,60 +4,49 @@ export default function CallControl({ apiBase }) {
   const [number, setNumber] = useState("+870772001899");
   const [callSeconds, setCallSeconds] = useState(15);
   const [statusMsg, setStatusMsg] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const normalizeNumber = (num) => {
-    return num.startsWith("+") ? num : "+" + num;
-  };
+  const [calling, setCalling] = useState(false);
+  const [stopping, setStopping] = useState(false);
 
   const handleCall = async () => {
-    setLoading(true);
+    setCalling(true);
     setStatusMsg("📞 Memanggil nomor...");
 
     try {
-      const normalized = normalizeNumber(number);
-
       const res = await fetch(
-        `${apiBase}/call?number=${encodeURIComponent(normalized)}&secs=${callSeconds}`
+        `${apiBase}/call?number=${encodeURIComponent(number)}&secs=${callSeconds}`
       );
+      const data = await res.json();
 
-      const json = await res.json();
-
-      if (json.status === "ok") {
-        setStatusMsg(
-          `✅ Memanggil ${json.number} selama ${json.call_seconds} detik`
-        );
+      if (data.status === "ok") {
+        setStatusMsg(`📞 Memanggil ${data.number} selama ${data.call_seconds} detik`);
       } else {
-        setStatusMsg(
-          `⚠️ Gagal melakukan panggilan: ${json.msg || "Tidak diketahui"}`
-        );
+        setStatusMsg(`⚠️ Gagal melakukan panggilan: ${data.msg || "Tidak diketahui"}`);
       }
     } catch (err) {
       console.error(err);
-      setStatusMsg("❌ Tidak dapat terhubung ke Raspberry Pi (cek tunnel).");
+      setStatusMsg("❌ Tidak dapat terhubung (cek tunnel).");
     } finally {
-      setLoading(false);
+      setCalling(false);
     }
   };
 
   const handleStop = async () => {
-    setLoading(true);
+    setStopping(true);
     setStatusMsg("🛑 Mengakhiri panggilan...");
 
     try {
-      const normalized = normalizeNumber(number);
-
       const res = await fetch(
-        `${apiBase}/call?number=${encodeURIComponent(normalized)}&secs=0`
+        `${apiBase}/call?number=${encodeURIComponent(number)}&secs=0`
       );
-
       await res.json();
-      setStatusMsg("✅ Panggilan dihentikan.");
+
+      setStatusMsg("🛑 Panggilan dihentikan.");
     } catch (err) {
       console.error(err);
-      setStatusMsg("❌ Gagal mengirim perintah stop call.");
+      setStatusMsg("❌ Gagal menghentikan panggilan.");
     } finally {
-      setLoading(false);
+      setStopping(false);
     }
   };
 
@@ -73,6 +62,7 @@ export default function CallControl({ apiBase }) {
       }}
     >
       <h4>📞 Call Control</h4>
+
       <div style={{ marginBottom: 10 }}>
         <label style={{ fontWeight: 500 }}>Nomor:</label>
         <input
@@ -109,7 +99,7 @@ export default function CallControl({ apiBase }) {
 
       <button
         onClick={handleCall}
-        disabled={loading}
+        disabled={calling} // hanya tombol CALL yang disable
         style={{
           padding: "6px 12px",
           backgroundColor: "#28a745",
@@ -117,7 +107,7 @@ export default function CallControl({ apiBase }) {
           border: "none",
           borderRadius: 6,
           marginRight: 10,
-          cursor: loading ? "not-allowed" : "pointer",
+          cursor: calling ? "not-allowed" : "pointer",
         }}
       >
         Call
@@ -125,23 +115,21 @@ export default function CallControl({ apiBase }) {
 
       <button
         onClick={handleStop}
-        disabled={loading}
+        disabled={stopping} // STOP hanya disable saat stop sedang proses
         style={{
           padding: "6px 12px",
           backgroundColor: "#dc3545",
           color: "white",
           border: "none",
           borderRadius: 6,
-          cursor: loading ? "not-allowed" : "pointer",
+          cursor: stopping ? "not-allowed" : "pointer",
         }}
       >
         Stop
       </button>
 
       {statusMsg && (
-        <p style={{ marginTop: 10, fontSize: 14, color: "#333" }}>
-          {statusMsg}
-        </p>
+        <p style={{ marginTop: 10, fontSize: 14, color: "#333" }}>{statusMsg}</p>
       )}
     </div>
   );
