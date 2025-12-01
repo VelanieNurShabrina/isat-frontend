@@ -17,6 +17,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
   const [endTime, setEndTime] = useState("");
   const [isFiltered, setIsFiltered] = useState(false);
 
+  // === FETCH HISTORY ===
   const fetchHistory = async () => {
     try {
       let url = `${apiBase}/history?limit=300`;
@@ -32,31 +33,25 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
 
       if (!json.data || !Array.isArray(json.data)) return;
 
-      // ✅ Urutkan data berdasarkan timestamp (lama → baru)
+      // Sort by timestamp ascending
       const sorted = [...json.data].sort((a, b) => a.timestamp - b.timestamp);
 
-      // ✅ Map data dengan konversi waktu
+      // Convert timestamp → ms for X-axis
       const mapped = sorted.map((d) => ({
-         time: new Date(d.timestamp * 1000),
-
-
-    
+        time: d.timestamp * 1000, // milliseconds
         rssi: d.rssi,
         dbm: d.dbm,
       }));
 
-      // ✅ Ambil hanya 200 data terakhir biar performa bagus
-      const latestData = mapped.slice(-200);
-
-      // ✅ Paksa React rerender
-      setData([...latestData]);
+      const latest = mapped.slice(-200);
+      setData(latest);
       setLastUpdate(new Date());
 
       console.log(
         "✅ Data updated:",
-        latestData.length,
+        latest.length,
         "entries. Latest at:",
-        latestData[latestData.length - 1]?.time.toLocaleTimeString("id-ID", {
+        new Date(latest[latest.length - 1]?.time).toLocaleTimeString("id-ID", {
           hour12: false,
         })
       );
@@ -65,23 +60,26 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
     }
   };
 
+  // === AUTO REFRESH ===
   useEffect(() => {
-    fetchHistory(); // ambil pertama kali
+    fetchHistory();
     if (!isFiltered) {
       const interval = setInterval(fetchHistory, refreshInterval * 1000);
       return () => clearInterval(interval);
     }
   }, [refreshInterval, isFiltered]);
 
-  const timeFormatter = (time) =>
+  // === TIME FORMATTER ===
+  const timeFormatter = (ms) =>
     new Intl.DateTimeFormat("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hour12: false,
       timeZone: "Asia/Jakarta",
-    }).format(time);
+    }).format(new Date(ms));
 
+  // === FILTER HANDLERS ===
   const handleFilter = () => {
     if (startTime && endTime) {
       setIsFiltered(true);
@@ -98,10 +96,11 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
 
   return (
     <div style={{ width: "100%", height: 400, marginTop: 20 }}>
-      <h3 style={{ fontWeight: "600", marginBottom: 10 }}>
+      <h3 style={{ fontWeight: 600, marginBottom: 10 }}>
         Signal History (RSSI and dBm)
       </h3>
 
+      {/* FILTER INPUT */}
       <div style={{ marginBottom: 10, display: "flex", gap: "8px" }}>
         <label>
           Start time:{" "}
@@ -127,18 +126,20 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
         </button>
       </div>
 
-      <ResponsiveContainer width="100%" height={400} key={lastUpdate}>
-        <LineChart
-          data={data}
-          margin={{ top: 10, right: 50, left: 0, bottom: 5 }}
-        >
+      {/* === CHART === */}
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart data={data} margin={{ top: 10, right: 50, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+
           <XAxis
             dataKey="time"
             tickFormatter={timeFormatter}
             stroke="#666"
             minTickGap={60}
+            type="number"
+            domain={["auto", "auto"]}
           />
+
           <YAxis
             yAxisId="left"
             domain={[0, 55]}
@@ -149,6 +150,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             }}
             stroke="#8884d8"
           />
+
           <YAxis
             yAxisId="right"
             orientation="right"
@@ -160,15 +162,18 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             }}
             stroke="#82ca9d"
           />
+
           <Tooltip
             formatter={(value, name) => {
               if (name === "rssi") return [`${value}`, "RSSI"];
               if (name === "dbm") return [`${value} dBm`, "dBm"];
               return [value, name];
             }}
-            labelFormatter={(label) => `Time: ${timeFormatter(label)}`}
+            labelFormatter={(ms) => `Time: ${timeFormatter(ms)}`}
           />
+
           <Legend verticalAlign="top" height={36} />
+
           <Line
             yAxisId="left"
             type="monotone"
@@ -178,6 +183,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             dot={false}
             name="RSSI"
           />
+
           <Line
             yAxisId="right"
             type="monotone"
@@ -190,6 +196,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
         </LineChart>
       </ResponsiveContainer>
 
+      {/* FOOTER */}
       {lastUpdate && (
         <p style={{ fontSize: 12, color: "#777", marginTop: 10 }}>
           {isFiltered
