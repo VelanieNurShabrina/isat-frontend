@@ -175,7 +175,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
 
       {lastUpdate && (
         <p style={{ fontSize: 12, color: "#777" }}>
-          Last update:{" "}
+          ⏱️ Updated every ${refreshInterval} seconds — Last update:{" "}
           {lastUpdate.toLocaleTimeString("id-ID", { hour12: false })}
         </p>
       )}
