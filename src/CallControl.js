@@ -14,14 +14,20 @@ export default function CallControl({ apiBase }) {
 
     try {
       const res = await fetch(
-        `${apiBase}/call?number=${encodeURIComponent(number)}&secs=${callSeconds}`
+        `${apiBase}/call?number=${encodeURIComponent(
+          number
+        )}&secs=${callSeconds}`
       );
       const data = await res.json();
 
       if (data.status === "ok") {
-        setStatusMsg(`📞 Memanggil ${data.number} selama ${data.call_seconds} detik`);
+        setStatusMsg(
+          `📞 Memanggil ${data.number} selama ${data.call_seconds} detik`
+        );
       } else {
-        setStatusMsg(`⚠️ Gagal melakukan panggilan: ${data.msg || "Tidak diketahui"}`);
+        setStatusMsg(
+          `⚠️ Gagal melakukan panggilan: ${data.msg || "Tidak diketahui"}`
+        );
       }
     } catch (err) {
       console.error(err);
@@ -36,9 +42,10 @@ export default function CallControl({ apiBase }) {
     setStatusMsg("🛑 Mengakhiri panggilan...");
 
     try {
-      const res = await fetch(
-        `${apiBase}/call?number=${encodeURIComponent(number)}&secs=0`
-      );
+      const res = await fetch(`${apiBase}/call/stop`, {
+        method: "POST",
+      });
+
       await res.json();
 
       setStatusMsg("🛑 Panggilan dihentikan.");
@@ -129,7 +136,9 @@ export default function CallControl({ apiBase }) {
       </button>
 
       {statusMsg && (
-        <p style={{ marginTop: 10, fontSize: 14, color: "#333" }}>{statusMsg}</p>
+        <p style={{ marginTop: 10, fontSize: 14, color: "#333" }}>
+          {statusMsg}
+        </p>
       )}
     </div>
   );
