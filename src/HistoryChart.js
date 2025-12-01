@@ -19,51 +19,48 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
 
   const fetchHistory = async () => {
     try {
-      let url = `${apiBase}/history?limit=300`;
+      let url = `${apiBase}/history?limit=500`;
 
       if (isFiltered && startTime && endTime) {
         const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
         const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
-        url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=500`;
+        url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=1000`;
       }
 
       const res = await fetch(url);
       const json = await res.json();
-
       if (!json.data || !Array.isArray(json.data)) return;
 
-      // ✅ Urutkan data berdasarkan timestamp (lama → baru)
-      const sorted = [...json.data].sort((a, b) => a.timestamp - b.timestamp);
+      // === FIX UTAMA ===
+      // Ambil data terbaru → balikkan ke urutan grafik
+      const latest = [...json.data]
+        .sort((a, b) => b.timestamp - a.timestamp) // sort terbaru dulu
+        .slice(0, 200)                              // ambil 200 terbaru
+        .sort((a, b) => a.timestamp - b.timestamp); // urutkan kembali untuk ditampilkan
 
-      // ✅ Map data dengan konversi waktu
-      const mapped = sorted.map((d) => ({
-         time: new Date(d.timestamp * 1000),
-         rssi: d.rssi,
-         dbm: d.dbm,
+      const mapped = latest.map((d) => ({
+        time: new Date(d.timestamp * 1000),
+        rssi: d.rssi,
+        dbm: d.dbm,
       }));
 
-      // ✅ Ambil hanya 200 data terakhir biar performa bagus
-      const latestData = mapped.slice(-200);
-
-      // ✅ Paksa React rerender
-      setData([...latestData]);
+      setData(mapped);
       setLastUpdate(new Date());
 
       console.log(
-        "✅ Data updated:",
-        latestData.length,
-        "entries. Latest at:",
-        latestData[latestData.length - 1]?.time.toLocaleTimeString("id-ID", {
+        "Updated at:",
+        mapped[mapped.length - 1]?.time?.toLocaleTimeString("id-ID", {
           hour12: false,
         })
       );
+
     } catch (e) {
-      console.error("❌ Gagal fetch history:", e);
+      console.error("❌ History fetch failed:", e);
     }
   };
 
   useEffect(() => {
-    fetchHistory(); // ambil pertama kali
+    fetchHistory();
     if (!isFiltered) {
       const interval = setInterval(fetchHistory, refreshInterval * 1000);
       return () => clearInterval(interval);
@@ -101,7 +98,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
 
       <div style={{ marginBottom: 10, display: "flex", gap: "8px" }}>
         <label>
-          Start time:{" "}
+          Start:
           <input
             type="datetime-local"
             value={startTime}
@@ -109,26 +106,19 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
           />
         </label>
         <label>
-          End time:{" "}
+          End:
           <input
             type="datetime-local"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
           />
         </label>
-        <button onClick={handleFilter} style={{ padding: "6px 10px" }}>
-          Show
-        </button>
-        <button onClick={handleReset} style={{ padding: "6px 10px" }}>
-          Reset
-        </button>
+        <button onClick={handleFilter}>Show</button>
+        <button onClick={handleReset}>Reset</button>
       </div>
 
       <ResponsiveContainer width="100%" height={400} key={lastUpdate}>
-        <LineChart
-          data={data}
-          margin={{ top: 10, right: 50, left: 0, bottom: 5 }}
-        >
+        <LineChart data={data} margin={{ top: 10, right: 50, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
           <XAxis
             dataKey="time"
@@ -140,7 +130,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             yAxisId="left"
             domain={[0, 55]}
             label={{
-              value: "RSSI (bars)",
+              value: "RSSI",
               angle: -90,
               position: "insideLeft",
             }}
@@ -151,21 +141,18 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             orientation="right"
             domain={[-140, -60]}
             label={{
-              value: "dBm (signal strength)",
+              value: "dBm",
               angle: 90,
               position: "insideRight",
             }}
             stroke="#82ca9d"
           />
+
           <Tooltip
-            formatter={(value, name) => {
-              if (name === "rssi") return [`${value}`, "RSSI"];
-              if (name === "dbm") return [`${value} dBm`, "dBm"];
-              return [value, name];
-            }}
             labelFormatter={(label) => `Time: ${timeFormatter(label)}`}
           />
-          <Legend verticalAlign="top" height={36} />
+          <Legend />
+
           <Line
             yAxisId="left"
             type="monotone"
@@ -173,8 +160,8 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             stroke="#8884d8"
             strokeWidth={2}
             dot={false}
-            name="RSSI"
           />
+
           <Line
             yAxisId="right"
             type="monotone"
@@ -182,19 +169,14 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             stroke="#82ca9d"
             strokeWidth={2}
             dot={false}
-            name="dBm"
           />
         </LineChart>
       </ResponsiveContainer>
 
       {lastUpdate && (
-        <p style={{ fontSize: 12, color: "#777", marginTop: 10 }}>
-          {isFiltered
-            ? "⏱️ Showing filtered data (no auto-refresh)"
-            : `⏱️ Updated every ${refreshInterval} seconds — Last update (WIB): ${lastUpdate.toLocaleTimeString(
-                "id-ID",
-                { hour12: false }
-              )}`}
+        <p style={{ fontSize: 12, color: "#777" }}>
+          Last update:{" "}
+          {lastUpdate.toLocaleTimeString("id-ID", { hour12: false })}
         </p>
       )}
     </div>
