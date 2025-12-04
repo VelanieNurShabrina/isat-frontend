@@ -10,7 +10,7 @@ export default function CallControl({ apiBase }) {
 
   const handleCall = async () => {
     setCalling(true);
-    setStatusMsg("📞 Memanggil nomor...");
+    setStatusMsg("📞 Calling Number...");
 
     try {
       const res = await fetch(
@@ -22,16 +22,16 @@ export default function CallControl({ apiBase }) {
 
       if (data.status === "ok") {
         setStatusMsg(
-          `📞 Memanggil ${data.number} selama ${data.call_seconds} detik`
+          `📞 Calling ${data.number} for ${data.call_seconds} seconds`
         );
       } else {
         setStatusMsg(
-          `⚠️ Gagal melakukan panggilan: ${data.msg || "Tidak diketahui"}`
+          `⚠️ Failed to make call: ${data.msg || "Unknown"}`
         );
       }
     } catch (err) {
       console.error(err);
-      setStatusMsg("❌ Tidak dapat terhubung (cek tunnel).");
+      setStatusMsg("❌ Unable to connect (check tunnel).");
     } finally {
       setCalling(false);
     }
@@ -39,7 +39,7 @@ export default function CallControl({ apiBase }) {
 
   const handleStop = async () => {
     setStopping(true);
-    setStatusMsg("🛑 Mengakhiri panggilan...");
+    setStatusMsg("🛑 End the call...");
 
     try {
       const res = await fetch(`${apiBase}/call/stop`, {
@@ -48,10 +48,10 @@ export default function CallControl({ apiBase }) {
 
       await res.json();
 
-      setStatusMsg("🛑 Panggilan dihentikan.");
+      setStatusMsg("🛑 Call terminated");
     } catch (err) {
       console.error(err);
-      setStatusMsg("❌ Gagal menghentikan panggilan.");
+      setStatusMsg("❌ Failed to stop call");
     } finally {
       setStopping(false);
     }
@@ -71,7 +71,7 @@ export default function CallControl({ apiBase }) {
       <h4>📞 Call Control</h4>
 
       <div style={{ marginBottom: 10 }}>
-        <label style={{ fontWeight: 500 }}>Nomor:</label>
+        <label style={{ fontWeight: 500 }}>Number:</label>
         <input
           type="text"
           value={number}
@@ -87,7 +87,7 @@ export default function CallControl({ apiBase }) {
       </div>
 
       <div style={{ marginBottom: 10 }}>
-        <label style={{ fontWeight: 500 }}>Durasi (detik):</label>
+        <label style={{ fontWeight: 500 }}>Duration (s):</label>
         <input
           type="number"
           min="1"

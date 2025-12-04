@@ -10,7 +10,7 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
 
     setIntervalValue(newInterval);
     setLoading(true);
-    setStatusMsg("⏳ Mengubah interval...");
+    setStatusMsg("⏳ Changing intervals...");
 
     try {
       const res = await fetch(
@@ -21,18 +21,18 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
       const json = await res.json();
 
       if (json.status === "ok") {
-        setStatusMsg(`✅ Interval berhasil diubah menjadi ${newInterval} detik`);
+        setStatusMsg(`✅ The interval was successfully changed to ${newInterval} seconds`);
         if (onIntervalChange) onIntervalChange(newInterval);
       } else {
         setStatusMsg(
-          `⚠️ Gagal ubah interval: ${
-            json.msg || json.message || "Tidak diketahui"
+          `⚠️ Failed to change interval: ${
+            json.msg || json.message || "Unknown"
           }`
         );
       }
     } catch (err) {
-      console.error("❌ Gagal koneksi ke Raspberry:", err);
-      setStatusMsg("❌ Tidak bisa terhubung ke Raspberry (cek tunnel).");
+      console.error("❌ Failed to connect to Mini PC:", err);
+      setStatusMsg("❌ Cannot connect to Mini PC (check tunnel).");
     } finally {
       setLoading(false);
     }

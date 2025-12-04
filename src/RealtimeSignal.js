@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 export default function RealtimeSignal({ apiBase }) {
   const [signal, setSignal] = useState({ rssi: "-", dbm: "-", ber: "-" });
-  const [source, setSource] = useState("Local (Pi)");
+  const [source, setSource] = useState("Mini PC");
 
   const fetchSignal = async () => {
     try {
@@ -12,12 +12,12 @@ export default function RealtimeSignal({ apiBase }) {
 
       if (json && json.rssi !== undefined) {
         setSignal(json);
-        setSource("Local (Pi)");
-        console.log("📡 Realtime dari Raspberry Pi:", json);
+        setSource("Mini PC");
+        console.log("📡 Realtime from Mini PC:", json);
         return;
       }
     } catch (e) {
-      console.warn("⚠️ Gagal fetch dari Pi, coba ambil dari Railway...");
+      console.warn("⚠️ Failed to fetch from Pi, try fetching from Railway...");
     }
 
     // 🔹 2️⃣ Kalau gagal, ambil data terbaru dari Railway (fallback)
@@ -34,7 +34,7 @@ export default function RealtimeSignal({ apiBase }) {
         console.log("☁️ Fallback ke Railway:", latest);
       }
     } catch (err) {
-      console.error("❌ Gagal fetch signal dari cloud:", err);
+      console.error("❌ Failed to fetch signal from cloud:", err);
     }
   };
 
