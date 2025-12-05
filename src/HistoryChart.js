@@ -35,13 +35,14 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
       // Ambil data terbaru → balikkan ke urutan grafik
       const latest = [...json.data]
         .sort((a, b) => b.timestamp - a.timestamp) // sort terbaru dulu
-        .slice(0, 200)                              // ambil 200 terbaru
+        .slice(0, 200) // ambil 200 terbaru
         .sort((a, b) => a.timestamp - b.timestamp); // urutkan kembali untuk ditampilkan
 
       const mapped = latest.map((d) => ({
         time: new Date(d.timestamp * 1000),
         rssi: d.rssi,
         dbm: d.dbm,
+        ber: d.ber,
       }));
 
       setData(mapped);
@@ -53,7 +54,6 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
           hour12: false,
         })
       );
-
     } catch (e) {
       console.error("❌ History fetch failed:", e);
     }
@@ -118,7 +118,10 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
       </div>
 
       <ResponsiveContainer width="100%" height={400} key={lastUpdate}>
-        <LineChart data={data} margin={{ top: 10, right: 50, left: 0, bottom: 5 }}>
+        <LineChart
+          data={data}
+          margin={{ top: 10, right: 50, left: 0, bottom: 5 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
           <XAxis
             dataKey="time"
@@ -146,6 +149,14 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
               position: "insideRight",
             }}
             stroke="#82ca9d"
+          />
+          <Line
+            yAxisId="left"
+            type="monotone"
+            dataKey="ber"
+            stroke="#ff7300"
+            strokeWidth={2}
+            dot={false}
           />
 
           <Tooltip
