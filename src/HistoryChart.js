@@ -107,7 +107,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
           width: "100%",
           background: "white",
           borderRadius: "12px",
-          padding: "20px 20px 35px 20px",
+          padding: "30px 25px 40px 25px",
           boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
         }}
       >

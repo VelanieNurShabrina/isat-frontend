@@ -11,10 +11,10 @@ function App() {
   return (
     <div
       style={{
-        width: "95%",               // <<< lebih lebar
-        maxWidth: "1500px",         // <<< chart dapat ruang lebih besar
+        width: "100%", // <<< lebih lebar
+        maxWidth: "1400px", // <<< chart dapat ruang lebih besar
         margin: "0 auto",
-        padding: "30px 24px",
+        padding: "40px 32px",
         fontFamily: "Segoe UI, Roboto, sans-serif",
       }}
     >
@@ -79,10 +79,12 @@ function App() {
         style={{
           width: "100%",
           background: "#fff",
-          padding: "25px",
+          padding: "30px", // lebih lega
           borderRadius: "12px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+          boxShadow: "0 4px 14px rgba(0,0,0,0.09)",
           border: "1px solid #eee",
+          marginTop: "25px", // <<< JARAK antar card
+          marginBottom: "25px",
         }}
       >
         <HistoryChart apiBase={apiBase} refreshInterval={interval} />
