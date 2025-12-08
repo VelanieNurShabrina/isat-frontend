@@ -137,7 +137,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             <YAxis
               yAxisId="left"
               domain={[-140, -60]}
-              label={{ value: "dBm", angle: -90, dx: -10 }}
+              label={{ value: "RSSI (dBm)", angle: -90, dx: -10 }}
             />
 
             {/* Y AXIS RIGHT → BER */}
