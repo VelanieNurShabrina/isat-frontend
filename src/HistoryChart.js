@@ -170,6 +170,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
               yAxisId="left"
               type="monotone"
               dataKey="dbm"
+              name="RSSI (dBm)"
               stroke="#4CAF50"
               dot={false}
               connectNulls
