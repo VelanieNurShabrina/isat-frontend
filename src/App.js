@@ -97,7 +97,7 @@ function App() {
           textAlign: "center",
         }}
       >
-        © {new Date().getFullYear()} ISAT Monitoring Dashboard
+        © {new Date().getFullYear()} ISAT Monitoring Dashboard by Velanie
       </p>
     </div>
   );
