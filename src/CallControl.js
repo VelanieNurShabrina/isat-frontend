@@ -1,16 +1,17 @@
+// src/CallControl.js
 import React, { useState } from "react";
 
-export default function CallControl({ apiBase }) {
+export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
   const [number, setNumber] = useState("+870772001899");
   const [callSeconds, setCallSeconds] = useState(15);
   const [statusMsg, setStatusMsg] = useState("");
-
-  const [calling, setCalling] = useState(false);
   const [stopping, setStopping] = useState(false);
 
   const handleCall = async () => {
-    setCalling(true);
-    setStatusMsg("📞 Calling Number...");
+    if (isCalling) return;
+
+    onCallStateChange(true);
+    setStatusMsg("📞 Calling number...");
 
     try {
       const res = await fetch(
@@ -25,35 +26,34 @@ export default function CallControl({ apiBase }) {
           `📞 Calling ${data.number} for ${data.call_seconds} seconds`
         );
       } else {
-        setStatusMsg(
-          `⚠️ Failed to make call: ${data.msg || "Unknown"}`
-        );
+        setStatusMsg(`⚠️ Failed to make call: ${data.msg || "Unknown"}`);
+        onCallStateChange(false);
       }
     } catch (err) {
       console.error(err);
       setStatusMsg("❌ Unable to connect (check tunnel).");
-    } finally {
-      setCalling(false);
+      onCallStateChange(false);
     }
   };
 
   const handleStop = async () => {
+    if (!isCalling) return;
+
     setStopping(true);
-    setStatusMsg("🛑 End the call...");
+    setStatusMsg("🛑 Ending call...");
 
     try {
       const res = await fetch(`${apiBase}/call/stop`, {
         method: "POST",
       });
-
       await res.json();
-
       setStatusMsg("🛑 Call terminated");
     } catch (err) {
       console.error(err);
       setStatusMsg("❌ Failed to stop call");
     } finally {
       setStopping(false);
+      onCallStateChange(false);
     }
   };
 
@@ -66,6 +66,8 @@ export default function CallControl({ apiBase }) {
         borderRadius: 8,
         backgroundColor: "#fafafa",
         display: "inline-block",
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
       <h4>📞 Call Control</h4>
@@ -106,30 +108,30 @@ export default function CallControl({ apiBase }) {
 
       <button
         onClick={handleCall}
-        disabled={calling} // hanya tombol CALL yang disable
+        disabled={isCalling} // disable saat call aktif
         style={{
           padding: "6px 12px",
-          backgroundColor: "#28a745",
+          backgroundColor: isCalling ? "#8bc48b" : "#28a745",
           color: "white",
           border: "none",
           borderRadius: 6,
           marginRight: 10,
-          cursor: calling ? "not-allowed" : "pointer",
+          cursor: isCalling ? "not-allowed" : "pointer",
         }}
       >
-        Call
+        {isCalling ? "Calling..." : "Call"}
       </button>
 
       <button
         onClick={handleStop}
-        disabled={stopping} // STOP hanya disable saat stop sedang proses
+        disabled={!isCalling || stopping}
         style={{
           padding: "6px 12px",
           backgroundColor: "#dc3545",
           color: "white",
           border: "none",
           borderRadius: 6,
-          cursor: stopping ? "not-allowed" : "pointer",
+          cursor: !isCalling || stopping ? "not-allowed" : "pointer",
         }}
       >
         Stop

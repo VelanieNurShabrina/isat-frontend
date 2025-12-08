@@ -1,20 +1,46 @@
-import React, { useState } from "react";
+// src/App.js
+import React, { useState, useEffect } from "react";
 import HistoryChart from "./HistoryChart";
 import RealtimeSignal from "./RealtimeSignal";
 import IntervalControl from "./IntervalControl";
 import CallControl from "./CallControl";
 
 function App() {
-  const apiBase = "/api"; // melalui proxy vercel
+  // Semua request lewat Vercel -> /api -> proxy -> ngrok -> Flask
+  const apiBase = "/api";
+
   const [interval, setInterval] = useState(10);
+  const [isCalling, setIsCalling] = useState(false);
+
+  // Saat halaman pertama kali load, sync ke backend /status
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(`${apiBase}/status`);
+        if (!res.ok) return;
+        const json = await res.json();
+
+        if (typeof json.interval === "number") {
+          setInterval(json.interval);
+        }
+        if (typeof json.call_active === "boolean") {
+          setIsCalling(json.call_active);
+        }
+      } catch (err) {
+        console.error("Failed to fetch status:", err);
+      }
+    };
+
+    fetchStatus();
+  }, [apiBase]);
 
   return (
     <div
       style={{
-        width: "100%", // <<< lebih lebar
-        maxWidth: "1400px", // <<< chart dapat ruang lebih besar
+        width: "100%",
+        maxWidth: "1250px",
         margin: "0 auto",
-        padding: "40px 32px",
+        padding: "30px 24px",
         fontFamily: "Segoe UI, Roboto, sans-serif",
       }}
     >
@@ -31,10 +57,15 @@ function App() {
           maxWidth: 350,
         }}
       >
-        <IntervalControl apiBase={apiBase} onIntervalChange={setInterval} />
+        {/* Interval dikontrol dari App */}
+        <IntervalControl
+          apiBase={apiBase}
+          interval={interval}
+          onIntervalChange={setInterval}
+        />
       </div>
 
-      {/* ===== TOP CARDS ===== */}
+      {/* ===== TOP CARDS: REALTIME + CALL ===== */}
       <div
         style={{
           display: "flex",
@@ -70,7 +101,11 @@ function App() {
             border: "1px solid #eee",
           }}
         >
-          <CallControl apiBase={apiBase} />
+          <CallControl
+            apiBase={apiBase}
+            isCalling={isCalling}
+            onCallStateChange={setIsCalling}
+          />
         </div>
       </div>
 
@@ -79,12 +114,10 @@ function App() {
         style={{
           width: "100%",
           background: "#fff",
-          padding: "30px", // lebih lega
+          padding: "20px",
           borderRadius: "12px",
-          boxShadow: "0 4px 14px rgba(0,0,0,0.09)",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
           border: "1px solid #eee",
-          marginTop: "25px", // <<< JARAK antar card
-          marginBottom: "25px",
         }}
       >
         <HistoryChart apiBase={apiBase} refreshInterval={interval} />

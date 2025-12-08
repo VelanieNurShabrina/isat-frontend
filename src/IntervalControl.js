@@ -1,28 +1,31 @@
+// src/IntervalControl.js
 import React, { useState } from "react";
 
-export default function IntervalControl({ apiBase, onIntervalChange }) {
-  const [interval, setIntervalValue] = useState(10);
+export default function IntervalControl({ apiBase, interval, onIntervalChange }) {
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
 
   const handleChange = async (e) => {
-    const newInterval = parseInt(e.target.value);
+    const newInterval = parseInt(e.target.value, 10);
+    if (Number.isNaN(newInterval)) return;
 
-    setIntervalValue(newInterval);
+    // Update UI langsung (supaya footer chart ikut berubah)
+    onIntervalChange(newInterval);
+
     setLoading(true);
-    setStatusMsg("⏳ Changing intervals...");
+    setStatusMsg("⏳ Changing interval...");
 
     try {
       const res = await fetch(
         `${apiBase}/config/interval?interval=${newInterval}`,
         { method: "GET" }
       );
-
       const json = await res.json();
 
       if (json.status === "ok") {
-        setStatusMsg(`✅ The interval was successfully changed to ${newInterval} seconds`);
-        if (onIntervalChange) onIntervalChange(newInterval);
+        setStatusMsg(
+          `✅ Interval was successfully changed to ${newInterval} seconds`
+        );
       } else {
         setStatusMsg(
           `⚠️ Failed to change interval: ${
@@ -74,11 +77,11 @@ export default function IntervalControl({ apiBase, onIntervalChange }) {
           width: "100%",
         }}
       >
-        <option value="5">5 Seconds</option>
-        <option value="10">10 Seconds</option>
-        <option value="20">20 Seconds</option>
-        <option value="30">30 Seconds</option>
-        <option value="60">60 Seconds</option>
+        <option value={5}>5 Seconds</option>
+        <option value={10}>10 Seconds</option>
+        <option value={20}>20 Seconds</option>
+        <option value={30}>30 Seconds</option>
+        <option value={60}>60 Seconds</option>
       </select>
 
       {statusMsg && (
