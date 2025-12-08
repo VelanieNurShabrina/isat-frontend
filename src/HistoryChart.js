@@ -9,159 +9,56 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
+import BER_TABLE from "./utils/BER_TABLE";
 
-export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
+export default function HistoryChart({ apiBase }) {
   const [data, setData] = useState([]);
-  const [lastUpdate, setLastUpdate] = useState(null);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [isFiltered, setIsFiltered] = useState(false);
 
   const fetchHistory = async () => {
     try {
-      let url = `${apiBase}/history?limit=500`;
-
-      if (isFiltered && startTime && endTime) {
-        const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
-        const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
-        url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=1000`;
-      }
-
-      const res = await fetch(url);
+      const res = await fetch(`${apiBase}/history?limit=300`);
       const json = await res.json();
-      if (!json.data || !Array.isArray(json.data)) return;
 
-      // === FIX UTAMA ===
-      // Ambil data terbaru → balikkan ke urutan grafik
-      const latest = [...json.data]
-        .sort((a, b) => b.timestamp - a.timestamp) // sort terbaru dulu
-        .slice(0, 200) // ambil 200 terbaru
-        .sort((a, b) => a.timestamp - b.timestamp); // urutkan kembali untuk ditampilkan
-
-      const mapped = latest.map((d) => ({
-        time: new Date(d.timestamp * 1000),
-        rssi: d.rssi,
-        dbm: d.dbm,
-        ber: d.ber,
-      }));
-
-      setData(mapped);
-      setLastUpdate(new Date());
-
-      console.log(
-        "Updated at:",
-        mapped[mapped.length - 1]?.time?.toLocaleTimeString("id-ID", {
-          hour12: false,
-        })
+      setData(
+        json.data.map((d) => ({
+          timestamp: new Date(d.timestamp * 1000).toLocaleTimeString(),
+          rssi: d.rssi,
+          dbm: d.dbm,
+          ber: d.ber,
+        }))
       );
-    } catch (e) {
-      console.error("❌ History fetch failed:", e);
+    } catch (err) {
+      console.error("History fetch error:", err);
     }
   };
 
   useEffect(() => {
     fetchHistory();
-    if (!isFiltered) {
-      const interval = setInterval(fetchHistory, refreshInterval * 1000);
-      return () => clearInterval(interval);
-    }
-  }, [refreshInterval, isFiltered]);
-
-  const timeFormatter = (time) =>
-    new Intl.DateTimeFormat("id-ID", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-      timeZone: "Asia/Jakarta",
-    }).format(time);
-
-  const handleFilter = () => {
-    if (startTime && endTime) {
-      setIsFiltered(true);
-      fetchHistory();
-    }
-  };
-
-  const handleReset = () => {
-    setIsFiltered(false);
-    setStartTime("");
-    setEndTime("");
-    fetchHistory();
-  };
+    const timer = setInterval(fetchHistory, 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <div style={{ width: "100%", height: 400, marginTop: 20 }}>
-      <h3 style={{ fontWeight: "600", marginBottom: 10 }}>
-        Signal History (RSSI and dBm)
-      </h3>
+    <div className="mt-4">
+      <h5>Signal History (RSSI, dBm, BER)</h5>
 
-      <div style={{ marginBottom: 10, display: "flex", gap: "8px" }}>
-        <label>
-          Start:
-          <input
-            type="datetime-local"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-          />
-        </label>
-        <label>
-          End:
-          <input
-            type="datetime-local"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-          />
-        </label>
-        <button onClick={handleFilter}>Show</button>
-        <button onClick={handleReset}>Reset</button>
-      </div>
+      <ResponsiveContainer width="100%" height={350}>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
 
-      <ResponsiveContainer width="100%" height={400} key={lastUpdate}>
-        <LineChart
-          data={data}
-          margin={{ top: 10, right: 50, left: 0, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
-          <XAxis
-            dataKey="time"
-            tickFormatter={timeFormatter}
-            stroke="#666"
-            minTickGap={60}
-          />
-          <YAxis
-            yAxisId="left"
-            domain={[0, 55]}
-            label={{
-              value: "RSSI",
-              angle: -90,
-              position: "insideLeft",
-            }}
-            stroke="#8884d8"
-          />
-          <YAxis
-            yAxisId="right"
-            orientation="right"
-            domain={[-140, -60]}
-            label={{
-              value: "dBm",
-              angle: 90,
-              position: "insideRight",
-            }}
-            stroke="#82ca9d"
-          />
-          <Line
-            yAxisId="left"
-            type="monotone"
-            dataKey="ber"
-            stroke="#ff7300"
-            strokeWidth={2}
-            dot={false}
-          />
+          <XAxis dataKey="timestamp" />
+          <YAxis yAxisId="left" domain={[0, 55]} />
+          <YAxis yAxisId="right" orientation="right" domain={[-140, -60]} />
 
           <Tooltip
-            labelFormatter={(label) => `Time: ${timeFormatter(label)}`}
+            formatter={(value, name) => {
+              if (name === "ber") {
+                return [`${value} (${BER_TABLE[value]})`, "BER"];
+              }
+              return [value, name];
+            }}
           />
+
           <Legend />
 
           <Line
@@ -169,27 +66,24 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             type="monotone"
             dataKey="rssi"
             stroke="#8884d8"
-            strokeWidth={2}
             dot={false}
           />
-
           <Line
             yAxisId="right"
             type="monotone"
             dataKey="dbm"
             stroke="#82ca9d"
-            strokeWidth={2}
+            dot={false}
+          />
+          <Line
+            yAxisId="left"
+            type="monotone"
+            dataKey="ber"
+            stroke="#ff7300"
             dot={false}
           />
         </LineChart>
       </ResponsiveContainer>
-
-      {lastUpdate && (
-        <p style={{ fontSize: 12, color: "#777" }}>
-          ⏱️ Updated every ${refreshInterval} seconds — Last update:{" "}
-          {lastUpdate.toLocaleTimeString("id-ID", { hour12: false })}
-        </p>
-      )}
     </div>
   );
 }
