@@ -5,7 +5,7 @@ import IntervalControl from "./IntervalControl";
 import CallControl from "./CallControl";
 
 function App() {
-  const apiBase = "/api"; // melalui proxy vercel
+  const apiBase = "https://heterophoric-franco-unplumbed.ngrok-free.dev"; // melalui proxy vercel
   const [interval, setInterval] = useState(10);
 
   return (
