@@ -10,7 +10,7 @@ import {
   Legend,
 } from "recharts";
 
-export default function HistoryChart({ apiBase }) {
+export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
   const [data, setData] = useState([]);
   const [lastUpdate, setLastUpdate] = useState(null);
 
@@ -18,7 +18,9 @@ export default function HistoryChart({ apiBase }) {
   const [endTime, setEndTime] = useState("");
   const [isFiltered, setIsFiltered] = useState(false);
 
-  // ==== FETCH HISTORY ====
+  // ===============================
+  // Fetch History
+  // ===============================
   const fetchHistory = async () => {
     try {
       let url = `${apiBase}/history?limit=500`;
@@ -26,39 +28,49 @@ export default function HistoryChart({ apiBase }) {
       if (isFiltered && startTime && endTime) {
         const startUnix = Math.floor(new Date(startTime).getTime() / 1000);
         const endUnix = Math.floor(new Date(endTime).getTime() / 1000);
-        url = `${apiBase}/history?start=${startUnix}&end=${endUnix}&limit=1000`;
+        url += `&start=${startUnix}&end=${endUnix}`;
       }
 
       const res = await fetch(url);
       const json = await res.json();
 
-      const formatted =
-        json.data?.map((row) => ({
-          timestamp: new Date(row.timestamp * 1000).toLocaleTimeString(),
+      if (json.data) {
+        const formatted = json.data.map((row) => ({
+          timestamp: row.timestamp * 1000, // gunakan format time-series
+          timeLabel: new Date(row.timestamp * 1000).toLocaleTimeString(), // untuk tooltip
+
+          // removed RSSI raw sesuai permintaan mentor
           dbm: row.dbm,
           ber: row.ber,
-        })) || [];
+        }));
 
-      setData(formatted);
-      setLastUpdate(new Date().toLocaleTimeString());
+        setData(formatted);
+        setLastUpdate(new Date());
+      }
     } catch (err) {
-      console.error("Error fetching history:", err);
+      console.error("Failed to fetch history:", err);
     }
   };
 
   useEffect(() => {
     fetchHistory();
-    const interval = setInterval(fetchHistory, 10000);
-    return () => clearInterval(interval);
-  }, []);
+    const t = setInterval(fetchHistory, refreshInterval * 1000);
+    return () => clearInterval(t);
+  }, [isFiltered, startTime, endTime]);
 
-  const applyFilter = () => {
-    if (!startTime || !endTime) return;
+  // ===============================
+  // Filter Submit
+  // ===============================
+  const handleFilter = () => {
+    if (!startTime || !endTime) {
+      alert("Isi start dan end time!");
+      return;
+    }
     setIsFiltered(true);
     fetchHistory();
   };
 
-  const resetFilter = () => {
+  const handleReset = () => {
     setIsFiltered(false);
     setStartTime("");
     setEndTime("");
@@ -66,80 +78,109 @@ export default function HistoryChart({ apiBase }) {
   };
 
   return (
-    <div style={{ marginTop: 30 }}>
-      <h3>Signal History (dBm & BER)</h3>
+    <div style={{ width: "100%", marginTop: "20px" }}>
+      <h3 style={{ marginBottom: "10px" }}>Signal History (dBm & BER)</h3>
 
-      <div style={{ marginBottom: 10 }}>
-        Start:
+      {/* FILTER BAR */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+        <span>Start:</span>
         <input
           type="datetime-local"
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
-          style={{ marginRight: 10, marginLeft: 5 }}
         />
-        End:
+
+        <span>End:</span>
         <input
           type="datetime-local"
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
-          style={{ marginLeft: 5, marginRight: 10 }}
         />
 
-        <button onClick={applyFilter}>Show</button>
-        <button onClick={resetFilter} style={{ marginLeft: 5 }}>
-          Reset
-        </button>
+        <button onClick={handleFilter}>Show</button>
+        <button onClick={handleReset}>Reset</button>
       </div>
 
-      {/* ==== CHART ==== */}
-      <ResponsiveContainer width="100%" height={320}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
+      {/* CHART */}
+      <div
+        style={{
+          width: "100%",
+          background: "white",
+          borderRadius: "10px",
+          padding: "10px 10px 25px 10px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+        }}
+      >
+        <ResponsiveContainer width="100%" height={350}>
+          <LineChart
+            data={data}
+            margin={{
+              top: 20,
+              right: 80,
+              left: 0,
+              bottom: 20,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
 
-          <XAxis dataKey="timestamp" />
+            {/* TIME SERIES */}
+            <XAxis
+              dataKey="timestamp"
+              type="number"
+              scale="time"
+              domain={["auto", "auto"]}
+              tickFormatter={(value) => new Date(value).toLocaleTimeString()}
+              minTickGap={50}
+            />
 
-          {/* LEFT AXIS (dBm) */}
-          <YAxis
-            yAxisId="left"
-            label={{ value: "dBm", angle: -90, position: "insideLeft" }}
-            domain={[-140, -60]}
-          />
+            {/* Y AXIS LEFT → DBM */}
+            <YAxis
+              yAxisId="left"
+              domain={[-140, -60]}
+              label={{ value: "dBm", angle: -90, dx: -10 }}
+            />
 
-          {/* RIGHT AXIS (BER) */}
-          <YAxis
-            yAxisId="right"
-            orientation="right"
-            label={{ value: "BER", angle: 90, position: "insideRight" }}
-            domain={[0, 10]}
-          />
+            {/* Y AXIS RIGHT → BER */}
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              domain={[0, 10]}
+              label={{ value: "BER", angle: 90, dx: 10 }}
+            />
 
-          <Tooltip />
-          <Legend />
+            {/* Tooltip */}
+            <Tooltip
+              labelFormatter={(value) => new Date(value).toLocaleTimeString()}
+            />
 
-          {/* === dBm LINE === */}
-          <Line
-            type="monotone"
-            yAxisId="left"
-            dataKey="dbm"
-            stroke="#4CAF50"
-            dot={false}
-            name="dBm"
-          />
+            <Legend />
 
-          {/* === BER LINE === */}
-          <Line
-            type="monotone"
-            yAxisId="right"
-            dataKey="ber"
-            stroke="#FF9800"
-            dot={false}
-            name="BER"
-          />
-        </LineChart>
-      </ResponsiveContainer>
+            {/* BER */}
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="ber"
+              stroke="#ff8c00"
+              dot={false}
+              connectNulls
+            />
 
-      <div style={{ marginTop: 10, fontSize: 12, opacity: 0.6 }}>
-        Updated {lastUpdate ? `— Last update: ${lastUpdate}` : ""}
+            {/* dBm */}
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="dbm"
+              stroke="#4CAF50"
+              dot={false}
+              connectNulls
+            />
+          </LineChart>
+        </ResponsiveContainer>
+
+        <div style={{ marginTop: "10px", fontSize: "12px", opacity: 0.7 }}>
+          Updated — Last update:{" "}
+          {lastUpdate ? lastUpdate.toLocaleTimeString() : "-"}
+        </div>
       </div>
     </div>
   );
