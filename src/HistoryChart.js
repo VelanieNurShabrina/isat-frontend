@@ -18,9 +18,6 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
   const [endTime, setEndTime] = useState("");
   const [isFiltered, setIsFiltered] = useState(false);
 
-  // ===============================
-  // Fetch History (default + filter)
-  // ===============================
   const fetchHistory = async () => {
     try {
       let url = `${apiBase}/history?limit=300`;
@@ -49,18 +46,12 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
     return () => clearInterval(t);
   }, [isFiltered, startTime, endTime]);
 
-  // ============================
-  // Timestamp formatter for X-Axis
-  // ============================
   const formatTime = (ts) => {
     if (!ts) return "";
     const d = new Date(ts * 1000);
     return d.toLocaleTimeString();
   };
 
-  // ============================
-  // Submit Filter
-  // ============================
   const handleFilter = () => {
     if (!startTime || !endTime) {
       alert("Isi start dan end time!");
@@ -70,9 +61,6 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
     fetchHistory();
   };
 
-  // ============================
-  // Reset Filter
-  // ============================
   const handleReset = () => {
     setIsFiltered(false);
     setStartTime("");
@@ -81,13 +69,20 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
   };
 
   return (
-    <div style={{ width: "100%", marginTop: "20px" }}>
-      <h3 style={{ marginBottom: "10px" }}>
+    <div style={{ width: "100%", marginTop: "10px" }}>
+      <h3 style={{ marginBottom: "12px" }}>
         Signal History (RSSI, dBm, BER)
       </h3>
 
-      {/* Filter Controls */}
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+      {/* FILTER BAR */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          marginBottom: "15px",
+        }}
+      >
         <span>Start:</span>
         <input
           type="datetime-local"
@@ -106,13 +101,13 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
         <button onClick={handleReset}>Reset</button>
       </div>
 
-      {/* CHART WRAPPER */}
+      {/* CHART */}
       <div
         style={{
           width: "100%",
           background: "white",
-          borderRadius: "10px",
-          padding: "10px 10px 25px 10px",
+          borderRadius: "12px",
+          padding: "20px 20px 35px 20px",
           boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
         }}
       >
@@ -121,8 +116,8 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             data={data}
             margin={{
               top: 20,
-              right: 80, // jangan kecilin biar Y-axis kanan aman
-              left: 0,
+              right: 100, // cukup biar Y-axis kanan tidak kepotong
+              left: 10,
               bottom: 20,
             }}
           >
@@ -131,7 +126,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             <XAxis
               dataKey="timestamp"
               tickFormatter={formatTime}
-              minTickGap={30}
+              minTickGap={40}
             />
 
             <YAxis
@@ -150,35 +145,9 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             <Tooltip />
             <Legend />
 
-            {/* BER */}
-            <Line
-              yAxisId="left"
-              type="monotone"
-              dataKey="ber"
-              stroke="#ff7300"
-              dot={false}
-              connectNulls
-            />
-
-            {/* dBm */}
-            <Line
-              yAxisId="right"
-              type="monotone"
-              dataKey="dbm"
-              stroke="#82ca9d"
-              dot={false}
-              connectNulls
-            />
-
-            {/* RSSI */}
-            <Line
-              yAxisId="left"
-              type="monotone"
-              dataKey="rssi"
-              stroke="#8884d8"
-              dot={false}
-              connectNulls
-            />
+            <Line yAxisId="left" dataKey="ber" stroke="#ff7300" dot={false} connectNulls />
+            <Line yAxisId="right" dataKey="dbm" stroke="#82ca9d" dot={false} connectNulls />
+            <Line yAxisId="left" dataKey="rssi" stroke="#8884d8" dot={false} connectNulls />
           </LineChart>
         </ResponsiveContainer>
 

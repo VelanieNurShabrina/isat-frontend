@@ -11,8 +11,8 @@ function App() {
   return (
     <div
       style={{
-        width: "100%",
-        maxWidth: "1250px",
+        width: "95%",               // <<< lebih lebar
+        maxWidth: "1500px",         // <<< chart dapat ruang lebih besar
         margin: "0 auto",
         padding: "30px 24px",
         fontFamily: "Segoe UI, Roboto, sans-serif",
@@ -34,7 +34,7 @@ function App() {
         <IntervalControl apiBase={apiBase} onIntervalChange={setInterval} />
       </div>
 
-      {/* ===== TOP CARDS: REALTIME + CALL ===== */}
+      {/* ===== TOP CARDS ===== */}
       <div
         style={{
           display: "flex",
@@ -79,7 +79,7 @@ function App() {
         style={{
           width: "100%",
           background: "#fff",
-          padding: "20px",
+          padding: "25px",
           borderRadius: "12px",
           boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
           border: "1px solid #eee",
