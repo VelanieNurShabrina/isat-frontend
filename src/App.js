@@ -5,7 +5,7 @@ import IntervalControl from "./IntervalControl";
 import CallControl from "./CallControl";
 
 function App() {
-  const apiBase = "https://isat-backend-production.up.railway.app";
+  const apiBase = "/api";
   const tunnelBase = "/api";
 
   const [interval, setInterval] = useState(10);
@@ -41,7 +41,7 @@ function App() {
             boxSizing: "border-box",
           }}
         >
-          <IntervalControl apiBase={tunnelBase} onIntervalChange={setInterval} />
+          <IntervalControl apiBase={apiBase} onIntervalChange={setInterval} />
         </div>
       </div>
 
@@ -64,7 +64,7 @@ function App() {
             boxSizing: "border-box",
           }}
         >
-          <RealtimeSignal apiBase={tunnelBase} />
+          <RealtimeSignal apiBase={apiBase} />
         </div>
 
         {/* 📞 Call Control */}
@@ -75,13 +75,13 @@ function App() {
             boxSizing: "border-box",
           }}
         >
-          <CallControl apiBase={tunnelBase} />
+          <CallControl apiBase={apiBase} />
         </div>
       </div>
 
       {/* ===== Grafik History ===== */}
       <div style={{ marginTop: 10 }}>
-        <HistoryChart apiBase={tunnelBase} refreshInterval={interval} />
+        <HistoryChart apiBase={apiBase} refreshInterval={interval} />
       </div>
 
       {/* ===== Footer ===== */}
