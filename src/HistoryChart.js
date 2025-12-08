@@ -160,6 +160,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
               yAxisId="right"
               type="monotone"
               dataKey="ber"
+              name="BER"
               stroke="#ff8c00"
               dot={false}
               connectNulls
