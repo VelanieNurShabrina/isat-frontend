@@ -1,26 +1,104 @@
 import React, { useState } from "react";
-import RealtimeSignal from "./RealtimeSignal";
 import HistoryChart from "./HistoryChart";
+import RealtimeSignal from "./RealtimeSignal";
+import IntervalControl from "./IntervalControl";
 import CallControl from "./CallControl";
 
 function App() {
-  const apiBase = "/api"; // Vercel proxy
+  const apiBase = "/api"; // melalui proxy vercel
+  const [interval, setInterval] = useState(10);
 
   return (
-    <div className="container p-4">
-      <h4>IsatPhone Signal Dashboard</h4>
+    <div
+      style={{
+        width: "100%",
+        maxWidth: "1250px",
+        margin: "0 auto",
+        padding: "30px 24px",
+        fontFamily: "Segoe UI, Roboto, sans-serif",
+      }}
+    >
+      {/* ===== HEADER ===== */}
+      <h2 style={{ marginBottom: 6 }}>📡 IsatPhone Signal Dashboard</h2>
+      <p style={{ marginBottom: 25, color: "#666" }}>
+        Signal values: RSSI (bars), dBm (power), BER (bit error rate)
+      </p>
 
-      <div className="row mt-3">
-        <div className="col-md-4">
+      {/* ===== INTERVAL CONTROL ===== */}
+      <div
+        style={{
+          marginBottom: 24,
+          maxWidth: 350,
+        }}
+      >
+        <IntervalControl apiBase={apiBase} onIntervalChange={setInterval} />
+      </div>
+
+      {/* ===== TOP CARDS: REALTIME + CALL ===== */}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "20px",
+          marginBottom: "30px",
+        }}
+      >
+        {/* REALTIME SIGNAL CARD */}
+        <div
+          style={{
+            flex: "1 1 350px",
+            minWidth: "330px",
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+            border: "1px solid #eee",
+          }}
+        >
           <RealtimeSignal apiBase={apiBase} />
         </div>
 
-        <div className="col-md-8">
+        {/* CALL CONTROL CARD */}
+        <div
+          style={{
+            flex: "1 1 350px",
+            minWidth: "330px",
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+            border: "1px solid #eee",
+          }}
+        >
           <CallControl apiBase={apiBase} />
         </div>
       </div>
 
-      <HistoryChart apiBase={apiBase} />
+      {/* ===== HISTORY CHART ===== */}
+      <div
+        style={{
+          width: "100%",
+          background: "#fff",
+          padding: "20px",
+          borderRadius: "12px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+          border: "1px solid #eee",
+        }}
+      >
+        <HistoryChart apiBase={apiBase} refreshInterval={interval} />
+      </div>
+
+      {/* FOOTER */}
+      <p
+        style={{
+          marginTop: 30,
+          fontSize: 12,
+          color: "#888",
+          textAlign: "center",
+        }}
+      >
+        © {new Date().getFullYear()} ISAT Monitoring Dashboard
+      </p>
     </div>
   );
 }
