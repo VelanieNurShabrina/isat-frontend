@@ -1,15 +1,15 @@
-import { SmsSubmitPdu } from "sms-pdu";
+// pdu.js
+import { PDU } from "node-pdu";
 
 export function generatePDU(destination, message) {
-  // Bangun PDU SUBMIT
-  const pduObj = new SmsSubmitPdu({
+  // PDU-SUBMIT
+  const sms = PDU.Submit({
     receiver: destination,
-    text: message,
-    smsc: "+870772001799"   // SMSC Default IsatPhone
+    text: message
   });
 
   return {
-    pdu: pduObj.toString(),
-    length: pduObj.getTpduLength()
+    pdu: sms.hex,
+    length: sms.getTpduLength()
   };
 }

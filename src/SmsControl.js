@@ -9,7 +9,7 @@ export default function SmsControl({ apiBase }) {
 
   async function sendSMS() {
     if (!number || !message) {
-      setResponse("❌ Nomor dan pesan wajib diisi");
+      setResponse("❌ Phone number and message are required");
       return;
     }
 
@@ -31,7 +31,7 @@ export default function SmsControl({ apiBase }) {
       const data = await res.json();
 
       if (data.status === "ok") {
-        setResponse("✅ SMS BERHASIL DIKIRIM!\n" + JSON.stringify(data, null, 2));
+        setResponse("✅ SMS SENT SUCCESSFULLY!\n" + JSON.stringify(data, null, 2));
       } else {
         setResponse("❌ ERROR:\n" + JSON.stringify(data, null, 2));
       }
@@ -50,10 +50,10 @@ export default function SmsControl({ apiBase }) {
         gap: "12px",
       }}
     >
-      <h3 style={{ margin: 0 }}>📨 Kirim SMS</h3>
+      <h3 style={{ margin: 0 }}>📨 Send SMS</h3>
 
       <input
-        placeholder="Nomor tujuan (contoh: +628xxxx)"
+        placeholder="Destination number (example: +628xxxx)"
         value={number}
         onChange={(e) => setNumber(e.target.value)}
         style={{
@@ -64,7 +64,7 @@ export default function SmsControl({ apiBase }) {
       />
 
       <textarea
-        placeholder="Isi pesan"
+        placeholder="Message content"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         rows={3}
@@ -88,7 +88,7 @@ export default function SmsControl({ apiBase }) {
           cursor: loading ? "not-allowed" : "pointer",
         }}
       >
-        {loading ? "Mengirim..." : "Kirim SMS"}
+        {loading ? "Sending..." : "Send SMS"}
       </button>
 
       {response && (
