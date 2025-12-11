@@ -4,6 +4,7 @@ import HistoryChart from "./HistoryChart";
 import RealtimeSignal from "./RealtimeSignal";
 import IntervalControl from "./IntervalControl";
 import CallControl from "./CallControl";
+import SmsControl from "./SmsControl";
 
 function App() {
   // Semua request lewat Vercel -> /api -> proxy -> ngrok -> Flask
@@ -57,7 +58,6 @@ function App() {
           maxWidth: 350,
         }}
       >
-        {/* Interval dikontrol dari App */}
         <IntervalControl
           apiBase={apiBase}
           interval={interval}
@@ -107,6 +107,21 @@ function App() {
             onCallStateChange={setIsCalling}
           />
         </div>
+      </div>
+
+      {/* ===== SMS CONTROL ===== */}
+      <div
+        style={{
+          marginBottom: "30px",
+          background: "#fff",
+          padding: "20px",
+          borderRadius: "12px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+          border: "1px solid #eee",
+          maxWidth: "500px",
+        }}
+      >
+        <SmsControl apiBase={apiBase} />
       </div>
 
       {/* ===== HISTORY CHART ===== */}
