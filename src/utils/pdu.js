@@ -1,17 +1,10 @@
-import { Submit } from "sms-pdu-node";
+import smsPdu from "sms-pdu";
 
-// Destination wajib format internasional +62...
 export function generatePDU(destination, message) {
-
-  // SMSC null → library akan pakai 00 (default)
-  const pdu = new Submit(
-    destination,
-    message,
-    null   // penting! BUKAN getSMSC()
-  );
+  const pdu = smsPdu.toPdu(message, destination);
 
   return {
-    pdu: pdu.hex,
-    length: pdu.tpduLength
+    pdu: pdu.pdu,
+    length: pdu.length
   };
 }
