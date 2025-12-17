@@ -8,103 +8,42 @@ export default function SmsControl({ apiBase }) {
   const [loading, setLoading] = useState(false);
 
   async function sendSMS() {
-    if (!number || !message) {
-      setResponse("❌ Phone number and message are required");
-      return;
-    }
-
     setLoading(true);
-    setResponse("");
-
     try {
-      // Generate PDU dari frontend
-      const { pdu, length } = generatePDU(number, message);
-      console.log("[DEBUG] PDU:", pdu, "LEN:", length);
-
-      // Kirim ke backend
       const res = await fetch(`${apiBase}/sms/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pdu, length }),
+        body: JSON.stringify({ number, message }),
       });
 
       const data = await res.json();
-
-      if (data.status === "ok") {
-        setResponse("✅ SMS SENT SUCCESSFULLY!\n" + JSON.stringify(data, null, 2));
-      } else {
-        setResponse("❌ ERROR:\n" + JSON.stringify(data, null, 2));
-      }
-    } catch (err) {
-      setResponse("❌ Exception: " + err.message);
+      setResponse(JSON.stringify(data, null, 2));
+    } catch (e) {
+      setResponse("Error: " + e.message);
     }
-
     setLoading(false);
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px",
-      }}
-    >
-      <h3 style={{ margin: 0 }}>📨 Send SMS</h3>
+    <>
+      <h3>📨 Send SMS</h3>
 
       <input
-        placeholder="Destination number (example: +628xxxx)"
         value={number}
         onChange={(e) => setNumber(e.target.value)}
-        style={{
-          padding: "10px",
-          borderRadius: "8px",
-          border: "1px solid #ccc",
-        }}
+        placeholder="+8707xxxx"
       />
 
       <textarea
-        placeholder="Message content"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        rows={3}
-        style={{
-          padding: "10px",
-          borderRadius: "8px",
-          border: "1px solid #ccc",
-          resize: "vertical",
-        }}
       />
 
-      <button
-        onClick={sendSMS}
-        disabled={loading}
-        style={{
-          padding: "10px",
-          borderRadius: "8px",
-          border: "none",
-          background: loading ? "#999" : "#007bff",
-          color: "#fff",
-          cursor: loading ? "not-allowed" : "pointer",
-        }}
-      >
+      <button onClick={sendSMS} disabled={loading}>
         {loading ? "Sending..." : "Send SMS"}
       </button>
 
-      {response && (
-        <pre
-          style={{
-            background: "#f5f5f5",
-            padding: "12px",
-            borderRadius: "8px",
-            border: "1px solid #ddd",
-            maxHeight: "250px",
-            overflow: "auto",
-          }}
-        >
-          {response}
-        </pre>
-      )}
-    </div>
+      {response && <pre>{response}</pre>}
+    </>
   );
 }
