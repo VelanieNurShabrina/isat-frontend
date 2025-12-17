@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { generatePDU } from "./utils/pdu";
 
 export default function SmsControl({ apiBase }) {
   const [number, setNumber] = useState("");
