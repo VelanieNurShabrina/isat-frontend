@@ -21,25 +21,33 @@ const BER_TABLE = {
   0: "BER < 0,05%",
 };
 
-function StatCard({ title, value, subtitle, color = "#222" }) {
+function StatCard({ title, value, subtitle, accent = "#2563eb" }) {
   return (
     <div
       style={{
         flex: 1,
-        background: "#f9fafb",
+        background: "#fff",
         padding: "14px 16px",
-        borderRadius: "10px",
+        borderRadius: "12px",
         border: "1px solid #eee",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
       }}
     >
-      <div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>
-        {title}
+      <div style={{ fontSize: 12, color: "#666" }}>{title}</div>
+
+      <div
+        style={{
+          fontSize: 28,
+          fontWeight: 700,
+          color: accent,
+          marginTop: 4,
+        }}
+      >
+        {value}
       </div>
-      <div style={{ fontSize: 26, fontWeight: 600, color }}>{value}</div>
+
       {subtitle && (
-        <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
-          {subtitle}
-        </div>
+        <div style={{ fontSize: 11, color: "#888" }}>{subtitle}</div>
       )}
     </div>
   );
@@ -91,19 +99,44 @@ export default function RealtimeSignal({ apiBase }) {
 
       {/* STAT CARDS */}
       <div style={{ display: "flex", gap: 12 }}>
-        <StatCard title="RSSI" value={signal.rssi} subtitle="bars" />
+        <StatCard
+          title="RSSI"
+          value={signal.rssi}
+          subtitle="bars"
+          accent="#2563eb"
+        />
 
-        <StatCard title="Signal Power" value={signal.dbm} subtitle="dBm" />
+        <StatCard
+          title="Signal Power"
+          value={signal.dbm}
+          subtitle="dBm"
+          accent="#16a34a"
+        />
 
-        <StatCard title="BER" value={signal.ber} subtitle={berText} />
+        <StatCard
+          title="BER"
+          value={signal.ber}
+          subtitle={berText}
+          accent={signal.ber > 5 ? "#dc2626" : "#f59e0b"}
+        />
       </div>
 
       {/* MODE & SOURCE */}
-      <div style={{ marginTop: 12 }}>
-        <div style={{ fontSize: 13 }}>
-          <strong>Mode:</strong> {mode}
-        </div>
-        <div style={{ fontSize: 12, color: "#777" }}>📍 Source: {source}</div>
+      <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+        <span
+          style={{
+            padding: "4px 10px",
+            borderRadius: 20,
+            fontSize: 12,
+            background: mode === "idle" ? "#e0f2fe" : "#fee2e2",
+            color: mode === "idle" ? "#0369a1" : "#991b1b",
+            fontWeight: 500,
+          }}
+        >
+          {mode.toUpperCase()}
+        </span>
+
+        <span style={{ fontSize: 12, color: "#777" }}>📍 {source}</span>
       </div>
     </div>
   );
