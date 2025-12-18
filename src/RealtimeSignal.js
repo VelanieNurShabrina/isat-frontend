@@ -21,6 +21,30 @@ const BER_TABLE = {
   0: "BER < 0,05%",
 };
 
+function StatCard({ title, value, subtitle, color = "#222" }) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        background: "#f9fafb",
+        padding: "14px 16px",
+        borderRadius: "10px",
+        border: "1px solid #eee",
+      }}
+    >
+      <div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>
+        {title}
+      </div>
+      <div style={{ fontSize: 26, fontWeight: 600, color }}>{value}</div>
+      {subtitle && (
+        <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+          {subtitle}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function RealtimeSignal({ apiBase }) {
   const [signal, setSignal] = useState({
     rssi: "-",
@@ -63,23 +87,24 @@ export default function RealtimeSignal({ apiBase }) {
 
   return (
     <div>
-      <h4>📶 Realtime Signal</h4>
-      <p>
-        <strong>RSSI:</strong> {signal.rssi}
-      </p>
-      <p>
-        <strong>dBm:</strong> {signal.dbm}
-      </p>
-      <p>
-        <strong>BER:</strong> {signal.ber}{" "}
-        {typeof signal.ber === "number" && (
-          <span style={{ fontSize: 12, color: "#666" }}>({berText})</span>
-        )}
-      </p>
-      <p>
-        <strong>Mode:</strong> {mode}
-      </p>
-      <p style={{ fontSize: 12, color: "#777" }}>📍Source: {source}</p>
+      <h4 style={{ marginBottom: 12 }}>📶 Realtime Signal</h4>
+
+      {/* STAT CARDS */}
+      <div style={{ display: "flex", gap: 12 }}>
+        <StatCard title="RSSI" value={signal.rssi} subtitle="bars" />
+
+        <StatCard title="Signal Power" value={signal.dbm} subtitle="dBm" />
+
+        <StatCard title="BER" value={signal.ber} subtitle={berText} />
+      </div>
+
+      {/* MODE & SOURCE */}
+      <div style={{ marginTop: 12 }}>
+        <div style={{ fontSize: 13 }}>
+          <strong>Mode:</strong> {mode}
+        </div>
+        <div style={{ fontSize: 12, color: "#777" }}>📍 Source: {source}</div>
+      </div>
     </div>
   );
 }
