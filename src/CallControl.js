@@ -63,12 +63,32 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
   };
 
   return (
-    <div style={{ marginBottom: 20 }}>
-      <h4>📞 Call Control</h4>
+  <div
+    style={{
+      background: "#fff",
+      border: "1px solid #eee",
+      borderRadius: 12,
+      padding: 16,
+      height: "100%",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+    }}
+  >
+    {/* HEADER */}
+    <h4
+      style={{
+        marginBottom: 16,
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+      }}
+    >
+      📞 Call Control
+    </h4>
 
-      {/* Number */}
-      <div style={{ marginBottom: 10 }}>
-        <label>Number:</label>
+    {/* INPUTS */}
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div>
+        <label style={{ fontSize: 12, color: "#555" }}>Number</label>
         <input
           type="text"
           value={number}
@@ -77,18 +97,17 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
             localStorage.setItem("call_number", e.target.value);
           }}
           style={{
-            marginLeft: 10,
-            padding: 6,
-            borderRadius: 6,
+            marginTop: 4,
+            padding: "8px 10px",
+            borderRadius: 8,
             border: "1px solid #ccc",
-            width: 200,
+            width: "100%",
           }}
         />
       </div>
 
-      {/* Duration */}
-      <div style={{ marginBottom: 10 }}>
-        <label>Duration (s):</label>
+      <div>
+        <label style={{ fontSize: 12, color: "#555" }}>Duration (seconds)</label>
         <input
           type="number"
           min="1"
@@ -99,26 +118,29 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
             localStorage.setItem("call_duration", e.target.value);
           }}
           style={{
-            marginLeft: 10,
-            padding: 6,
-            borderRadius: 6,
+            marginTop: 4,
+            padding: "8px 10px",
+            borderRadius: 8,
             border: "1px solid #ccc",
-            width: 80,
+            width: "100%",
           }}
         />
       </div>
+    </div>
 
-      {/* Buttons */}
+    {/* BUTTONS */}
+    <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
       <button
         onClick={handleCall}
         disabled={isCalling}
         style={{
-          padding: "6px 12px",
-          marginRight: 10,
-          borderRadius: 6,
+          flex: 1,
+          padding: "10px 0",
+          borderRadius: 8,
           border: "none",
-          backgroundColor: isCalling ? "#8bc48b" : "#28a745",
+          backgroundColor: isCalling ? "#9acfa2" : "#16a34a",
           color: "white",
+          fontWeight: 600,
         }}
       >
         {isCalling ? "Calling..." : "Call"}
@@ -128,19 +150,35 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
         onClick={handleStop}
         disabled={!isCalling || stopping}
         style={{
-          padding: "6px 12px",
-          borderRadius: 6,
+          flex: 1,
+          padding: "10px 0",
+          borderRadius: 8,
           border: "none",
-          backgroundColor: "#dc3545",
+          backgroundColor: "#dc2626",
           color: "white",
+          fontWeight: 600,
         }}
       >
         Stop
       </button>
-
-      {statusMsg && (
-        <p style={{ marginTop: 10, fontSize: 14 }}>{statusMsg}</p>
-      )}
     </div>
-  );
+
+    {/* STATUS */}
+    {statusMsg && (
+      <div
+        style={{
+          marginTop: 12,
+          fontSize: 12,
+          color: "#555",
+          background: "#f9fafb",
+          padding: "6px 10px",
+          borderRadius: 6,
+        }}
+      >
+        {statusMsg}
+      </div>
+    )}
+  </div>
+);
+
 }
