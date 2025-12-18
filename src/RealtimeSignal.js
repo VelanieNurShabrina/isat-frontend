@@ -95,7 +95,32 @@ export default function RealtimeSignal({ apiBase }) {
 
   return (
     <div>
-      <h4 style={{ marginBottom: 12 }}>📶 Realtime Signal</h4>
+      {/* SECTION HEADER */}
+      <div style={{ marginBottom: 16 }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            color: "#111",
+          }}
+        >
+          📶 Realtime Signal
+        </h3>
+
+        <div
+          style={{
+            width: 48,
+            height: 3,
+            background: "#2563eb",
+            borderRadius: 2,
+            marginTop: 6,
+          }}
+        />
+      </div>
 
       {/* STAT CARDS */}
       <div style={{ display: "flex", gap: 12 }}>
