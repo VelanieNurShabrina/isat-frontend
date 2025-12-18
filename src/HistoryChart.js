@@ -82,7 +82,14 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
       <h3 style={{ marginBottom: "10px" }}>Signal History (dBm & BER)</h3>
 
       {/* FILTER BAR */}
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          marginBottom: "10px",
+        }}
+      >
         <span>Start:</span>
         <input
           type="datetime-local"
@@ -144,8 +151,9 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             <YAxis
               yAxisId="right"
               orientation="right"
-              domain={[0, 10]}
-              label={{ value: "BER", angle: 90, dx: 10 }}
+              domain={[0, 15]}
+              ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
+              label={{ value: "BER (Index)", angle: 90, dx: 10 }}
             />
 
             {/* Tooltip */}
