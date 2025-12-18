@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://heterophoric-franco-unplumbed.ngrok-free.dev/$1"
+      "source": "/api/:path*",
+      "destination": "https://heterophoric-franco-unplumbed.ngrok-free.dev/:path*"
     }
   ]
 }
