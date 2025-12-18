@@ -63,7 +63,7 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
   };
 
   return (
-    <div style={{ padding: "4px 4px" }}>
+    <div style={{ padding: "12px 16px" }}>
       {/* HEADER */}
       <div style={{ marginBottom: 16 }}>
         <h3
