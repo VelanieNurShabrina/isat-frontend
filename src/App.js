@@ -39,9 +39,9 @@ function App() {
     <div
       style={{
         width: "100%",
-        maxWidth: "1250px",
-        margin: "0 auto",
-        padding: "30px 24px",
+        maxWidth: "100%", // ⬅️ full width
+        margin: 0, // ⬅️ HAPUS center
+        padding: "24px 32px", // ⬅️ padding kiri-kanan aja
         fontFamily: "Segoe UI, Roboto, sans-serif",
       }}
     >
