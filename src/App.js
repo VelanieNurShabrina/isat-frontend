@@ -77,8 +77,8 @@ function App() {
         {/* REALTIME SIGNAL CARD */}
         <div
           style={{
-            flex: "1 1 350px",
-            minWidth: "330px",
+            flex: "0 0 420px", // ⬅️ FIXED WIDTH
+            maxWidth: "420px",
             background: "#fff",
             padding: "20px",
             borderRadius: "12px",
@@ -92,8 +92,8 @@ function App() {
         {/* CALL CONTROL CARD */}
         <div
           style={{
-            flex: "1 1 350px",
-            minWidth: "330px",
+            fflex: "0 0 420px", // ⬅️ FIXED WIDTH
+            maxWidth: "420px",
             background: "#fff",
             padding: "20px",
             borderRadius: "12px",
