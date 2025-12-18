@@ -63,126 +63,124 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
   };
 
   return (
-  <div
-    style={{
-      background: "#fff",
-      borderRadius: 12,
-      border: "1px solid #eee",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-      padding: 16,
-      height: "100%",
-    }}
-  >
-    {/* HEADER — SAMA PERSIS DENGAN REALTIME SIGNAL */}
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 6,
-        fontSize: 14,
-        fontWeight: 600,
-        marginBottom: 14,
-        paddingBottom: 6,
-        borderBottom: "2px solid #2563eb",
-        width: "fit-content",
-      }}
-    >
-      📞 Call Control
-    </div>
-
-    {/* CONTENT */}
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {/* NUMBER */}
-      <div>
-        <label style={{ fontSize: 12, color: "#555" }}>Number</label>
-        <input
-          type="text"
-          value={number}
-          onChange={(e) => {
-            setNumber(e.target.value);
-            localStorage.setItem("call_number", e.target.value);
-          }}
+    <div>
+      {/* HEADER — SAMA PERSIS KAYA REALTIME SIGNAL */}
+      <div style={{ marginBottom: 16 }}>
+        <h3
           style={{
-            width: "100%",
-            marginTop: 6,
-            padding: "10px 12px",
-            borderRadius: 8,
-            border: "1px solid #ddd",
-            fontSize: 13,
-          }}
-        />
-      </div>
-
-      {/* DURATION */}
-      <div>
-        <label style={{ fontSize: 12, color: "#555" }}>
-          Duration (seconds)
-        </label>
-        <input
-          type="number"
-          min="1"
-          max="300"
-          value={callSeconds}
-          onChange={(e) => {
-            setCallSeconds(e.target.value);
-            localStorage.setItem("call_duration", e.target.value);
-          }}
-          style={{
-            width: "100%",
-            marginTop: 6,
-            padding: "10px 12px",
-            borderRadius: 8,
-            border: "1px solid #ddd",
-            fontSize: 13,
-          }}
-        />
-      </div>
-
-      {/* BUTTONS */}
-      <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-        <button
-          onClick={handleCall}
-          disabled={isCalling}
-          style={{
-            flex: 1,
-            padding: "10px 0",
-            borderRadius: 8,
-            border: "none",
-            background: isCalling ? "#86efac" : "#16a34a",
-            color: "#fff",
-            fontWeight: 600,
-            cursor: isCalling ? "not-allowed" : "pointer",
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            color: "#111",
           }}
         >
-          {isCalling ? "Calling..." : "Call"}
-        </button>
+          📞 Call Control
+        </h3>
 
-        <button
-          onClick={handleStop}
-          disabled={!isCalling || stopping}
+        <div
           style={{
-            flex: 1,
-            padding: "10px 0",
-            borderRadius: 8,
-            border: "none",
+            width: 48,
+            height: 3,
             background: "#dc2626",
-            color: "#fff",
-            fontWeight: 600,
-            cursor: !isCalling ? "not-allowed" : "pointer",
+            borderRadius: 2,
+            marginTop: 6,
           }}
-        >
-          Stop
-        </button>
+        />
       </div>
 
-      {/* STATUS */}
-      {statusMsg && (
-        <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}>
-          {statusMsg}
+      {/* FORM */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {/* NUMBER */}
+        <div>
+          <label style={{ fontSize: 13, color: "#555" }}>Number</label>
+          <input
+            type="text"
+            value={number}
+            onChange={(e) => {
+              setNumber(e.target.value);
+              localStorage.setItem("call_number", e.target.value);
+            }}
+            style={{
+              width: "100%",
+              marginTop: 6,
+              padding: "10px 12px",
+              borderRadius: 8,
+              border: "1px solid #ddd",
+              fontSize: 14,
+            }}
+          />
         </div>
-      )}
-    </div>
-  </div>
-);
 
+        {/* DURATION */}
+        <div>
+          <label style={{ fontSize: 13, color: "#555" }}>
+            Duration (seconds)
+          </label>
+          <input
+            type="number"
+            min="1"
+            max="300"
+            value={callSeconds}
+            onChange={(e) => {
+              setCallSeconds(e.target.value);
+              localStorage.setItem("call_duration", e.target.value);
+            }}
+            style={{
+              width: "100%",
+              marginTop: 6,
+              padding: "10px 12px",
+              borderRadius: 8,
+              border: "1px solid #ddd",
+              fontSize: 14,
+            }}
+          />
+        </div>
+
+        {/* BUTTONS */}
+        <div style={{ display: "flex", gap: 12, marginTop: 6 }}>
+          <button
+            onClick={handleCall}
+            disabled={isCalling}
+            style={{
+              flex: 1,
+              padding: "10px 0",
+              borderRadius: 8,
+              border: "none",
+              background: isCalling ? "#86efac" : "#16a34a",
+              color: "#fff",
+              fontWeight: 600,
+              cursor: isCalling ? "not-allowed" : "pointer",
+            }}
+          >
+            {isCalling ? "Calling..." : "Call"}
+          </button>
+
+          <button
+            onClick={handleStop}
+            disabled={!isCalling || stopping}
+            style={{
+              flex: 1,
+              padding: "10px 0",
+              borderRadius: 8,
+              border: "none",
+              background: "#dc2626",
+              color: "#fff",
+              fontWeight: 600,
+              cursor: !isCalling ? "not-allowed" : "pointer",
+            }}
+          >
+            Stop
+          </button>
+        </div>
+
+        {/* STATUS */}
+        {statusMsg && (
+          <div style={{ fontSize: 13, color: "#555" }}>{statusMsg}</div>
+        )}
+      </div>
+    </div>
+  );
 }
