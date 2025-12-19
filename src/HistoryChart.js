@@ -169,6 +169,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
               yAxisId="left"
               domain={[-140, -60]}
               label={{ value: "RSSI (dBm)", angle: -90, dx: -10 }}
+              stroke="#4CAF50"
             />
 
             {/* Y AXIS RIGHT → BER */}
@@ -178,6 +179,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
               domain={[0, 15]}
               ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
               label={{ value: "BER (Index)", angle: 90, dx: 10 }}
+              stroke="#ff8c00"
             />
 
             {/* Tooltip */}
