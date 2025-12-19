@@ -148,7 +148,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             margin={{
               top: 20,
               right: 80,
-              left: 0,
+              left: 60,
               bottom: 20,
             }}
           >
