@@ -9,7 +9,6 @@ export default function IntervalControl({ apiBase, interval, onIntervalChange })
     const newInterval = parseInt(e.target.value, 10);
     if (Number.isNaN(newInterval)) return;
 
-    // Update UI langsung (supaya footer chart ikut berubah)
     onIntervalChange(newInterval);
 
     setLoading(true);
@@ -23,58 +22,58 @@ export default function IntervalControl({ apiBase, interval, onIntervalChange })
       const json = await res.json();
 
       if (json.status === "ok") {
-        setStatusMsg(
-          `✅ Interval was successfully changed to ${newInterval} seconds`
-        );
+        setStatusMsg(`✅ Interval set to ${newInterval} seconds`);
       } else {
-        setStatusMsg(
-          `⚠️ Failed to change interval: ${
-            json.msg || json.message || "Unknown"
-          }`
-        );
+        setStatusMsg(`⚠️ Failed to change interval`);
       }
     } catch (err) {
-      console.error("❌ Failed to connect to Mini PC:", err);
-      setStatusMsg("❌ Cannot connect to Mini PC (check tunnel).");
+      setStatusMsg("❌ Cannot connect to backend");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: "#f9f9f9",
-        padding: "10px 14px",
-        borderRadius: 8,
-        border: "1px solid #ddd",
-        width: "100%",
-        boxSizing: "border-box",
-        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-      }}
-    >
-      <label
-        style={{
-          fontWeight: 600,
-          marginBottom: 6,
-          display: "block",
-          fontSize: 14,
-        }}
-      >
-        ⏱️ Signal Reading Interval:
-      </label>
+    <div>
+      {/* ===== HEADER ===== */}
+      <div style={{ marginBottom: 16 }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            color: "#111",
+          }}
+        >
+          ⏱️ Signal Reading Interval
+        </h3>
 
+        <div
+          style={{
+            width: 48,
+            height: 3,
+            background: "#7c3aed", // ungu biar beda dari card lain
+            borderRadius: 2,
+            marginTop: 6,
+          }}
+        />
+      </div>
+
+      {/* ===== CONTENT ===== */}
       <select
         value={interval}
         onChange={handleChange}
         disabled={loading}
         style={{
-          padding: "6px 10px",
-          borderRadius: 6,
+          width: "100%",
+          padding: "10px 12px",
+          borderRadius: 8,
           border: "1px solid #ccc",
           fontSize: 14,
           cursor: loading ? "not-allowed" : "pointer",
-          width: "100%",
         }}
       >
         <option value={5}>5 Seconds</option>
@@ -85,21 +84,19 @@ export default function IntervalControl({ apiBase, interval, onIntervalChange })
       </select>
 
       {statusMsg && (
-        <p
+        <div
           style={{
+            marginTop: 10,
             fontSize: 13,
-            marginTop: 8,
             color: statusMsg.startsWith("✅")
-              ? "green"
+              ? "#15803d"
               : statusMsg.startsWith("⚠️")
-              ? "#d67b00"
-              : statusMsg.startsWith("❌")
-              ? "red"
-              : "#333",
+              ? "#b45309"
+              : "#b91c1c",
           }}
         >
           {statusMsg}
-        </p>
+        </div>
       )}
     </div>
   );
