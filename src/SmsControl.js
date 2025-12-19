@@ -30,9 +30,9 @@ export default function SmsControl({ apiBase }) {
       if (data.status === "ok") {
         setResponse(
           `✅ SMS berhasil dikirim\n` +
-          `📱 Tujuan : ${data.number}\n` +
-          `💬 Pesan  : ${data.message}\n` +
-          `⏱️ Waktu  : ${data.timestamp}`
+            `📱 Tujuan : ${data.number}\n` +
+            `💬 Pesan  : ${data.message}\n` +
+            `⏱️ Waktu  : ${data.timestamp}`
         );
       } else {
         setResponse("❌ Gagal mengirim SMS");
@@ -46,7 +46,31 @@ export default function SmsControl({ apiBase }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-      <h3 style={{ margin: 0 }}>📨 Send SMS</h3>
+      <div style={{ marginBottom: 16 }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            color: "#111",
+          }}
+        >
+          📨 Send SMS
+        </h3>
+
+        <div
+          style={{
+            width: 48,
+            height: 3,
+            background: "#2563eb", // biru konsisten (SMS = action)
+            borderRadius: 2,
+            marginTop: 6,
+          }}
+        />
+      </div>
 
       <input
         placeholder="Destination number (example: +628xxxx)"
