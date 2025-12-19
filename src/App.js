@@ -74,16 +74,16 @@ function App() {
       <div
         style={{
           display: "flex",
-          flexWrap: "wrap",
           gap: "20px",
           marginBottom: "30px",
+          alignItems: "stretch", // ⬅️ penting biar tinggi sejajar
         }}
       >
-        {/* REALTIME SIGNAL CARD */}
+        {/* REALTIME SIGNAL */}
         <div
           style={{
-            flex: "0 0 420px", // ⬅️ FIXED WIDTH
-            maxWidth: "420px",
+            flex: 1,
+            minWidth: 320,
             background: "#fff",
             padding: "20px",
             borderRadius: "12px",
@@ -94,11 +94,11 @@ function App() {
           <RealtimeSignal apiBase={apiBase} />
         </div>
 
-        {/* CALL CONTROL CARD */}
+        {/* CALL CONTROL */}
         <div
           style={{
-            flex: "0 0 420px", // ⬅️ FIXED WIDTH
-            maxWidth: "420px",
+            flex: 1,
+            minWidth: 320,
             background: "#fff",
             padding: "20px",
             borderRadius: "12px",
@@ -112,21 +112,21 @@ function App() {
             onCallStateChange={setIsCalling}
           />
         </div>
-      </div>
 
-      {/* ===== SMS CONTROL ===== */}
-      <div
-        style={{
-          marginBottom: "30px",
-          background: "#fff",
-          padding: "20px",
-          borderRadius: "12px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-          border: "1px solid #eee",
-          maxWidth: "500px",
-        }}
-      >
-        <SmsControl apiBase={apiBase} />
+        {/* SEND SMS */}
+        <div
+          style={{
+            flex: 1,
+            minWidth: 320,
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+            border: "1px solid #eee",
+          }}
+        >
+          <SmsControl apiBase={apiBase} />
+        </div>
       </div>
 
       {/* ===== HISTORY CHART ===== */}
