@@ -46,16 +46,21 @@ function App() {
       }}
     >
       {/* ===== HEADER ===== */}
-      <h2 style={{ marginBottom: 6 }}>📡 IsatPhone Signal Dashboard</h2>
+      <h2 style={{ marginBottom: 6 }}>📡 IsatPhone Monitoring Dashboard</h2>
       <p style={{ marginBottom: 25, color: "#666" }}>
         Signal values: RSSI (bars), dBm (power), BER (bit error rate)
       </p>
 
-      {/* ===== INTERVAL CONTROL ===== */}
+      {/* ===== INTERVAL CONTROL CARD ===== */}
       <div
         style={{
-          marginBottom: 24,
-          maxWidth: 350,
+          marginBottom: 30,
+          background: "#fff",
+          padding: "20px",
+          borderRadius: "12px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+          border: "1px solid #eee",
+          maxWidth: "420px",
         }}
       >
         <IntervalControl
@@ -92,7 +97,7 @@ function App() {
         {/* CALL CONTROL CARD */}
         <div
           style={{
-            fflex: "0 0 420px", // ⬅️ FIXED WIDTH
+            flex: "0 0 420px", // ⬅️ FIXED WIDTH
             maxWidth: "420px",
             background: "#fff",
             padding: "20px",
