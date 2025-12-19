@@ -82,8 +82,8 @@ function App() {
         {/* REALTIME SIGNAL */}
         <div
           style={{
-            flex: 1,
-            minWidth: 320,
+            flex: "1 1 360px",
+            maxWidth: "420px",
             background: "#fff",
             padding: "20px",
             borderRadius: "12px",
@@ -97,8 +97,8 @@ function App() {
         {/* CALL CONTROL */}
         <div
           style={{
-            flex: 1,
-            minWidth: 320,
+            flex: "1 1 360px",
+            maxWidth: "420px",
             background: "#fff",
             padding: "20px",
             borderRadius: "12px",
@@ -116,8 +116,8 @@ function App() {
         {/* SEND SMS */}
         <div
           style={{
-            flex: 1,
-            minWidth: 320,
+            flex: "1 1 360px",
+            maxWidth: "420px",
             background: "#fff",
             padding: "20px",
             borderRadius: "12px",
