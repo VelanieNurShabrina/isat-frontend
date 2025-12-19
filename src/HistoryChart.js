@@ -168,14 +168,15 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             <YAxis
               yAxisId="left"
               domain={[-140, -60]}
-              tick={{ fill: "#4CAF50", fontSize: 12 }}
+              tick={{ fill: "#111", fontSize: 12 }} // ⬅️ angka skala HITAM
               label={{
                 value: "RSSI (dBm)",
                 angle: -90,
                 position: "insideLeft",
-                fill: "#4CAF50",
-                fontSize: 12,
-                offset: -5,
+                fill: "#4CAF50", // ⬅️ judul HIJAU
+                fontSize: 14,
+                fontWeight: 600,
+                dx: -20, // ⬅️ PENTING biar muncul
               }}
             />
 
@@ -185,14 +186,15 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
               orientation="right"
               domain={[0, 15]}
               ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
-              tick={{ fill: "#ff8c00", fontSize: 12 }}
+              tick={{ fill: "#111", fontSize: 12 }} // ⬅️ angka skala HITAM
               label={{
                 value: "BER (Index)",
                 angle: 90,
                 position: "insideRight",
-                fill: "#ff8c00",
-                fontSize: 12,
-                offset: -5,
+                fill: "#ff8c00", // ⬅️ judul ORANGE
+                fontSize: 14, // ⬅️ DIBESARIN
+                fontWeight: 600,
+                dx: 20, // ⬅️ biar ga kepotong
               }}
             />
 
