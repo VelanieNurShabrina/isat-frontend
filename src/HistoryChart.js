@@ -79,7 +79,31 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
 
   return (
     <div style={{ width: "100%", marginTop: "20px" }}>
-      <h3 style={{ marginBottom: "10px" }}>Signal History (dBm & BER)</h3>
+      <div style={{ marginBottom: 16 }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            color: "#111",
+          }}
+        >
+          📈 Signal History (dBm & BER)
+        </h3>
+
+        <div
+          style={{
+            width: 56,
+            height: 3,
+            background: "#16a34a", // hijau → nyambung ke RSSI chart
+            borderRadius: 2,
+            marginTop: 6,
+          }}
+        />
+      </div>
 
       {/* FILTER BAR */}
       <div
