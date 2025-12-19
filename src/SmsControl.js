@@ -65,7 +65,7 @@ export default function SmsControl({ apiBase }) {
           style={{
             width: 48,
             height: 3,
-            background: "#2563eb", // biru konsisten (SMS = action)
+            background: "#75d8f0ff", // biru konsisten (SMS = action)
             borderRadius: 2,
             marginTop: 6,
           }}
