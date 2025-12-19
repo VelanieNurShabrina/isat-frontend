@@ -55,7 +55,7 @@ export default function IntervalControl({ apiBase, interval, onIntervalChange })
           style={{
             width: 48,
             height: 3,
-            background: "#7c3aed", // ungu biar beda dari card lain
+            background: "#7c3aed",
             borderRadius: 2,
             marginTop: 6,
           }}

@@ -36,10 +36,10 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
 
       if (json.data) {
         const formatted = json.data.map((row) => ({
-          timestamp: row.timestamp * 1000, // gunakan format time-series
+          timestamp: row.timestamp * 1000, 
           timeLabel: new Date(row.timestamp * 1000).toLocaleTimeString(), // untuk tooltip
 
-          // removed RSSI raw sesuai permintaan mentor
+          // removed RSSI raw 
           dbm: row.dbm,
           ber: row.ber,
         }));
@@ -63,7 +63,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
   // ===============================
   const handleFilter = () => {
     if (!startTime || !endTime) {
-      alert("Isi start dan end time!");
+      alert("Fill start and end time!");
       return;
     }
     setIsFiltered(true);
@@ -98,7 +98,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
           style={{
             width: 56,
             height: 3,
-            background: "#16a34a", // hijau → nyambung ke RSSI chart
+            background: "#16a34a", 
             borderRadius: 2,
             marginTop: 6,
           }}
@@ -168,15 +168,15 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             <YAxis
               yAxisId="left"
               domain={[-140, -60]}
-              tick={{ fill: "#111", fontSize: 12 }} // ⬅️ angka skala HITAM
+              tick={{ fill: "#111", fontSize: 12 }} // ⬅️ scale
               label={{
                 value: "RSSI (dBm)",
                 angle: -90,
                 position: "insideLeft",
-                fill: "#4CAF50", // ⬅️ judul HIJAU
+                fill: "#4CAF50", 
                 fontSize: 14,
                 fontWeight: 600,
-                dx: -20, // ⬅️ PENTING biar muncul
+                dx: -20, 
               }}
             />
 
@@ -186,15 +186,15 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
               orientation="right"
               domain={[0, 15]}
               ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
-              tick={{ fill: "#111", fontSize: 12 }} // ⬅️ angka skala HITAM
+              tick={{ fill: "#111", fontSize: 12 }} 
               label={{
                 value: "BER (Index)",
                 angle: 90,
                 position: "insideRight",
-                fill: "#ff8c00", // ⬅️ judul ORANGE
-                fontSize: 14, // ⬅️ DIBESARIN
+                fill: "#ff8c00", // 
+                fontSize: 14, //
                 fontWeight: 600,
-                dx: 20, // ⬅️ biar ga kepotong
+                dx: 20, // 
               }}
             />
 

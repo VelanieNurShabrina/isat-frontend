@@ -40,8 +40,8 @@ function App() {
       style={{
         width: "100%",
         maxWidth: "100%", // ⬅️ full width
-        margin: 0, // ⬅️ HAPUS center
-        padding: "24px 32px", // ⬅️ padding kiri-kanan aja
+        margin: 0, // 
+        padding: "24px 32px", // ⬅️ padding kiri-kanan
         fontFamily: "Segoe UI, Roboto, sans-serif",
       }}
     >
@@ -76,7 +76,7 @@ function App() {
           display: "flex",
           gap: "20px",
           marginBottom: "30px",
-          alignItems: "stretch", // ⬅️ penting biar tinggi sejajar
+          alignItems: "stretch", 
         }}
       >
         {/* REALTIME SIGNAL */}
@@ -152,7 +152,7 @@ function App() {
           textAlign: "center",
         }}
       >
-        © {new Date().getFullYear()} ISAT Monitoring Dashboard by Velanie
+        © {new Date().getFullYear()} IsatPhone Monitoring Dashboard by Velanie
       </p>
     </div>
   );

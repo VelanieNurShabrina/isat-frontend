@@ -8,7 +8,7 @@ export default function SmsControl({ apiBase }) {
 
   async function sendSMS() {
     if (!number || !message) {
-      setResponse("❌ Nomor dan pesan wajib diisi");
+      setResponse("❌ Number and message are required.");
       return;
     }
 
@@ -29,13 +29,13 @@ export default function SmsControl({ apiBase }) {
 
       if (data.status === "ok") {
         setResponse(
-          `✅ SMS berhasil dikirim\n` +
-            `📱 Tujuan : ${data.number}\n` +
-            `💬 Pesan  : ${data.message}\n` +
-            `⏱️ Waktu  : ${data.timestamp}`
+          `✅ SMS sent successfully\n` +
+            `📱 Destination : ${data.number}\n` +
+            `💬 Message  : ${data.message}\n` +
+            `⏱️ Time  : ${data.timestamp}`
         );
       } else {
-        setResponse("❌ Gagal mengirim SMS");
+        setResponse("❌ Failed sent SMS");
       }
     } catch (err) {
       setResponse("❌ Error: " + err.message);
@@ -65,7 +65,7 @@ export default function SmsControl({ apiBase }) {
           style={{
             width: 48,
             height: 3,
-            background: "#75d8f0ff", // biru konsisten (SMS = action)
+            background: "#75d8f0ff", 
             borderRadius: 2,
             marginTop: 6,
           }}
