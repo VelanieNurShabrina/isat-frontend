@@ -40,16 +40,45 @@ function App() {
       style={{
         width: "100%",
         maxWidth: "100%", // ⬅️ full width
-        margin: 0, // 
+        margin: 0, //
         padding: "24px 32px", // ⬅️ padding kiri-kanan
         fontFamily: "Segoe UI, Roboto, sans-serif",
       }}
     >
       {/* ===== HEADER ===== */}
-      <h2 style={{ marginBottom: 6 }}>📡 IsatPhone Monitoring Dashboard</h2>
-      <p style={{ marginBottom: 25, color: "#666" }}>
-        Signal values: RSSI (bars), dBm (power), BER (bit error rate)
-      </p>
+      <div
+        style={{
+          marginBottom: 28,
+          paddingBottom: 16,
+          borderBottom: "1px solid #eee",
+        }}
+      >
+        <h1
+          style={{
+            margin: 0,
+            fontSize: 28,
+            fontWeight: 800,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            color: "#111",
+          }}
+        >
+          📡 IsatPhone Monitoring Dashboard
+        </h1>
+
+        <p
+          style={{
+            marginTop: 8,
+            fontSize: 14,
+            color: "#555",
+            maxWidth: 720,
+          }}
+        >
+          Real-time monitoring of signal strength, call activity, SMS delivery,
+          and historical performance (RSSI, dBm, BER).
+        </p>
+      </div>
 
       {/* ===== INTERVAL CONTROL CARD ===== */}
       <div
@@ -76,7 +105,7 @@ function App() {
           display: "flex",
           gap: "20px",
           marginBottom: "30px",
-          alignItems: "stretch", 
+          alignItems: "stretch",
         }}
       >
         {/* REALTIME SIGNAL */}
