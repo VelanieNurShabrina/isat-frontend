@@ -16,32 +16,53 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
     if (savedDuration) setCallSeconds(parseInt(savedDuration));
   }, []);
 
+  useEffect(() => {
+    if (!isCalling) return;
+
+    const poll = setInterval(async () => {
+      try {
+        const res = await fetch(`${apiBase}/status`, {
+          headers: { "ngrok-skip-browser-warning": "true" },
+        });
+        const data = await res.json();
+
+        if (data.call_active === false) {
+          onCallStateChange(false);
+          setStatusMsg("🛑 Call ended");
+          resetForm();
+        }
+      } catch (e) {
+        console.error("Failed to poll call status", e);
+      }
+    }, 1000); // tiap 1 detik
+
+    return () => clearInterval(poll);
+  }, [isCalling]);
+
+  const resetForm = () => {
+    setNumber("");
+    setCallSeconds("");
+    localStorage.removeItem("call_number");
+    localStorage.removeItem("call_duration");
+  };
+
   const handleCall = async () => {
     if (isCalling) return;
 
     onCallStateChange(true);
-    setStatusMsg("📞 Calling number...");
+    setStatusMsg(`📞 Calling ${number}(waiting for connection)...`);
 
     try {
-      const res = await fetch(
+      await fetch(
         `${apiBase}/call?number=${encodeURIComponent(
           number
         )}&secs=${callSeconds}`,
         {
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
+          headers: { "ngrok-skip-browser-warning": "true" },
         }
       );
-
-      const data = await res.json();
-
-      if (data.status === "ok") {
-        setStatusMsg(`📞 Calling ${data.number} for ${data.call_seconds}s`);
-      } else {
-        setStatusMsg(`⚠️ Failed: ${data.msg || "Unknown error"}`);
-        onCallStateChange(false);
-      }
+      // ⛔ JANGAN parse json
+      // ⛔ JANGAN set durasi di UI
     } catch (err) {
       console.error(err);
       setStatusMsg("❌ Unable to connect.");
@@ -53,23 +74,20 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
     if (!isCalling) return;
 
     setStopping(true);
-    setStatusMsg("🛑 Ending call...");
+    setStatusMsg("🛑 Stopping call...");
 
     try {
-      const res = await fetch(`${apiBase}/call/stop`, {
+      await fetch(`${apiBase}/call/stop`, {
         method: "POST",
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
+        headers: { "ngrok-skip-browser-warning": "true" },
       });
-      await res.json();
-      setStatusMsg("🛑 Call terminated");
     } catch (err) {
       console.error(err);
-      setStatusMsg("❌ Failed to stop call");
     } finally {
       setStopping(false);
       onCallStateChange(false);
+      setStatusMsg("🛑 Call stopped by user");
+      resetForm();
     }
   };
 
