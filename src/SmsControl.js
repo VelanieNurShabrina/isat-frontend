@@ -18,11 +18,11 @@ export default function SmsControl({ apiBase }) {
     try {
       const res = await fetch(`${apiBase}/sms/send`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          number,
-          message,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
+        body: JSON.stringify({ number, message }),
       });
 
       const data = await res.json();
@@ -65,7 +65,7 @@ export default function SmsControl({ apiBase }) {
           style={{
             width: 48,
             height: 3,
-            background: "#75d8f0ff", 
+            background: "#75d8f0ff",
             borderRadius: 2,
             marginTop: 6,
           }}

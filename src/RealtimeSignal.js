@@ -69,7 +69,11 @@ export default function RealtimeSignal({ apiBase }) {
 
   const fetchSignal = async () => {
     try {
-      const res = await fetch(`${apiBase}/signal`);
+      const res = await fetch(`${apiBase}/signal`, {
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
+      });
       const json = await res.json();
 
       if (json && json.rssi !== undefined) {

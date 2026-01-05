@@ -1,7 +1,11 @@
 // src/IntervalControl.js
 import React, { useState } from "react";
 
-export default function IntervalControl({ apiBase, interval, onIntervalChange }) {
+export default function IntervalControl({
+  apiBase,
+  interval,
+  onIntervalChange,
+}) {
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
 
@@ -17,7 +21,12 @@ export default function IntervalControl({ apiBase, interval, onIntervalChange })
     try {
       const res = await fetch(
         `${apiBase}/config/interval?interval=${newInterval}`,
-        { method: "GET" }
+        {
+          method: "GET",
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
       );
       const json = await res.json();
 

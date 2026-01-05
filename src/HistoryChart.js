@@ -31,15 +31,19 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
         url += `&start=${startUnix}&end=${endUnix}`;
       }
 
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
+      });
       const json = await res.json();
 
       if (json.data) {
         const formatted = json.data.map((row) => ({
-          timestamp: row.timestamp * 1000, 
+          timestamp: row.timestamp * 1000,
           timeLabel: new Date(row.timestamp * 1000).toLocaleTimeString(), // untuk tooltip
 
-          // removed RSSI raw 
+          // removed RSSI raw
           dbm: row.dbm,
           ber: row.ber,
         }));
@@ -98,7 +102,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
           style={{
             width: 56,
             height: 3,
-            background: "#16a34a", 
+            background: "#16a34a",
             borderRadius: 2,
             marginTop: 6,
           }}
@@ -173,10 +177,10 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
                 value: "RSSI (dBm)",
                 angle: -90,
                 position: "insideLeft",
-                fill: "#4CAF50", 
+                fill: "#4CAF50",
                 fontSize: 14,
                 fontWeight: 600,
-                dx: -20, 
+                dx: -20,
               }}
             />
 
@@ -186,15 +190,15 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
               orientation="right"
               domain={[0, 15]}
               ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
-              tick={{ fill: "#111", fontSize: 12 }} 
+              tick={{ fill: "#111", fontSize: 12 }}
               label={{
                 value: "BER (Index)",
                 angle: 90,
                 position: "insideRight",
-                fill: "#ff8c00", // 
+                fill: "#ff8c00", //
                 fontSize: 14, //
                 fontWeight: 600,
-                dx: 20, // 
+                dx: 20, //
               }}
             />
 

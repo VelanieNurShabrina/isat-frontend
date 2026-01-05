@@ -17,7 +17,11 @@ function App() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await fetch(`${apiBase}/status`);
+        const res = await fetch(`${apiBase}/status`, {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
         if (!res.ok) return;
         const json = await res.json();
 

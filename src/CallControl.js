@@ -26,8 +26,14 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
       const res = await fetch(
         `${apiBase}/call?number=${encodeURIComponent(
           number
-        )}&secs=${callSeconds}`
+        )}&secs=${callSeconds}`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
       );
+
       const data = await res.json();
 
       if (data.status === "ok") {
@@ -50,7 +56,12 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
     setStatusMsg("🛑 Ending call...");
 
     try {
-      const res = await fetch(`${apiBase}/call/stop`, { method: "POST" });
+      const res = await fetch(`${apiBase}/call/stop`, {
+        method: "POST",
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
+      });
       await res.json();
       setStatusMsg("🛑 Call terminated");
     } catch (err) {
