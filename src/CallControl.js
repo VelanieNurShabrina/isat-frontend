@@ -7,7 +7,7 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
   const [statusMsg, setStatusMsg] = useState("");
   const [stopping, setStopping] = useState(false);
 
-  // Restore saved values on page load
+  // restore last input
   useEffect(() => {
     const savedNumber = localStorage.getItem("call_number");
     const savedDuration = localStorage.getItem("call_duration");
@@ -16,6 +16,7 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
     if (savedDuration) setCallSeconds(parseInt(savedDuration));
   }, []);
 
+  // 🔁 polling backend (SATU-SATUNYA sumber kebenaran)
   useEffect(() => {
     if (!isCalling) return;
 
@@ -29,19 +30,19 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
         if (data.call_active === false) {
           onCallStateChange(false);
           setStatusMsg("🛑 Call ended");
-          resetForm();
+          resetForm(); // ✅ SATU-SATUNYA TEMPAT RESET
         }
       } catch (e) {
-        console.error("Failed to poll call status", e);
+        console.error("Polling failed", e);
       }
-    }, 1000); // tiap 1 detik
+    }, 1000);
 
     return () => clearInterval(poll);
   }, [isCalling]);
 
   const resetForm = () => {
     setNumber("");
-    setCallSeconds("");
+    setCallSeconds(15);
     localStorage.removeItem("call_number");
     localStorage.removeItem("call_duration");
   };
@@ -50,22 +51,16 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
     if (isCalling) return;
 
     onCallStateChange(true);
-    setStatusMsg(`📞 Calling ${number}(waiting for connection)...`);
+    setStatusMsg("📞 Calling (waiting for connection)...");
 
     try {
       await fetch(
-        `${apiBase}/call?number=${encodeURIComponent(
-          number
-        )}&secs=${callSeconds}`,
-        {
-          headers: { "ngrok-skip-browser-warning": "true" },
-        }
+        `${apiBase}/call?number=${encodeURIComponent(number)}&secs=${callSeconds}`,
+        { headers: { "ngrok-skip-browser-warning": "true" } }
       );
-      // ⛔ JANGAN parse json
-      // ⛔ JANGAN set durasi di UI
     } catch (err) {
       console.error(err);
-      setStatusMsg("❌ Unable to connect.");
+      setStatusMsg("❌ Failed to start call");
       onCallStateChange(false);
     }
   };
@@ -85,124 +80,36 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
       console.error(err);
     } finally {
       setStopping(false);
-      onCallStateChange(false);
-      setStatusMsg("🛑 Call stopped by user");
-      resetForm();
+      // ⛔ JANGAN reset, ⛔ JANGAN set call ended
+      // tunggu polling backend
     }
   };
 
   return (
     <div style={{ padding: "12px 16px" }}>
-      {/* HEADER */}
-      <div style={{ marginBottom: 16 }}>
-        <h3
-          style={{
-            margin: 0,
-            fontSize: 20,
-            fontWeight: 700,
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            color: "#111",
-          }}
-        >
-          📞 Call Control
-        </h3>
+      <h3>📞 Call Control</h3>
 
-        <div
-          style={{
-            width: 48,
-            height: 3,
-            background: "#dc2626",
-            borderRadius: 2,
-            marginTop: 6,
-          }}
-        />
-      </div>
+      <input
+        value={number}
+        onChange={(e) => {
+          setNumber(e.target.value);
+          localStorage.setItem("call_number", e.target.value);
+        }}
+      />
 
-      {/* FORM */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div>
-          <label style={{ fontSize: 12, color: "#555" }}>Number</label>
-          <input
-            type="text"
-            value={number}
-            onChange={(e) => {
-              setNumber(e.target.value);
-              localStorage.setItem("call_number", e.target.value);
-            }}
-            style={{
-              width: "100%",
-              padding: "8px 10px",
-              borderRadius: 8,
-              border: "1px solid #ccc",
-              marginTop: 4,
-            }}
-          />
-        </div>
+      <input
+        type="number"
+        value={callSeconds}
+        onChange={(e) => {
+          setCallSeconds(e.target.value);
+          localStorage.setItem("call_duration", e.target.value);
+        }}
+      />
 
-        <div>
-          <label style={{ fontSize: 12, color: "#555" }}>
-            Duration (seconds)
-          </label>
-          <input
-            type="number"
-            min="1"
-            max="300"
-            value={callSeconds}
-            onChange={(e) => {
-              setCallSeconds(e.target.value);
-              localStorage.setItem("call_duration", e.target.value);
-            }}
-            style={{
-              width: "100%",
-              padding: "8px 10px",
-              borderRadius: 8,
-              border: "1px solid #ccc",
-              marginTop: 4,
-            }}
-          />
-        </div>
+      <button onClick={handleCall} disabled={isCalling}>Call</button>
+      <button onClick={handleStop} disabled={!isCalling || stopping}>Stop</button>
 
-        {/* BUTTONS */}
-        <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-          <button
-            onClick={handleCall}
-            disabled={isCalling}
-            style={{
-              flex: 1,
-              padding: "8px 0",
-              borderRadius: 8,
-              border: "none",
-              backgroundColor: "#16a34a",
-              color: "white",
-              fontWeight: 600,
-            }}
-          >
-            Call
-          </button>
-
-          <button
-            onClick={handleStop}
-            disabled={!isCalling || stopping}
-            style={{
-              flex: 1,
-              padding: "8px 0",
-              borderRadius: 8,
-              border: "none",
-              backgroundColor: "#dc2626",
-              color: "white",
-              fontWeight: 600,
-            }}
-          >
-            Stop
-          </button>
-        </div>
-
-        {statusMsg && (
-          <div style={{ fontSize: 13, color: "#555" }}>{statusMsg}</div>
-        )}
-      </div>
+      {statusMsg && <div>{statusMsg}</div>}
     </div>
   );
 }
