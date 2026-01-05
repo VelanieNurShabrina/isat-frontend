@@ -2,21 +2,14 @@
 import React, { useState, useEffect } from "react";
 
 export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
-  const [number, setNumber] = useState("+870772001899");
-  const [callSeconds, setCallSeconds] = useState(15);
+  const [number, setNumber] = useState("");
+  const [callSeconds, setCallSeconds] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
   const [stopping, setStopping] = useState(false);
 
-  // restore last input
-  useEffect(() => {
-    const savedNumber = localStorage.getItem("call_number");
-    const savedDuration = localStorage.getItem("call_duration");
-
-    if (savedNumber) setNumber(savedNumber);
-    if (savedDuration) setCallSeconds(parseInt(savedDuration));
-  }, []);
-
-  // 🔁 polling backend (SATU-SATUNYA sumber kebenaran)
+  // =========================
+  // Poll backend status
+  // =========================
   useEffect(() => {
     if (!isCalling) return;
 
@@ -30,37 +23,48 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
         if (data.call_active === false) {
           onCallStateChange(false);
           setStatusMsg("🛑 Call ended");
-          resetForm(); // ✅ SATU-SATUNYA TEMPAT RESET
+          resetForm();
         }
-      } catch (e) {
-        console.error("Polling failed", e);
+      } catch (err) {
+        console.error("Failed to poll call status", err);
       }
     }, 1000);
 
     return () => clearInterval(poll);
-  }, [isCalling]);
+  }, [isCalling, apiBase, onCallStateChange]);
 
+  // =========================
+  // Helpers
+  // =========================
   const resetForm = () => {
     setNumber("");
-    setCallSeconds(15);
-    localStorage.removeItem("call_number");
-    localStorage.removeItem("call_duration");
+    setCallSeconds("");
   };
 
+  // =========================
+  // Handlers
+  // =========================
   const handleCall = async () => {
-    if (isCalling) return;
+    if (!number || !callSeconds) {
+      setStatusMsg("⚠️ Number & duration required");
+      return;
+    }
 
     onCallStateChange(true);
-    setStatusMsg("📞 Calling (waiting for connection)...");
+    setStatusMsg(`📞 Calling ${number} (waiting for connection…)`);
 
     try {
       await fetch(
-        `${apiBase}/call?number=${encodeURIComponent(number)}&secs=${callSeconds}`,
-        { headers: { "ngrok-skip-browser-warning": "true" } }
+        `${apiBase}/call?number=${encodeURIComponent(
+          number
+        )}&secs=${callSeconds}`,
+        {
+          headers: { "ngrok-skip-browser-warning": "true" },
+        }
       );
     } catch (err) {
       console.error(err);
-      setStatusMsg("❌ Failed to start call");
+      setStatusMsg("❌ Unable to connect");
       onCallStateChange(false);
     }
   };
@@ -80,36 +84,102 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
       console.error(err);
     } finally {
       setStopping(false);
-      // ⛔ JANGAN reset, ⛔ JANGAN set call ended
-      // tunggu polling backend
+      onCallStateChange(false);
+      setStatusMsg("🛑 Call stopped by user");
+      resetForm();
     }
   };
 
+  // =========================
+  // UI
+  // =========================
   return (
     <div style={{ padding: "12px 16px" }}>
-      <h3>📞 Call Control</h3>
+      {/* HEADER */}
+      <div style={{ marginBottom: 16 }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            color: "#111",
+          }}
+        >
+          📞 Call Control
+        </h3>
+        <div
+          style={{
+            width: 48,
+            height: 3,
+            background: "#dc2626",
+            borderRadius: 2,
+            marginTop: 6,
+          }}
+        />
+      </div>
 
-      <input
-        value={number}
-        onChange={(e) => {
-          setNumber(e.target.value);
-          localStorage.setItem("call_number", e.target.value);
-        }}
-      />
+      {/* FORM */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <input
+          placeholder="Destination number"
+          value={number}
+          onChange={(e) => setNumber(e.target.value)}
+          disabled={isCalling}
+          style={inputStyle}
+        />
 
-      <input
-        type="number"
-        value={callSeconds}
-        onChange={(e) => {
-          setCallSeconds(e.target.value);
-          localStorage.setItem("call_duration", e.target.value);
-        }}
-      />
+        <input
+          type="number"
+          placeholder="Duration (seconds)"
+          min="1"
+          max="300"
+          value={callSeconds}
+          onChange={(e) => setCallSeconds(e.target.value)}
+          disabled={isCalling}
+          style={inputStyle}
+        />
 
-      <button onClick={handleCall} disabled={isCalling}>Call</button>
-      <button onClick={handleStop} disabled={!isCalling || stopping}>Stop</button>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button
+            onClick={handleCall}
+            disabled={isCalling}
+            style={{ ...btnStyle, background: "#16a34a" }}
+          >
+            Call
+          </button>
 
-      {statusMsg && <div>{statusMsg}</div>}
+          <button
+            onClick={handleStop}
+            disabled={!isCalling || stopping}
+            style={{ ...btnStyle, background: "#dc2626" }}
+          >
+            Stop
+          </button>
+        </div>
+
+        {statusMsg && (
+          <div style={{ fontSize: 13, color: "#555" }}>{statusMsg}</div>
+        )}
+      </div>
     </div>
   );
 }
+
+const inputStyle = {
+  width: "100%",
+  padding: "8px 10px",
+  borderRadius: 8,
+  border: "1px solid #ccc",
+};
+
+const btnStyle = {
+  flex: 1,
+  padding: "8px 0",
+  borderRadius: 8,
+  border: "none",
+  color: "white",
+  fontWeight: 600,
+};
