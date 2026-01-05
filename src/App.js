@@ -8,7 +8,7 @@ import SmsControl from "./SmsControl";
 
 function App() {
   // Semua request lewat Vercel -> /api -> proxy -> ngrok -> Flask
-  const apiBase = "/api";
+  const apiBase = "https://heterophoric-franco-unplumbed.ngrok-free.dev";
 
   const [interval, setInterval] = useState(10);
   const [isCalling, setIsCalling] = useState(false);
