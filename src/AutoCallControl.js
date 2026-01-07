@@ -4,18 +4,14 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
   const [interval, setInterval] = useState(String(autoCall.interval));
   const [enabled, setEnabled] = useState(autoCall.enabled);
   const [number, setNumber] = useState(autoCall.number);
-  const [duration, setDuration] = useState(autoCall.duration);
-
-  const [statusMsg, setStatusMsg] = useState("");
+  const [duration, setDuration] = useState(String(autoCall.duration));
 
   // =========================
   // SAVE CONFIG (POST)
   // =========================
   const saveConfig = async (newEnabled, newInterval) => {
     try {
-      setStatusMsg("⏳ Updating auto call config...");
-
-      const res = await fetch(`${apiBase}/config/auto-call`, {
+      await fetch(`${apiBase}/config/auto-call`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,24 +21,16 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
           enabled: newEnabled,
           interval: newInterval,
           number,
-          duration,
+          duration: parseInt(duration, 10),
         }),
       });
 
-      const json = await res.json();
-
-      if (json.status === "ok") {
-        onChange({
-          enabled: json.enabled,
-          interval: json.interval,
-        });
-        setStatusMsg("✅ Auto call updated");
-      } else {
-        setStatusMsg("⚠️ Failed to update auto call");
-      }
+      onChange({
+        enabled: newEnabled,
+        interval: newInterval,
+      });
     } catch {
-      // ❌ jangan spam error merah
-      setStatusMsg("");
+      // ❌ sengaja DIEM — dashboard monitoring ga perlu error merah
     }
   };
 
@@ -110,7 +98,6 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
           value={interval}
           disabled={enabled}
           onChange={(e) => {
-            // hanya boleh angka
             if (/^\d*$/.test(e.target.value)) {
               setInterval(e.target.value);
             }
@@ -120,7 +107,6 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
             if (!isNaN(val) && val >= 5 && val <= 600) {
               saveConfig(enabled, val);
             } else {
-              // rollback kalau invalid
               setInterval(String(autoCall.interval));
             }
           }}
@@ -128,7 +114,7 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
         />
       </div>
 
-      {/* NUMBER */}
+      {/* DESTINATION NUMBER */}
       <div style={{ marginTop: 12 }}>
         <label>Destination Number</label>
         <input
@@ -141,7 +127,7 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
         />
       </div>
 
-      {/* DURATION */}
+      {/* CALL DURATION */}
       <div style={{ marginTop: 12 }}>
         <label>Call Duration (seconds)</label>
         <input
@@ -156,29 +142,12 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
           onBlur={() => {
             const val = parseInt(duration, 10);
             if (isNaN(val) || val < 5 || val > 300) {
-              setDuration(autoCall.duration);
+              setDuration(String(autoCall.duration));
             }
           }}
           style={inputStyle}
         />
       </div>
-
-      {/* STATUS */}
-      {statusMsg && (
-        <div
-          style={{
-            marginTop: 12,
-            fontSize: 13,
-            color: statusMsg.startsWith("✅")
-              ? "#15803d"
-              : statusMsg.startsWith("⚠️")
-              ? "#b45309"
-              : "#555",
-          }}
-        >
-          {statusMsg}
-        </div>
-      )}
     </div>
   );
 }
