@@ -57,13 +57,43 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
 
   return (
     <div style={{ padding: "12px 16px" }}>
-      <h3 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>🔁 Auto Call</h3>
+      {/* HEADER */}
+      <div style={{ marginBottom: 16 }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            color: "#111",
+          }}
+        >
+          🔁 Auto Call
+        </h3>
+
+        <div
+          style={{
+            width: 48,
+            height: 3,
+            background: "#2563eb", // biru = automated/system
+            borderRadius: 2,
+            marginTop: 6,
+          }}
+        />
+      </div>
 
       <div style={{ marginTop: 10 }}>
         <label>
           <input type="checkbox" checked={enabled} onChange={toggleAutoCall} />{" "}
           Enable Auto Call
         </label>
+        {enabled && (
+          <div style={{ marginTop: 6, fontSize: 12, color: "#16a34a" }}>
+            🟢 Auto Call is running
+          </div>
+        )}
       </div>
 
       <div style={{ marginTop: 10 }}>
@@ -73,6 +103,7 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
           min="5"
           max="600"
           value={interval}
+          disabled={enabled}
           onChange={changeInterval}
           style={{
             width: "100%",
@@ -89,6 +120,7 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
         <input
           type="text"
           value={number}
+          disabled={enabled}
           onChange={(e) => setNumber(e.target.value)}
           placeholder="+8707xxxxxxx"
           style={inputStyle}
@@ -102,13 +134,26 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
           min="5"
           max="300"
           value={duration}
+          disabled={enabled}
           onChange={(e) => setDuration(parseInt(e.target.value, 10))}
           style={inputStyle}
         />
       </div>
 
       {statusMsg && (
-        <div style={{ marginTop: 10, fontSize: 13 }}>{statusMsg}</div>
+        <div
+          style={{
+            marginTop: 10,
+            fontSize: 13,
+            color: statusMsg.startsWith("✅")
+              ? "#15803d"
+              : statusMsg.startsWith("⚠️")
+              ? "#b45309"
+              : "#b91c1c",
+          }}
+        >
+          {statusMsg}
+        </div>
       )}
     </div>
   );
