@@ -3,6 +3,9 @@ import React, { useState } from "react";
 export default function AutoCallControl({ apiBase, autoCall, onChange }) {
   const [interval, setInterval] = useState(autoCall.interval);
   const [enabled, setEnabled] = useState(autoCall.enabled);
+  const [number, setNumber] = useState(autoCall.number);
+  const [duration, setDuration] = useState(autoCall.duration);
+
   const [statusMsg, setStatusMsg] = useState("");
 
   const saveConfig = async (newEnabled, newInterval) => {
@@ -18,6 +21,8 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
         body: JSON.stringify({
           enabled: newEnabled,
           interval: newInterval,
+          number,
+          duration,
         }),
       });
 
@@ -52,9 +57,7 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
 
   return (
     <div style={{ padding: "12px 16px" }}>
-      <h3 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>
-        🔁 Auto Call
-      </h3>
+      <h3 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>🔁 Auto Call</h3>
 
       <div style={{ marginTop: 10 }}>
         <label>
@@ -81,9 +84,39 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
         />
       </div>
 
+      <div style={{ marginTop: 10 }}>
+        <label>Destination Number</label>
+        <input
+          type="text"
+          value={number}
+          onChange={(e) => setNumber(e.target.value)}
+          placeholder="+8707xxxxxxx"
+          style={inputStyle}
+        />
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        <label>Call Duration (seconds)</label>
+        <input
+          type="number"
+          min="5"
+          max="300"
+          value={duration}
+          onChange={(e) => setDuration(parseInt(e.target.value, 10))}
+          style={inputStyle}
+        />
+      </div>
+
       {statusMsg && (
         <div style={{ marginTop: 10, fontSize: 13 }}>{statusMsg}</div>
       )}
     </div>
   );
 }
+const inputStyle = {
+  width: "100%",
+  padding: "8px",
+  marginTop: 4,
+  borderRadius: 6,
+  border: "1px solid #ccc",
+};

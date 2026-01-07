@@ -16,6 +16,8 @@ function App() {
   const [autoCall, setAutoCall] = useState({
     enabled: false,
     interval: 30,
+    number: "",
+    duration: 15,
   });
 
   // Saat halaman pertama kali load, sync ke backend /status
@@ -37,6 +39,8 @@ function App() {
           setAutoCall({
             enabled: json.auto_call.enabled,
             interval: json.auto_call.interval,
+            number: json.auto_call.number || "",
+            duration: json.auto_call.duration || 15,
           });
         }
 
