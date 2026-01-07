@@ -5,6 +5,7 @@ import RealtimeSignal from "./RealtimeSignal";
 import IntervalControl from "./IntervalControl";
 import CallControl from "./CallControl";
 import SmsControl from "./SmsControl";
+import AutoCallControl from "./AutoCallControl";
 
 function App() {
   // Semua request lewat Vercel -> /api -> proxy -> ngrok -> Flask
@@ -12,6 +13,10 @@ function App() {
 
   const [interval, setInterval] = useState(10);
   const [isCalling, setIsCalling] = useState(false);
+  const [autoCall, setAutoCall] = useState({
+    enabled: false,
+    interval: 30,
+  });
 
   // Saat halaman pertama kali load, sync ke backend /status
   useEffect(() => {
@@ -28,6 +33,13 @@ function App() {
         if (typeof json.interval === "number") {
           setInterval(json.interval);
         }
+        if (json.auto_call) {
+          setAutoCall({
+            enabled: json.auto_call.enabled,
+            interval: json.auto_call.interval,
+          });
+        }
+
         if (typeof json.call_active === "boolean") {
           setIsCalling(json.call_active);
         }
@@ -143,6 +155,25 @@ function App() {
             apiBase={apiBase}
             isCalling={isCalling}
             onCallStateChange={setIsCalling}
+          />
+        </div>
+
+        {/* AUTO CALL */}
+        <div
+          style={{
+            flex: "1 1 360px",
+            maxWidth: "420px",
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+            border: "1px solid #eee",
+          }}
+        >
+          <AutoCallControl
+            apiBase={apiBase}
+            autoCall={autoCall}
+            onChange={setAutoCall}
           />
         </div>
 

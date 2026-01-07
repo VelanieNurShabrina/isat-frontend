@@ -1,7 +1,7 @@
 // src/RealtimeSignal.js
 import React, { useEffect, useState } from "react";
 
-// Mapping BER index 0–15 ke teks persentase (sesuai tabel Pak Eko)
+// Mapping BER index 0–15 ke teks persentase
 const BER_TABLE = {
   15: "11,9% < BER",
   14: "10,5% < BER < 11,9%",
@@ -84,7 +84,6 @@ export default function RealtimeSignal({ apiBase }) {
         });
         setMode(json.mode || "idle");
         setSource("Mini PC");
-        // console.log("Realtime from backend:", json);
       }
     } catch (e) {
       console.error("Failed to fetch realtime signal:", e);
@@ -93,7 +92,7 @@ export default function RealtimeSignal({ apiBase }) {
 
   useEffect(() => {
     fetchSignal();
-    const t = setInterval(fetchSignal, 2000); // 2 detik
+    const t = setInterval(fetchSignal, 2000);
     return () => clearInterval(t);
   }, []);
 
