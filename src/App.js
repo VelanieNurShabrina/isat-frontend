@@ -25,9 +25,7 @@ function App() {
     const fetchStatus = async () => {
       try {
         const res = await fetch(`${apiBase}/status`, {
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
+          headers: { "ngrok-skip-browser-warning": "true" },
         });
         if (!res.ok) return;
         const json = await res.json();
@@ -35,6 +33,7 @@ function App() {
         if (typeof json.interval === "number") {
           setInterval(json.interval);
         }
+
         if (json.auto_call) {
           setAutoCall({
             enabled: json.auto_call.enabled,
@@ -47,12 +46,12 @@ function App() {
         if (typeof json.call_active === "boolean") {
           setIsCalling(json.call_active);
         }
-      } catch (err) {
-        console.error("Failed to fetch status:", err);
-      }
+      } catch {}
     };
 
     fetchStatus();
+    const t = setInterval(fetchStatus, 2000); // ⬅️ PENTING
+    return () => clearInterval(t);
   }, [apiBase]);
 
   return (

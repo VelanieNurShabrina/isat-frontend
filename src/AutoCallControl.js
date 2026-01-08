@@ -1,19 +1,36 @@
-import React, { useState } from "react";
+// src/AutoCallControl.js
+import React, { useState, useEffect } from "react";
 
 export default function AutoCallControl({ apiBase, autoCall, onChange }) {
-  const [enabled, setEnabled] = useState(autoCall.enabled);
+  // =========================
+  // STATE (DISPLAY ONLY)
+  // =========================
+  const enabled = autoCall.enabled;
 
   const [interval, setInterval] = useState(String(autoCall.interval));
   const [lastValidInterval, setLastValidInterval] = useState(
     String(autoCall.interval)
   );
 
-  const [number, setNumber] = useState(autoCall.number);
+  const [number, setNumber] = useState(autoCall.number || "");
 
   const [duration, setDuration] = useState(String(autoCall.duration));
   const [lastValidDuration, setLastValidDuration] = useState(
     String(autoCall.duration)
   );
+
+  // =========================
+  // SYNC DARI BACKEND (PENTING)
+  // =========================
+  useEffect(() => {
+    setInterval(String(autoCall.interval));
+    setLastValidInterval(String(autoCall.interval));
+
+    setDuration(String(autoCall.duration));
+    setLastValidDuration(String(autoCall.duration));
+
+    setNumber(autoCall.number || "");
+  }, [autoCall]);
 
   // =========================
   // SAVE CONFIG
@@ -37,21 +54,20 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
       onChange({
         enabled: newEnabled,
         interval: newInterval,
+        number,
+        duration: newDuration,
       });
     } catch {
-      // dashboard monitoring → no noisy error
+      // dashboard monitoring → no error popup
     }
   };
 
   // =========================
-  // TOGGLE
+  // TOGGLE AUTO CALL
   // =========================
   const toggleAutoCall = () => {
-    const newEnabled = !enabled;
-    setEnabled(newEnabled);
-
     saveConfig(
-      newEnabled,
+      !enabled,
       parseInt(lastValidInterval, 10),
       parseInt(lastValidDuration, 10)
     );
@@ -61,7 +77,16 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
     <div style={{ padding: "12px 16px" }}>
       {/* HEADER */}
       <div style={{ marginBottom: 16 }}>
-        <h3 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
           🔁 Auto Call
         </h3>
         <div
@@ -76,10 +101,28 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
       </div>
 
       {/* ENABLE */}
-      <label>
-        <input type="checkbox" checked={enabled} onChange={toggleAutoCall} /> Enable
-        Auto Call
-      </label>
+      <div>
+        <label>
+          <input type="checkbox" checked={enabled} onChange={toggleAutoCall} />{" "}
+          Enable Auto Call
+        </label>
+
+        {enabled && (
+          <div
+            style={{
+              marginTop: 8,
+              padding: "6px 10px",
+              borderRadius: 6,
+              background: "#dcfce7",
+              color: "#166534",
+              fontSize: 12,
+              fontWeight: 600,
+            }}
+          >
+            🟢 Auto Call is running
+          </div>
+        )}
+      </div>
 
       {/* INTERVAL */}
       <div style={{ marginTop: 12 }}>
@@ -94,6 +137,11 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
             }
           }}
           onBlur={() => {
+            if (interval === "") {
+              setInterval(lastValidInterval);
+              return;
+            }
+
             const val = parseInt(interval, 10);
             if (!isNaN(val) && val >= 5 && val <= 600) {
               setLastValidInterval(interval);
@@ -106,7 +154,7 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
         />
       </div>
 
-      {/* NUMBER */}
+      {/* DESTINATION NUMBER */}
       <div style={{ marginTop: 12 }}>
         <label>Destination Number</label>
         <input
@@ -114,6 +162,7 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
           disabled={enabled}
           value={number}
           onChange={(e) => setNumber(e.target.value)}
+          placeholder="+8707xxxxxxx"
           style={inputStyle}
         />
       </div>
@@ -131,6 +180,11 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
             }
           }}
           onBlur={() => {
+            if (duration === "") {
+              setDuration(lastValidDuration);
+              return;
+            }
+
             const val = parseInt(duration, 10);
             if (!isNaN(val) && val >= 5 && val <= 300) {
               setLastValidDuration(duration);
