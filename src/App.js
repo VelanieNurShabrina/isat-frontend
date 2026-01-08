@@ -157,6 +157,7 @@ function App() {
           <CallControl
             apiBase={apiBase}
             isCalling={isCalling}
+            autoCallRunning={autoCall.enabled}
             onCallStateChange={setIsCalling}
           />
         </div>

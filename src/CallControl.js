@@ -1,7 +1,12 @@
 // src/CallControl.js
 import React, { useState, useEffect } from "react";
 
-export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
+export default function CallControl({
+  apiBase,
+  isCalling,
+  autoCallRunning, // ⬅️ BARU
+  onCallStateChange,
+}) {
   const [number, setNumber] = useState("");
   const [callSeconds, setCallSeconds] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
@@ -45,6 +50,8 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
   // Handlers
   // =========================
   const handleCall = async () => {
+    if (autoCallRunning) return;
+
     if (!number || !callSeconds) {
       setStatusMsg("⚠️ Number & duration required");
       return;
@@ -127,7 +134,7 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
           placeholder="Destination number"
           value={number}
           onChange={(e) => setNumber(e.target.value)}
-          disabled={isCalling}
+          disabled={isCalling || autoCallRunning}
           style={inputStyle}
         />
 
@@ -138,15 +145,19 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
           max="300"
           value={callSeconds}
           onChange={(e) => setCallSeconds(e.target.value)}
-          disabled={isCalling}
+          disabled={isCalling || autoCallRunning}
           style={inputStyle}
         />
 
         <div style={{ display: "flex", gap: 10 }}>
           <button
             onClick={handleCall}
-            disabled={isCalling}
-            style={{ ...btnStyle, background: "#16a34a" }}
+            disabled={isCalling || autoCallRunning}
+            style={{
+              ...btnStyle,
+              background: autoCallRunning ? "#9ca3af" : "#16a34a",
+              cursor: autoCallRunning ? "not-allowed" : "pointer",
+            }}
           >
             Call
           </button>
@@ -159,6 +170,21 @@ export default function CallControl({ apiBase, isCalling, onCallStateChange }) {
             Stop
           </button>
         </div>
+
+        {/* INFO AUTO CALL */}
+        {autoCallRunning && (
+          <div
+            style={{
+              fontSize: 12,
+              color: "#92400e",
+              background: "#fef3c7",
+              padding: "6px 10px",
+              borderRadius: 6,
+            }}
+          >
+            ⚠️ Manual call disabled while auto call is running
+          </div>
+        )}
 
         {statusMsg && (
           <div style={{ fontSize: 13, color: "#555" }}>{statusMsg}</div>
