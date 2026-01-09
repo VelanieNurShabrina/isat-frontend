@@ -6,22 +6,20 @@ import IntervalControl from "./IntervalControl";
 import CallControl from "./CallControl";
 import SmsControl from "./SmsControl";
 import AutoCallControl from "./AutoCallControl";
-import AutoSmsControl from "./AutoSmsControl"; // ⬅️ BARU
+import AutoSmsControl from "./AutoSmsControl";
 
 function App() {
+  // Semua request lewat Vercel -> /api -> proxy -> ngrok -> Flask
   const apiBase = "https://heterophoric-franco-unplumbed.ngrok-free.dev";
 
   const [interval, setInterval] = useState(10);
   const [isCalling, setIsCalling] = useState(false);
-
   const [autoCall, setAutoCall] = useState({
     enabled: false,
     interval: 30,
     number: "",
     duration: 15,
   });
-
-  // ⬇️ BARU
   const [autoSms, setAutoSms] = useState({
     enabled: false,
     interval: 300,
@@ -29,9 +27,7 @@ function App() {
     message: "",
   });
 
-  // =========================
-  // SYNC STATUS DARI BACKEND
-  // =========================
+  // Saat halaman pertama kali load, sync ke backend /status
   useEffect(() => {
     const fetchStatus = async () => {
       try {
@@ -54,7 +50,9 @@ function App() {
           });
         }
 
-        // ⬇️ BARU
+        if (typeof json.call_active === "boolean") {
+          setIsCalling(json.call_active);
+        }
         if (json.auto_sms) {
           setAutoSms({
             enabled: json.auto_sms.enabled,
@@ -63,15 +61,11 @@ function App() {
             message: json.auto_sms.message || "",
           });
         }
-
-        if (typeof json.call_active === "boolean") {
-          setIsCalling(json.call_active);
-        }
       } catch {}
     };
 
     fetchStatus();
-    const t = setInterval(fetchStatus, 2000);
+    const t = setInterval(fetchStatus, 2000); // ⬅️ PENTING
     return () => clearInterval(t);
   }, [apiBase]);
 
@@ -79,11 +73,13 @@ function App() {
     <div
       style={{
         width: "100%",
-        padding: "24px 32px",
+        maxWidth: "100%", // ⬅️ full width
+        margin: 0, //
+        padding: "24px 32px", // ⬅️ padding kiri-kanan
         fontFamily: "Segoe UI, Roboto, sans-serif",
       }}
     >
-      {/* HEADER */}
+      {/* ===== HEADER ===== */}
       <div
         style={{
           marginBottom: 28,
@@ -91,16 +87,45 @@ function App() {
           borderBottom: "1px solid #eee",
         }}
       >
-        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800 }}>
+        <h1
+          style={{
+            margin: 0,
+            fontSize: 28,
+            fontWeight: 800,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            color: "#111",
+          }}
+        >
           📡 IsatPhone Monitoring Dashboard
         </h1>
-        <p style={{ marginTop: 8, fontSize: 14, color: "#555" }}>
-          Real-time monitoring of signal, call, and SMS activity.
+
+        <p
+          style={{
+            marginTop: 8,
+            fontSize: 14,
+            color: "#555",
+            maxWidth: 720,
+          }}
+        >
+          Real-time monitoring of signal strength, call activity, SMS delivery,
+          and historical performance (RSSI, dBm, BER).
         </p>
       </div>
 
-      {/* INTERVAL */}
-      <div style={cardStyle}>
+      {/* ===== INTERVAL CONTROL CARD ===== */}
+      <div
+        style={{
+          marginBottom: 30,
+          background: "#fff",
+          padding: "20px",
+          borderRadius: "12px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+          border: "1px solid #eee",
+          maxWidth: "420px",
+        }}
+      >
         <IntervalControl
           apiBase={apiBase}
           interval={interval}
@@ -108,13 +133,42 @@ function App() {
         />
       </div>
 
-      {/* TOP CARDS */}
-      <div style={{ display: "flex", gap: 20, marginBottom: 30 }}>
-        <div style={cardStyle}>
+      {/* ===== TOP CARDS: REALTIME + CALL ===== */}
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          marginBottom: "30px",
+          alignItems: "stretch",
+        }}
+      >
+        {/* REALTIME SIGNAL */}
+        <div
+          style={{
+            flex: "1 1 360px",
+            maxWidth: "420px",
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+            border: "1px solid #eee",
+          }}
+        >
           <RealtimeSignal apiBase={apiBase} />
         </div>
 
-        <div style={cardStyle}>
+        {/* CALL CONTROL */}
+        <div
+          style={{
+            flex: "1 1 360px",
+            maxWidth: "420px",
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+            border: "1px solid #eee",
+          }}
+        >
           <CallControl
             apiBase={apiBase}
             isCalling={isCalling}
@@ -123,7 +177,18 @@ function App() {
           />
         </div>
 
-        <div style={cardStyle}>
+        {/* AUTO CALL */}
+        <div
+          style={{
+            flex: "1 1 360px",
+            maxWidth: "420px",
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+            border: "1px solid #eee",
+          }}
+        >
           <AutoCallControl
             apiBase={apiBase}
             autoCall={autoCall}
@@ -131,40 +196,68 @@ function App() {
           />
         </div>
 
-        {/* ⬇️ AUTO SMS CARD */}
-        <div style={cardStyle}>
+        {/* SEND SMS */}
+        <div
+          style={{
+            flex: "1 1 360px",
+            maxWidth: "420px",
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+            border: "1px solid #eee",
+          }}
+        >
+          <SmsControl apiBase={apiBase} />
+        </div>
+
+        {/* AUTO SMS */}
+        <div
+          style={{
+            flex: "1 1 360px",
+            maxWidth: "420px",
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+            border: "1px solid #eee",
+          }}
+        >
           <AutoSmsControl
             apiBase={apiBase}
             autoSms={autoSms}
             onChange={setAutoSms}
           />
         </div>
-
-        <div style={cardStyle}>
-          <SmsControl apiBase={apiBase} />
-        </div>
       </div>
 
-      {/* HISTORY */}
-      <div style={cardStyle}>
+      {/* ===== HISTORY CHART ===== */}
+      <div
+        style={{
+          width: "100%",
+          background: "#fff",
+          padding: "20px",
+          borderRadius: "12px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+          border: "1px solid #eee",
+        }}
+      >
         <HistoryChart apiBase={apiBase} refreshInterval={interval} />
       </div>
 
-      <p style={{ marginTop: 30, fontSize: 12, color: "#888", textAlign: "center" }}>
+      {/* FOOTER */}
+      <p
+        style={{
+          marginTop: 30,
+          fontSize: 12,
+          color: "#888",
+          textAlign: "center",
+        }}
+      >
         © {new Date().getFullYear()} IsatPhone Monitoring Dashboard by Velanie
       </p>
     </div>
   );
 }
-
-const cardStyle = {
-  flex: "1 1 360px",
-  maxWidth: "420px",
-  background: "#fff",
-  padding: "20px",
-  borderRadius: "12px",
-  boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-  border: "1px solid #eee",
-};
 
 export default App;
