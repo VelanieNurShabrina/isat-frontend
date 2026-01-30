@@ -103,6 +103,10 @@ function App() {
         >
           📡 IsatPhone Monitoring Dashboard
         </h1>
+        {/* SYSTEM STATUS */}
+        <div style={{ marginBottom: 20, maxWidth: 420 }}>
+          <SystemStatusCard status={systemStatus} />
+        </div>
 
         <p
           style={{
@@ -158,20 +162,6 @@ function App() {
           }}
         >
           <RealtimeSignal apiBase={apiBase} />
-        </div>
-
-        <div
-          style={{
-            flex: "1 1 360px",
-            maxWidth: "420px",
-            background: "#fff",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-            border: "1px solid #eee",
-          }}
-        >
-          <SystemStatusCard status={systemStatus} />
         </div>
 
         {/* CALL CONTROL */}
