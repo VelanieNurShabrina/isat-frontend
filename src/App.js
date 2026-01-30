@@ -7,7 +7,7 @@ import CallControl from "./CallControl";
 import SmsControl from "./SmsControl";
 import AutoCallControl from "./AutoCallControl";
 import AutoSmsControl from "./AutoSmsControl";
-import SystemStatusCard from "./SystemStatusCard";
+
 
 function App() {
   // Semua request lewat Vercel -> /api -> proxy -> ngrok -> Flask
@@ -27,7 +27,6 @@ function App() {
     number: "",
     message: "",
   });
-  const [systemStatus, setSystemStatus] = useState(null);
 
   // Saat halaman pertama kali load, sync ke backend /status
   useEffect(() => {
@@ -38,7 +37,6 @@ function App() {
         });
         if (!res.ok) return;
         const json = await res.json();
-        setSystemStatus(json);
 
         if (typeof json.interval === "number") {
           setInterval(json.interval);
@@ -103,10 +101,6 @@ function App() {
         >
           📡 IsatPhone Monitoring Dashboard
         </h1>
-        {/* SYSTEM STATUS */}
-        <div style={{ marginBottom: 20, maxWidth: 420 }}>
-          <SystemStatusCard status={systemStatus} />
-        </div>
 
         <p
           style={{
