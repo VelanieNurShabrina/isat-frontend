@@ -7,7 +7,7 @@ import CallControl from "./CallControl";
 import SmsControl from "./SmsControl";
 import AutoCallControl from "./AutoCallControl";
 import AutoSmsControl from "./AutoSmsControl";
-
+import SystemStatusCard from "./SystemStatusCard";
 
 function App() {
   // Semua request lewat Vercel -> /api -> proxy -> ngrok -> Flask
@@ -27,6 +27,7 @@ function App() {
     number: "",
     message: "",
   });
+  const [systemStatus, setSystemStatus] = useState(null);
 
   // Saat halaman pertama kali load, sync ke backend /status
   useEffect(() => {
@@ -37,6 +38,7 @@ function App() {
         });
         if (!res.ok) return;
         const json = await res.json();
+        setSystemStatus(json);
 
         if (typeof json.interval === "number") {
           setInterval(json.interval);
@@ -113,6 +115,20 @@ function App() {
           Real-time monitoring of signal strength, call activity, SMS delivery,
           and historical performance (RSSI, dBm, BER).
         </p>
+      </div>
+
+      <div
+        style={{
+          flex: "1 1 360px",
+          maxWidth: "420px",
+          background: "#fff",
+          padding: "20px",
+          borderRadius: "12px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+          border: "1px solid #eee",
+        }}
+      >
+        <SystemStatusCard status={systemStatus} />
       </div>
 
       {/* ===== INTERVAL CONTROL CARD ===== */}
