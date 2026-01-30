@@ -7,19 +7,21 @@ import CallControl from "./CallControl";
 import SmsControl from "./SmsControl";
 import AutoCallControl from "./AutoCallControl";
 import AutoSmsControl from "./AutoSmsControl";
+import SystemStatusCard from "./SystemStatusCard";
 
 function App() {
-  // Semua request lewat Vercel -> /api -> proxy -> ngrok -> Flask
   const apiBase = "https://heterophoric-franco-unplumbed.ngrok-free.dev";
 
   const [interval, setInterval] = useState(10);
   const [isCalling, setIsCalling] = useState(false);
+
   const [autoCall, setAutoCall] = useState({
     enabled: false,
     interval: 30,
     number: "",
     duration: 15,
   });
+
   const [autoSms, setAutoSms] = useState({
     enabled: false,
     interval: 300,
@@ -27,7 +29,8 @@ function App() {
     message: "",
   });
 
-  // Saat halaman pertama kali load, sync ke backend /status
+  const [systemStatus, setSystemStatus] = useState(null);
+
   useEffect(() => {
     const fetchStatus = async () => {
       try {
@@ -36,6 +39,8 @@ function App() {
         });
         if (!res.ok) return;
         const json = await res.json();
+
+        setSystemStatus(json);
 
         if (typeof json.interval === "number") {
           setInterval(json.interval);
@@ -53,6 +58,7 @@ function App() {
         if (typeof json.call_active === "boolean") {
           setIsCalling(json.call_active);
         }
+
         if (json.auto_sms) {
           setAutoSms({
             enabled: json.auto_sms.enabled,
@@ -65,195 +71,53 @@ function App() {
     };
 
     fetchStatus();
-    const t = setInterval(fetchStatus, 2000); // ⬅️ PENTING
+    const t = setInterval(fetchStatus, 2000);
     return () => clearInterval(t);
   }, [apiBase]);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: "100%", // ⬅️ full width
-        margin: 0, //
-        padding: "24px 32px", // ⬅️ padding kiri-kanan
-        fontFamily: "Segoe UI, Roboto, sans-serif",
-      }}
-    >
-      {/* ===== HEADER ===== */}
-      <div
-        style={{
-          marginBottom: 28,
-          paddingBottom: 16,
-          borderBottom: "1px solid #eee",
-        }}
-      >
-        <h1
-          style={{
-            margin: 0,
-            fontSize: 28,
-            fontWeight: 800,
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            color: "#111",
-          }}
-        >
-          📡 IsatPhone Monitoring Dashboard
-        </h1>
+    <div style={{ padding: "24px 32px", fontFamily: "Segoe UI, Roboto" }}>
+      <h1>📡 IsatPhone Monitoring Dashboard</h1>
 
-        <p
-          style={{
-            marginTop: 8,
-            fontSize: 14,
-            color: "#555",
-            maxWidth: 720,
-          }}
-        >
-          Real-time monitoring of signal strength, call activity, SMS delivery,
-          and historical performance (RSSI, dBm, BER).
-        </p>
+      {/* SYSTEM STATUS */}
+      <div style={{ marginBottom: 20, maxWidth: 420 }}>
+        <SystemStatusCard status={systemStatus} />
       </div>
 
-      {/* ===== INTERVAL CONTROL CARD ===== */}
-      <div
-        style={{
-          marginBottom: 30,
-          background: "#fff",
-          padding: "20px",
-          borderRadius: "12px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-          border: "1px solid #eee",
-          maxWidth: "420px",
-        }}
-      >
-        <IntervalControl
+      <IntervalControl
+        apiBase={apiBase}
+        interval={interval}
+        onIntervalChange={setInterval}
+      />
+
+      <div style={{ display: "flex", gap: 20, marginTop: 30 }}>
+        <RealtimeSignal apiBase={apiBase} />
+
+        <CallControl
           apiBase={apiBase}
-          interval={interval}
-          onIntervalChange={setInterval}
+          isCalling={isCalling}
+          autoCallRunning={autoCall.enabled}
+          onCallStateChange={setIsCalling}
+        />
+
+        <AutoCallControl
+          apiBase={apiBase}
+          autoCall={autoCall}
+          onChange={setAutoCall}
+        />
+
+        <SmsControl apiBase={apiBase} />
+
+        <AutoSmsControl
+          apiBase={apiBase}
+          autoSms={autoSms}
+          onChange={setAutoSms}
         />
       </div>
 
-      {/* ===== TOP CARDS: REALTIME + CALL ===== */}
-      <div
-        style={{
-          display: "flex",
-          gap: "20px",
-          marginBottom: "30px",
-          alignItems: "stretch",
-        }}
-      >
-        {/* REALTIME SIGNAL */}
-        <div
-          style={{
-            flex: "1 1 360px",
-            maxWidth: "420px",
-            background: "#fff",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-            border: "1px solid #eee",
-          }}
-        >
-          <RealtimeSignal apiBase={apiBase} />
-        </div>
+      <HistoryChart apiBase={apiBase} refreshInterval={interval} />
 
-        {/* CALL CONTROL */}
-        <div
-          style={{
-            flex: "1 1 360px",
-            maxWidth: "420px",
-            background: "#fff",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-            border: "1px solid #eee",
-          }}
-        >
-          <CallControl
-            apiBase={apiBase}
-            isCalling={isCalling}
-            autoCallRunning={autoCall.enabled}
-            onCallStateChange={setIsCalling}
-          />
-        </div>
-
-        {/* AUTO CALL */}
-        <div
-          style={{
-            flex: "1 1 360px",
-            maxWidth: "420px",
-            background: "#fff",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-            border: "1px solid #eee",
-          }}
-        >
-          <AutoCallControl
-            apiBase={apiBase}
-            autoCall={autoCall}
-            onChange={setAutoCall}
-          />
-        </div>
-
-        {/* SEND SMS */}
-        <div
-          style={{
-            flex: "1 1 360px",
-            maxWidth: "420px",
-            background: "#fff",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-            border: "1px solid #eee",
-          }}
-        >
-          <SmsControl apiBase={apiBase} />
-        </div>
-
-        {/* AUTO SMS */}
-        <div
-          style={{
-            flex: "1 1 360px",
-            maxWidth: "420px",
-            background: "#fff",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-            border: "1px solid #eee",
-          }}
-        >
-          <AutoSmsControl
-            apiBase={apiBase}
-            autoSms={autoSms}
-            onChange={setAutoSms}
-          />
-        </div>
-      </div>
-
-      {/* ===== HISTORY CHART ===== */}
-      <div
-        style={{
-          width: "100%",
-          background: "#fff",
-          padding: "20px",
-          borderRadius: "12px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-          border: "1px solid #eee",
-        }}
-      >
-        <HistoryChart apiBase={apiBase} refreshInterval={interval} />
-      </div>
-
-      {/* FOOTER */}
-      <p
-        style={{
-          marginTop: 30,
-          fontSize: 12,
-          color: "#888",
-          textAlign: "center",
-        }}
-      >
+      <p style={{ marginTop: 30, fontSize: 12, textAlign: "center" }}>
         © {new Date().getFullYear()} IsatPhone Monitoring Dashboard by Velanie
       </p>
     </div>
