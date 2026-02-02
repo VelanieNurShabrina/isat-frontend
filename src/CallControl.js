@@ -31,7 +31,7 @@ export default function CallControl({
           resetForm();
         }
       } catch (err) {
-        console.error("Failed to poll call status", err);
+        console.error("Failed to fetch call status", err);
       }
     }, 1000);
 
