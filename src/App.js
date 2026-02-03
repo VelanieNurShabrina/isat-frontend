@@ -45,11 +45,17 @@ function App() {
         }
 
         if (json.auto_call) {
-          setAutoCall({
-            enabled: json.auto_call.enabled,
-            interval: json.auto_call.interval,
-            number: json.auto_call.number || "",
-            duration: json.auto_call.duration || 15,
+          setAutoCall((prev) => {
+            // update hanya kalau enable berubah
+            if (prev.enabled !== json.auto_call.enabled) {
+              return {
+                enabled: json.auto_call.enabled,
+                interval: json.auto_call.interval,
+                number: json.auto_call.number || "",
+                duration: json.auto_call.duration || 15,
+              };
+            }
+            return prev;
           });
         }
 
