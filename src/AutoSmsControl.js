@@ -2,21 +2,22 @@ import React, { useState, useEffect } from "react";
 
 export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
   const [enabled, setEnabled] = useState(autoSms.enabled);
-  const [intervalValue, setIntervalValue] = useState(
-    String(autoSms.interval)
-  );
+  const [intervalValue, setIntervalValue] = useState(String(autoSms.interval));
   const [lastValidInterval, setLastValidInterval] = useState(
     String(autoSms.interval)
   );
   const [number, setNumber] = useState(autoSms.number || "");
   const [message, setMessage] = useState(autoSms.message || "");
 
+  // ✅ SYNC BACKEND → UI hanya kalau DISABLED
   useEffect(() => {
+    if (!enabled) {
+      setIntervalValue(String(autoSms.interval));
+      setLastValidInterval(String(autoSms.interval));
+      setNumber(autoSms.number || "");
+      setMessage(autoSms.message || "");
+    }
     setEnabled(autoSms.enabled);
-    setIntervalValue(String(autoSms.interval));
-    setLastValidInterval(String(autoSms.interval));
-    setNumber(autoSms.number || "");
-    setMessage(autoSms.message || "");
   }, [autoSms]);
 
   const saveConfig = async (newEnabled, newInterval) => {
@@ -63,18 +64,19 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
         <input type="checkbox" checked={enabled} onChange={toggleAutoSms} /> Enable
       </label>
 
+      {/* ✅ EDITABLE kalau belum enable */}
       <input
         disabled={enabled}
         value={intervalValue}
-        onChange={(e) =>
-          /^\d*$/.test(e.target.value) && setIntervalValue(e.target.value)
-        }
+        onChange={(e) => setIntervalValue(e.target.value)}
         onBlur={() => {
           const v = parseInt(intervalValue, 10);
           if (v >= 30 && v <= 3600) {
             setLastValidInterval(intervalValue);
             saveConfig(enabled, v);
-          } else setIntervalValue(lastValidInterval);
+          } else {
+            setIntervalValue(lastValidInterval);
+          }
         }}
         placeholder="Interval (s)"
       />
