@@ -12,6 +12,11 @@ export default function SmsControl({ apiBase }) {
       return;
     }
 
+    if (!number.startsWith("+")) {
+      setResponse("❌ Number must start with +");
+      return;
+    }
+
     setLoading(true);
     setResponse("");
 
@@ -29,13 +34,13 @@ export default function SmsControl({ apiBase }) {
 
       if (data.status === "ok") {
         setResponse(
-          `✅ SMS sent successfully\n` +
-            `📱 Destination : ${data.number}\n` +
-            `💬 Message  : ${data.message}\n` +
-            `⏱️ Time  : ${data.timestamp}`
+          `✅ SMS queued successfully\n` +
+          `📱 Destination : ${number}\n` +
+          `💬 Message : ${message}\n` +
+          `⏱️ Time : ${new Date().toLocaleTimeString()}`
         );
       } else {
-        setResponse("❌ Failed sent SMS");
+        setResponse("❌ Failed to queue SMS");
       }
     } catch (err) {
       setResponse("❌ Error: " + err.message);
@@ -46,84 +51,25 @@ export default function SmsControl({ apiBase }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-      <div style={{ marginBottom: 16 }}>
-        <h3
-          style={{
-            margin: 0,
-            fontSize: 20,
-            fontWeight: 700,
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            color: "#111",
-          }}
-        >
-          📨 Send SMS
-        </h3>
-
-        <div
-          style={{
-            width: 48,
-            height: 3,
-            background: "#75d8f0ff",
-            borderRadius: 2,
-            marginTop: 6,
-          }}
-        />
-      </div>
+      <h3>📨 Send SMS</h3>
 
       <input
-        placeholder="Destination number (example: +628xxxx)"
+        placeholder="+628xxxx"
         value={number}
         onChange={(e) => setNumber(e.target.value)}
-        style={{
-          padding: "10px",
-          borderRadius: "8px",
-          border: "1px solid #ccc",
-        }}
       />
 
       <textarea
-        placeholder="Message content"
+        placeholder="Message"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        rows={3}
-        style={{
-          padding: "10px",
-          borderRadius: "8px",
-          border: "1px solid #ccc",
-          resize: "vertical",
-        }}
       />
 
-      <button
-        onClick={sendSMS}
-        disabled={loading}
-        style={{
-          padding: "10px",
-          borderRadius: "8px",
-          border: "none",
-          background: loading ? "#999" : "#007bff",
-          color: "#fff",
-          cursor: loading ? "not-allowed" : "pointer",
-        }}
-      >
+      <button onClick={sendSMS} disabled={loading}>
         {loading ? "Sending..." : "Send SMS"}
       </button>
 
-      {response && (
-        <pre
-          style={{
-            background: "#f5f5f5",
-            padding: "12px",
-            borderRadius: "8px",
-            border: "1px solid #ddd",
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          {response}
-        </pre>
-      )}
+      {response && <pre>{response}</pre>}
     </div>
   );
 }
