@@ -2,21 +2,25 @@ import React, { useState, useEffect } from "react";
 
 export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
   const [enabled, setEnabled] = useState(autoSms.enabled);
-  const [interval, setInterval] = useState(String(autoSms.interval));
-  const [lastValidInterval, setLastValidInterval] = useState(String(autoSms.interval));
+  const [intervalValue, setIntervalValue] = useState(
+    String(autoSms.interval)
+  );
+  const [lastValidInterval, setLastValidInterval] = useState(
+    String(autoSms.interval)
+  );
   const [number, setNumber] = useState(autoSms.number || "");
   const [message, setMessage] = useState(autoSms.message || "");
 
   useEffect(() => {
     setEnabled(autoSms.enabled);
-    setInterval(String(autoSms.interval));
+    setIntervalValue(String(autoSms.interval));
     setLastValidInterval(String(autoSms.interval));
     setNumber(autoSms.number || "");
     setMessage(autoSms.message || "");
   }, [autoSms]);
 
   const saveConfig = async (newEnabled, newInterval) => {
-    await fetch(`${apiBase}/config/auto-sms`, {
+    const res = await fetch(`${apiBase}/config/auto-sms`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,7 +34,14 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
       }),
     });
 
-    onChange({ enabled: newEnabled, interval: newInterval, number, message });
+    const json = await res.json();
+
+    onChange({
+      enabled: json.enabled,
+      interval: json.interval,
+      number: json.number || "",
+      message: json.message || "",
+    });
   };
 
   const toggleAutoSms = () => {
@@ -54,14 +65,16 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
 
       <input
         disabled={enabled}
-        value={interval}
-        onChange={(e) => /^\d*$/.test(e.target.value) && setInterval(e.target.value)}
+        value={intervalValue}
+        onChange={(e) =>
+          /^\d*$/.test(e.target.value) && setIntervalValue(e.target.value)
+        }
         onBlur={() => {
-          const v = parseInt(interval, 10);
+          const v = parseInt(intervalValue, 10);
           if (v >= 30 && v <= 3600) {
-            setLastValidInterval(interval);
+            setLastValidInterval(intervalValue);
             saveConfig(enabled, v);
-          } else setInterval(lastValidInterval);
+          } else setIntervalValue(lastValidInterval);
         }}
         placeholder="Interval (s)"
       />

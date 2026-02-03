@@ -13,7 +13,7 @@ function App() {
   // Semua request lewat Vercel -> /api -> proxy -> ngrok -> Flask
   const apiBase = "https://heterophoric-franco-unplumbed.ngrok-free.dev";
 
-  const [interval, setInterval] = useState(10);
+  const [signalInterval, setSignalInterval] = useState(10);
   const [isCalling, setIsCalling] = useState(false);
   const [autoCall, setAutoCall] = useState({
     enabled: false,
@@ -41,7 +41,7 @@ function App() {
         setSystemStatus(json);
 
         if (typeof json.interval === "number") {
-          setInterval(json.interval);
+          setSignalInterval(json.interval);
         }
 
         if (json.auto_call) {
@@ -68,8 +68,8 @@ function App() {
     };
 
     fetchStatus();
-    const t = setInterval(fetchStatus, 2000); // ⬅️ PENTING
-    return () => clearInterval(t);
+    const timer = window.setInterval(fetchStatus, 1000);
+    return () => window.clearInterval(timer);
   }, [apiBase]);
 
   return (
@@ -145,8 +145,8 @@ function App() {
       >
         <IntervalControl
           apiBase={apiBase}
-          interval={interval}
-          onIntervalChange={setInterval}
+          interval={signalInterval}
+          onIntervalChange={setSignalInterval}
         />
       </div>
 
@@ -259,7 +259,7 @@ function App() {
           border: "1px solid #eee",
         }}
       >
-        <HistoryChart apiBase={apiBase} refreshInterval={interval} />
+        <HistoryChart apiBase={apiBase} refreshInterval={signalInterval} />
       </div>
 
       {/* FOOTER */}
