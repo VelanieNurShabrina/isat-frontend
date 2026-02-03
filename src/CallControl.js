@@ -16,19 +16,28 @@ export default function CallControl({
   // Poll backend status
   // =========================
   useEffect(() => {
-    if (!isCalling) return;
-
     const poll = setInterval(async () => {
       try {
         const res = await fetch(`${apiBase}/status`, {
           headers: { "ngrok-skip-browser-warning": "true" },
         });
+
         const data = await res.json();
 
-        if (data.call_active === false) {
-          onCallStateChange(false);
-          setStatusMsg("🛑 Call ended");
-          resetForm();
+        // 🔥 Backend adalah source of truth
+        if (data.call_active !== isCalling) {
+          onCallStateChange(data.call_active);
+        }
+
+        // Update message berdasarkan call_state
+        if (!data.call_active) {
+          if (data.call_state === "timeout") {
+            setStatusMsg("⏱️ Call timeout");
+          } else if (data.call_state === "stopped_by_user") {
+            setStatusMsg("🛑 Stopped by user");
+          } else {
+            setStatusMsg("Idle");
+          }
         }
       } catch (err) {
         console.error("Failed to fetch call status", err);
@@ -36,7 +45,7 @@ export default function CallControl({
     }, 1000);
 
     return () => clearInterval(poll);
-  }, [isCalling, apiBase, onCallStateChange]);
+  }, [apiBase, isCalling, onCallStateChange]);
 
   // =========================
   // Helpers
@@ -63,11 +72,11 @@ export default function CallControl({
     try {
       await fetch(
         `${apiBase}/call?number=${encodeURIComponent(
-          number
+          number,
         )}&secs=${callSeconds}`,
         {
           headers: { "ngrok-skip-browser-warning": "true" },
-        }
+        },
       );
     } catch (err) {
       console.error(err);
