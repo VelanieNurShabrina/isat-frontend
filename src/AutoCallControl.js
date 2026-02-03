@@ -11,7 +11,7 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
   const [duration, setDuration] = useState(String(autoCall.duration));
   const [lastValidDuration, setLastValidDuration] = useState(String(autoCall.duration));
 
-  // ✅ SYNC BACKEND → UI hanya saat DISABLED
+  // ✅ Sync config values ONLY (not enabled)
   useEffect(() => {
     if (!enabled) {
       setInterval(String(autoCall.interval));
@@ -20,9 +20,7 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
       setLastValidDuration(String(autoCall.duration));
       setNumber(autoCall.number || "");
     }
-
-    setEnabled(autoCall.enabled);
-  }, [autoCall]);
+  }, [autoCall]); // ❌ no setEnabled here
 
   const saveConfig = async (newEnabled, newInterval, newDuration) => {
     const res = await fetch(`${apiBase}/config/auto-call`, {
@@ -40,7 +38,6 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
     });
 
     const json = await res.json();
-
     onChange(json);
   };
 
@@ -78,13 +75,6 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
         onChange={(e) =>
           /^\d*$/.test(e.target.value) && setInterval(e.target.value)
         }
-        onBlur={() => {
-          const v = parseInt(interval, 10);
-          if (v >= 5 && v <= 600) {
-            setLastValidInterval(interval);
-            saveConfig(enabled, v, parseInt(lastValidDuration, 10));
-          } else setInterval(lastValidInterval);
-        }}
         placeholder="Interval (s)"
       />
 
@@ -101,13 +91,6 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
         onChange={(e) =>
           /^\d*$/.test(e.target.value) && setDuration(e.target.value)
         }
-        onBlur={() => {
-          const v = parseInt(duration, 10);
-          if (v >= 5 && v <= 300) {
-            setLastValidDuration(duration);
-            saveConfig(enabled, parseInt(lastValidInterval, 10), v);
-          } else setDuration(lastValidDuration);
-        }}
         placeholder="Duration (s)"
       />
     </div>
