@@ -1,53 +1,58 @@
 import React, { useState, useEffect } from "react";
 
 export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
-  const [enabled, setEnabled] = useState(autoSms.enabled);
-  const [intervalValue, setIntervalValue] = useState(String(autoSms.interval));
-  const [lastValidInterval, setLastValidInterval] = useState(
-    String(autoSms.interval)
-  );
-  const [number, setNumber] = useState(autoSms.number || "");
-  const [message, setMessage] = useState(autoSms.message || "");
+  const [enabled, setEnabled] = useState(false);
+  const [intervalValue, setIntervalValue] = useState("300");
+  const [lastValidInterval, setLastValidInterval] = useState("300");
+  const [number, setNumber] = useState("");
+  const [message, setMessage] = useState("");
 
-  // ✅ SYNC BACKEND → UI hanya kalau DISABLED
+  // ✅ INIT sekali saat component mount
   useEffect(() => {
-    if (!enabled) {
-      setIntervalValue(String(autoSms.interval));
-      setLastValidInterval(String(autoSms.interval));
-      setNumber(autoSms.number || "");
-      setMessage(autoSms.message || "");
-    }
     setEnabled(autoSms.enabled);
-  }, [autoSms]);
+    setIntervalValue(String(autoSms.interval));
+    setLastValidInterval(String(autoSms.interval));
+    setNumber(autoSms.number || "");
+    setMessage(autoSms.message || "");
+  }, []); // ⬅️ PENTING: kosong!
+
+  // ✅ Sync hanya status enable dari backend
+  useEffect(() => {
+    setEnabled(autoSms.enabled);
+  }, [autoSms.enabled]);
 
   const saveConfig = async (newEnabled, newInterval) => {
-    const res = await fetch(`${apiBase}/config/auto-sms`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-      body: JSON.stringify({
-        enabled: newEnabled,
-        interval: newInterval,
-        number,
-        message,
-      }),
-    });
+    try {
+      const res = await fetch(`${apiBase}/config/auto-sms`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
+        body: JSON.stringify({
+          enabled: newEnabled,
+          interval: newInterval,
+          number,
+          message,
+        }),
+      });
 
-    const json = await res.json();
+      const json = await res.json();
 
-    onChange({
-      enabled: json.enabled,
-      interval: json.interval,
-      number: json.number || "",
-      message: json.message || "",
-    });
+      onChange({
+        enabled: json.enabled,
+        interval: json.interval,
+        number: json.number || "",
+        message: json.message || "",
+      });
+    } catch (err) {
+      console.error("Save config error:", err);
+    }
   };
 
   const toggleAutoSms = () => {
     if (!enabled && (!number || !number.startsWith("+"))) {
-      alert("Destination number must start with +");
+      alert("Number must start with +");
       return;
     }
 
@@ -61,33 +66,41 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
       <h3>📩 Auto SMS</h3>
 
       <label>
-        <input type="checkbox" checked={enabled} onChange={toggleAutoSms} /> Enable
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={toggleAutoSms}
+        />
+        Enable
       </label>
 
-      {/* ✅ EDITABLE kalau belum enable */}
+      {/* INTERVAL */}
       <input
         disabled={enabled}
         value={intervalValue}
         onChange={(e) => setIntervalValue(e.target.value)}
         onBlur={() => {
           const v = parseInt(intervalValue, 10);
-          if (v >= 30 && v <= 3600) {
-            setLastValidInterval(intervalValue);
+
+          if (!isNaN(v) && v >= 30 && v <= 3600) {
+            setLastValidInterval(String(v));
             saveConfig(enabled, v);
           } else {
             setIntervalValue(lastValidInterval);
           }
         }}
-        placeholder="Interval (s)"
+        placeholder="Interval (30–3600s)"
       />
 
+      {/* NUMBER */}
       <input
         disabled={enabled}
         value={number}
         onChange={(e) => setNumber(e.target.value)}
-        placeholder="+62xxxxxxxxxx"
+        placeholder="+628xxxx"
       />
 
+      {/* MESSAGE */}
       <textarea
         disabled={enabled}
         value={message}
