@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 export default function AutoCallControl({ apiBase, autoCall, onChange }) {
   const [enabled, setEnabled] = useState(autoCall.enabled);
@@ -6,17 +6,6 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
   const [interval, setInterval] = useState(String(autoCall.interval));
   const [number, setNumber] = useState(autoCall.number || "");
   const [duration, setDuration] = useState(String(autoCall.duration));
-
-  const [isEditing, setIsEditing] = useState(false);
-
-  // ✅ Sync ONLY when not editing
-  useEffect(() => {
-    if (!isEditing) {
-      setInterval(String(autoCall.interval));
-      setDuration(String(autoCall.duration));
-      setNumber(autoCall.number || "");
-    }
-  }, [autoCall, isEditing]);
 
   const saveConfig = async (newEnabled) => {
     const res = await fetch(`${apiBase}/config/auto-call`, {
@@ -58,8 +47,6 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
       <input
         disabled={enabled}
         value={interval}
-        onFocus={() => setIsEditing(true)}
-        onBlur={() => setIsEditing(false)}
         onChange={(e) => setInterval(e.target.value)}
         placeholder="Interval (s)"
       />
@@ -67,8 +54,6 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
       <input
         disabled={enabled}
         value={number}
-        onFocus={() => setIsEditing(true)}
-        onBlur={() => setIsEditing(false)}
         onChange={(e) => setNumber(e.target.value)}
         placeholder="+8707xxxxxxx"
       />
@@ -76,8 +61,6 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
       <input
         disabled={enabled}
         value={duration}
-        onFocus={() => setIsEditing(true)}
-        onBlur={() => setIsEditing(false)}
         onChange={(e) => setDuration(e.target.value)}
         placeholder="Duration (s)"
       />
