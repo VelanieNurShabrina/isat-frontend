@@ -4,25 +4,21 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
   const [enabled, setEnabled] = useState(autoCall.enabled);
 
   const [interval, setInterval] = useState(String(autoCall.interval));
-  const [lastValidInterval, setLastValidInterval] = useState(String(autoCall.interval));
-
   const [number, setNumber] = useState(autoCall.number || "");
-
   const [duration, setDuration] = useState(String(autoCall.duration));
-  const [lastValidDuration, setLastValidDuration] = useState(String(autoCall.duration));
 
-  // ✅ Sync config values ONLY (not enabled)
+  const [isEditing, setIsEditing] = useState(false);
+
+  // ✅ Sync ONLY when not editing
   useEffect(() => {
-    if (!enabled) {
+    if (!isEditing) {
       setInterval(String(autoCall.interval));
-      setLastValidInterval(String(autoCall.interval));
       setDuration(String(autoCall.duration));
-      setLastValidDuration(String(autoCall.duration));
       setNumber(autoCall.number || "");
     }
-  }, [autoCall]); // ❌ no setEnabled here
+  }, [autoCall, isEditing]);
 
-  const saveConfig = async (newEnabled, newInterval, newDuration) => {
+  const saveConfig = async (newEnabled) => {
     const res = await fetch(`${apiBase}/config/auto-call`, {
       method: "POST",
       headers: {
@@ -31,9 +27,9 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
       },
       body: JSON.stringify({
         enabled: newEnabled,
-        interval: newInterval,
+        interval: parseInt(interval, 10),
         number,
-        duration: newDuration,
+        duration: parseInt(duration, 10),
       }),
     });
 
@@ -42,19 +38,9 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
   };
 
   const toggleAutoCall = () => {
-    if (!enabled && (!number || !number.startsWith("+"))) {
-      alert("Destination number must start with +");
-      return;
-    }
-
     const newEnabled = !enabled;
     setEnabled(newEnabled);
-
-    saveConfig(
-      newEnabled,
-      parseInt(lastValidInterval, 10),
-      parseInt(lastValidDuration, 10)
-    );
+    saveConfig(newEnabled);
   };
 
   return (
@@ -72,15 +58,17 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
       <input
         disabled={enabled}
         value={interval}
-        onChange={(e) =>
-          /^\d*$/.test(e.target.value) && setInterval(e.target.value)
-        }
+        onFocus={() => setIsEditing(true)}
+        onBlur={() => setIsEditing(false)}
+        onChange={(e) => setInterval(e.target.value)}
         placeholder="Interval (s)"
       />
 
       <input
         disabled={enabled}
         value={number}
+        onFocus={() => setIsEditing(true)}
+        onBlur={() => setIsEditing(false)}
         onChange={(e) => setNumber(e.target.value)}
         placeholder="+8707xxxxxxx"
       />
@@ -88,9 +76,9 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
       <input
         disabled={enabled}
         value={duration}
-        onChange={(e) =>
-          /^\d*$/.test(e.target.value) && setDuration(e.target.value)
-        }
+        onFocus={() => setIsEditing(true)}
+        onBlur={() => setIsEditing(false)}
+        onChange={(e) => setDuration(e.target.value)}
         placeholder="Duration (s)"
       />
     </div>
