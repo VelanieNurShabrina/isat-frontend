@@ -7,19 +7,16 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
   const [number, setNumber] = useState("");
   const [message, setMessage] = useState("");
 
-  // ✅ INIT sekali saat component mount
+  // ✅ SYNC FULL DARI BACKEND
   useEffect(() => {
+    if (!autoSms) return;
+
     setEnabled(autoSms.enabled);
     setIntervalValue(String(autoSms.interval));
     setLastValidInterval(String(autoSms.interval));
     setNumber(autoSms.number || "");
     setMessage(autoSms.message || "");
-  }, []); // ⬅️ PENTING: kosong!
-
-  // ✅ Sync hanya status enable dari backend
-  useEffect(() => {
-    setEnabled(autoSms.enabled);
-  }, [autoSms.enabled]);
+  }, [autoSms]); // 🔥 INI KUNCINYA
 
   const saveConfig = async (newEnabled, newInterval) => {
     try {
@@ -58,6 +55,7 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
 
     const newEnabled = !enabled;
     setEnabled(newEnabled);
+
     saveConfig(newEnabled, parseInt(lastValidInterval, 10));
   };
 
