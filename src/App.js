@@ -63,11 +63,17 @@ function App() {
           setIsCalling(json.call_active);
         }
         if (json.auto_sms) {
-          setAutoSms({
-            enabled: json.auto_sms.enabled,
-            interval: json.auto_sms.interval,
-            number: json.auto_sms.number || "",
-            message: json.auto_sms.message || "",
+          setAutoSms((prev) => {
+            // update hanya kalau status enable berubah
+            if (prev.enabled !== json.auto_sms.enabled) {
+              return {
+                enabled: json.auto_sms.enabled,
+                interval: json.auto_sms.interval,
+                number: json.auto_sms.number || "",
+                message: json.auto_sms.message || "",
+              };
+            }
+            return prev;
           });
         }
       } catch {}
