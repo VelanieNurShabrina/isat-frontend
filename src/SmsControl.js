@@ -1,23 +1,40 @@
 import React, { useState, useEffect } from "react";
 
-export default function SmsControl({ apiBase, autoSmsRunning }) {
+export default function SmsControl({ apiBase }) {
   const [number, setNumber] = useState("");
   const [message, setMessage] = useState("");
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Auto reset kalau Auto SMS nyala
+  const [autoSmsRunning, setAutoSmsRunning] = useState(false);
+  const [manualSmsProcessing, setManualSmsProcessing] = useState(false);
+
+  // 🔥 Poll backend status
   useEffect(() => {
-    if (autoSmsRunning) {
-      setNumber("");
-      setMessage("");
-      setResponse("");
-    }
-  }, [autoSmsRunning]);
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(`${apiBase}/status`, {
+          headers: { "ngrok-skip-browser-warning": "true" }
+        });
+
+        const json = await res.json();
+
+        setAutoSmsRunning(json.auto_sms?.enabled);
+
+        setManualSmsProcessing(
+          json.current_task?.type === "SMS"
+        );
+      } catch {}
+    };
+
+    fetchStatus();
+    const t = setInterval(fetchStatus, 1000);
+    return () => clearInterval(t);
+  }, [apiBase]);
 
   async function sendSMS() {
     if (!number || !message) {
-      setResponse("❌ Number and message are required.");
+      setResponse("❌ Number and message required");
       return;
     }
 
@@ -42,12 +59,7 @@ export default function SmsControl({ apiBase, autoSmsRunning }) {
       const data = await res.json();
 
       if (data.status === "ok") {
-        setResponse(
-          `✅ SMS queued successfully\n` +
-          `📱 Destination : ${number}\n` +
-          `💬 Message : ${message}\n` +
-          `⏱️ Time : ${new Date().toLocaleTimeString()}`
-        );
+        setResponse("✅ SMS queued");
       } else {
         setResponse("❌ Failed to queue SMS");
       }
@@ -58,43 +70,53 @@ export default function SmsControl({ apiBase, autoSmsRunning }) {
     setLoading(false);
   }
 
+  const disabled =
+    loading ||
+    autoSmsRunning ||
+    manualSmsProcessing;
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <h3>📨 Send SMS</h3>
 
       <input
         placeholder="+628xxxx"
         value={number}
+        disabled={disabled}
         onChange={(e) => setNumber(e.target.value)}
-        disabled={autoSmsRunning}
       />
 
       <textarea
         placeholder="Message"
         value={message}
+        disabled={disabled}
         onChange={(e) => setMessage(e.target.value)}
-        disabled={autoSmsRunning}
       />
 
-      <button
-        onClick={sendSMS}
-        disabled={loading || autoSmsRunning}
-      >
+      <button onClick={sendSMS} disabled={disabled}>
         {loading ? "Sending..." : "Send SMS"}
       </button>
 
-      {/* ✅ Warning kalau Auto SMS aktif */}
+      {/* WARNINGS */}
       {autoSmsRunning && (
-        <div
-          style={{
-            fontSize: 12,
-            color: "#92400e",
-            background: "#fef3c7",
-            padding: "6px 10px",
-            borderRadius: 6,
-          }}
-        >
+        <div style={{
+          background: "#fef3c7",
+          padding: 8,
+          borderRadius: 6,
+          fontSize: 12
+        }}>
           ⚠️ Manual SMS disabled while Auto SMS is running
+        </div>
+      )}
+
+      {manualSmsProcessing && (
+        <div style={{
+          background: "#dbeafe",
+          padding: 8,
+          borderRadius: 6,
+          fontSize: 12
+        }}>
+          ⏳ Manual SMS processing...
         </div>
       )}
 
