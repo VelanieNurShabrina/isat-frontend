@@ -231,7 +231,7 @@ function App() {
             border: "1px solid #eee",
           }}
         >
-          <SmsControl apiBase={apiBase} />
+          <SmsControl apiBase={apiBase} autoSmsRunning={autoSms.enabled} />
         </div>
 
         {/* AUTO SMS */}

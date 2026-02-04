@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function SmsControl({ apiBase }) {
+export default function SmsControl({ apiBase, autoSmsRunning }) {
   const [number, setNumber] = useState("");
   const [message, setMessage] = useState("");
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // ✅ Auto reset kalau Auto SMS nyala
+  useEffect(() => {
+    if (autoSmsRunning) {
+      setNumber("");
+      setMessage("");
+      setResponse("");
+    }
+  }, [autoSmsRunning]);
 
   async function sendSMS() {
     if (!number || !message) {
@@ -57,17 +66,37 @@ export default function SmsControl({ apiBase }) {
         placeholder="+628xxxx"
         value={number}
         onChange={(e) => setNumber(e.target.value)}
+        disabled={autoSmsRunning}
       />
 
       <textarea
         placeholder="Message"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+        disabled={autoSmsRunning}
       />
 
-      <button onClick={sendSMS} disabled={loading}>
+      <button
+        onClick={sendSMS}
+        disabled={loading || autoSmsRunning}
+      >
         {loading ? "Sending..." : "Send SMS"}
       </button>
+
+      {/* ✅ Warning kalau Auto SMS aktif */}
+      {autoSmsRunning && (
+        <div
+          style={{
+            fontSize: 12,
+            color: "#92400e",
+            background: "#fef3c7",
+            padding: "6px 10px",
+            borderRadius: 6,
+          }}
+        >
+          ⚠️ Manual SMS disabled while Auto SMS is running
+        </div>
+      )}
 
       {response && <pre>{response}</pre>}
     </div>
