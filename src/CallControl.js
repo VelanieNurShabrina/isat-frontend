@@ -24,17 +24,29 @@ export default function CallControl({
 
         const data = await res.json();
 
-        // 🔥 Backend adalah source of truth
+        // 🔥 Sync calling state
         if (data.call_active !== isCalling) {
           onCallStateChange(data.call_active);
         }
 
-        // Update message berdasarkan call_state
+        // 🔥 RESTORE FORM SAAT MASIH CALLING
+        if (data.call_active && data.active_call) {
+          setNumber(data.active_call.number || "");
+          setCallSeconds(data.active_call.duration || "");
+
+          setStatusMsg(
+            `📞 Calling ${data.active_call.number} (waiting for connection…)`,
+          );
+        }
+
+        // 🔥 Update status kalau sudah selesai
         if (!data.call_active) {
           if (data.call_state === "timeout") {
             setStatusMsg("⏱️ Call timeout");
-          } else if (data.call_state === "stopped_by_user") {
+          } else if (data.call_state === "stopped") {
             setStatusMsg("🛑 Stopped by user");
+          } else if (data.call_state === "rejected") {
+            setStatusMsg("❌ Call rejected");
           } else {
             setStatusMsg("Idle");
           }
