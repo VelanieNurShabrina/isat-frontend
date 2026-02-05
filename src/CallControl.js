@@ -1,10 +1,10 @@
 // src/CallControl.js
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function CallControl({
   apiBase,
   isCalling,
-  autoCallRunning,
+  autoCallRunning, // ⬅️ BARU
   onCallStateChange,
 }) {
   const [number, setNumber] = useState("");
@@ -12,16 +12,8 @@ export default function CallControl({
   const [statusMsg, setStatusMsg] = useState("");
   const [stopping, setStopping] = useState(false);
 
-  const wasCallingRef = useRef(false);
-
   // =========================
-  const resetForm = () => {
-    setNumber("");
-    setCallSeconds("");
-  };
-
-  // =========================
-  // Poll backend
+  // Poll backend status
   // =========================
   useEffect(() => {
     const poll = setInterval(async () => {
@@ -32,39 +24,26 @@ export default function CallControl({
 
         const data = await res.json();
 
-        const isManualCall =
-          data.call_active &&
-          data.current_task?.type === "CALL" &&
-          data.current_task?.source === "manual";
-
-        onCallStateChange(isManualCall);
-
-        // =========================
-        // RESTORE FORM SAAT CALLING
-        // =========================
-        if (isManualCall) {
-          wasCallingRef.current = true;
-
-          setNumber(data.last_manual_call?.number || "");
-          setCallSeconds(data.last_manual_call?.duration || "");
-
-          setStatusMsg(
-            `📞 Calling ${data.last_manual_call?.number || ""} (waiting for connection…)`,
-          );
-          return;
+        // 🔥 Sync calling state
+        if (data.call_active !== isCalling) {
+          onCallStateChange(data.call_active);
         }
 
-        // =========================
-        // CALL BARU SAJA SELESAI
-        // =========================
-        if (!data.call_active && wasCallingRef.current) {
-          wasCallingRef.current = false;
+        // 🔥 RESTORE FORM SAAT MASIH CALLING
+        if (data.call_active && data.active_call) {
+          setNumber(data.active_call.number || "");
+          setCallSeconds(data.active_call.duration || "");
 
-          resetForm();
+          setStatusMsg(
+            `📞 Calling ${data.active_call.number} (waiting for connection…)`,
+          );
+        }
 
+        // 🔥 Update status kalau sudah selesai
+        if (!data.call_active) {
           if (data.call_state === "timeout") {
             setStatusMsg("⏱️ Call timeout");
-          } else if (data.call_state === "stopped_by_user") {
+          } else if (data.call_state === "stopped") {
             setStatusMsg("🛑 Stopped by user");
           } else if (data.call_state === "rejected") {
             setStatusMsg("❌ Call rejected");
@@ -72,12 +51,24 @@ export default function CallControl({
             setStatusMsg("Idle");
           }
         }
-      } catch {}
+      } catch (err) {
+        console.error("Failed to fetch call status", err);
+      }
     }, 1000);
 
     return () => clearInterval(poll);
-  }, [apiBase]);
+  }, [apiBase, isCalling, onCallStateChange]);
 
+  // =========================
+  // Helpers
+  // =========================
+  const resetForm = () => {
+    setNumber("");
+    setCallSeconds("");
+  };
+
+  // =========================
+  // Handlers
   // =========================
   const handleCall = async () => {
     if (autoCallRunning) return;
@@ -87,25 +78,44 @@ export default function CallControl({
       return;
     }
 
-    setStatusMsg(`📞 Calling ${number}...`);
+    onCallStateChange(true);
+    setStatusMsg(`📞 Calling ${number} (waiting for connection…)`);
 
-    await fetch(
-      `${apiBase}/call?number=${encodeURIComponent(number)}&secs=${callSeconds}`,
-      { headers: { "ngrok-skip-browser-warning": "true" } },
-    );
+    try {
+      await fetch(
+        `${apiBase}/call?number=${encodeURIComponent(
+          number,
+        )}&secs=${callSeconds}`,
+        {
+          headers: { "ngrok-skip-browser-warning": "true" },
+        },
+      );
+    } catch (err) {
+      console.error(err);
+      setStatusMsg("❌ Unable to connect");
+      onCallStateChange(false);
+    }
   };
 
   const handleStop = async () => {
     if (!isCalling) return;
 
     setStopping(true);
+    setStatusMsg("🛑 Stopping call...");
 
-    await fetch(`${apiBase}/call/stop`, {
-      method: "POST",
-      headers: { "ngrok-skip-browser-warning": "true" },
-    });
-
-    setStopping(false);
+    try {
+      await fetch(`${apiBase}/call/stop`, {
+        method: "POST",
+        headers: { "ngrok-skip-browser-warning": "true" },
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setStopping(false);
+      onCallStateChange(false);
+      setStatusMsg("🛑 Call stopped by user");
+      resetForm();
+    }
   };
 
   // =========================
