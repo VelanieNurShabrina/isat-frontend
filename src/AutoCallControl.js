@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from "react";
 
 export default function AutoCallControl({ apiBase, autoCall, onChange }) {
+
   const [enabled, setEnabled] = useState(false);
   const [interval, setInterval] = useState("30");
   const [number, setNumber] = useState("");
   const [duration, setDuration] = useState("15");
 
-  // 🔥 SYNC DARI BACKEND (INI KUNCI FIXNYA)
+  // 🔥 SYNC HANYA SAAT ENABLE CHANGED
   useEffect(() => {
     if (!autoCall) return;
 
     setEnabled(autoCall.enabled);
-    setInterval(String(autoCall.interval || 30));
-    setNumber(autoCall.number || "");
-    setDuration(String(autoCall.duration || 15));
-  }, [autoCall]);
+
+    // hanya update field saat enable ON
+    if (autoCall.enabled) {
+      setInterval(String(autoCall.interval || 30));
+      setNumber(autoCall.number || "");
+      setDuration(String(autoCall.duration || 15));
+    }
+
+  }, [autoCall.enabled]); // ← kunci fix di sini
 
   const saveConfig = async (newEnabled) => {
     const res = await fetch(`${apiBase}/config/auto-call`, {
