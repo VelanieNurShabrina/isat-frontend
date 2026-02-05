@@ -10,27 +10,32 @@ export default function SmsControl({ apiBase }) {
   const [manualSmsProcessing, setManualSmsProcessing] = useState(false);
 
   // 🔥 Poll backend status
-  useEffect(() => {
-    const fetchStatus = async () => {
-      try {
-        const res = await fetch(`${apiBase}/status`, {
-          headers: { "ngrok-skip-browser-warning": "true" }
-        });
+  // 🔥 Poll backend status
+useEffect(() => {
+  const fetchStatus = async () => {
+    try {
+      const res = await fetch(`${apiBase}/status`, {
+        headers: { "ngrok-skip-browser-warning": "true" }
+      });
 
-        const json = await res.json();
+      const json = await res.json();
 
-        setAutoSmsRunning(json.auto_sms?.enabled);
+      setAutoSmsRunning(json.auto_sms?.enabled);
 
-        setManualSmsProcessing(
-          json.current_task?.type === "SMS"
-        );
-      } catch {}
-    };
+      // ✅ FIX: cek source juga
+      setManualSmsProcessing(
+        json.current_task?.type === "SMS" &&
+        json.current_task?.source === "manual"
+      );
 
-    fetchStatus();
-    const t = setInterval(fetchStatus, 1000);
-    return () => clearInterval(t);
-  }, [apiBase]);
+    } catch {}
+  };
+
+  fetchStatus();
+  const t = setInterval(fetchStatus, 1000);
+  return () => clearInterval(t);
+}, [apiBase]);
+
 
   async function sendSMS() {
     if (!number || !message) {
