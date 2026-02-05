@@ -1,11 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function AutoCallControl({ apiBase, autoCall, onChange }) {
-  const [enabled, setEnabled] = useState(autoCall.enabled);
+  const [enabled, setEnabled] = useState(false);
+  const [interval, setInterval] = useState("30");
+  const [number, setNumber] = useState("");
+  const [duration, setDuration] = useState("15");
 
-  const [interval, setInterval] = useState(String(autoCall.interval));
-  const [number, setNumber] = useState(autoCall.number || "");
-  const [duration, setDuration] = useState(String(autoCall.duration));
+  // 🔥 SYNC DARI BACKEND (INI KUNCI FIXNYA)
+  useEffect(() => {
+    if (!autoCall) return;
+
+    setEnabled(autoCall.enabled);
+    setInterval(String(autoCall.interval || 30));
+    setNumber(autoCall.number || "");
+    setDuration(String(autoCall.duration || 15));
+  }, [autoCall]);
 
   const saveConfig = async (newEnabled) => {
     const res = await fetch(`${apiBase}/config/auto-call`, {
