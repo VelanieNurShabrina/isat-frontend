@@ -30,7 +30,12 @@ export default function CallControl({
         }
 
         // 🔥 RESTORE FORM SAAT MASIH CALLING
-        if (data.call_active && data.active_call) {
+        const isManualCall =
+          data.call_active &&
+          data.current_task?.type === "CALL" &&
+          data.current_task?.source === "manual";
+
+        if (isManualCall && data.active_call) {
           setNumber(data.active_call.number || "");
           setCallSeconds(data.active_call.duration || "");
 
