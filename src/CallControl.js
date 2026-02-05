@@ -24,29 +24,39 @@ export default function CallControl({
 
         const data = await res.json();
 
-        // 🔥 Sync calling state
+        // ===== SYNC CALL STATE =====
         if (data.call_active !== isCalling) {
           onCallStateChange(data.call_active);
         }
 
-        // 🔥 RESTORE FORM SAAT MASIH CALLING
-        if (data.call_active && data.active_call) {
-          setNumber(data.active_call.number || "");
-          setCallSeconds(data.active_call.duration || "");
+        // ===== RESTORE FORM IF CALLING =====
+        if (data.call_active && data.last_manual_call) {
+          setNumber(data.last_manual_call.number || "");
+          setCallSeconds(data.last_manual_call.duration || "");
 
           setStatusMsg(
-            `📞 Calling ${data.active_call.number} (waiting for connection…)`,
+            `📞 Calling ${data.last_manual_call.number} (waiting for connection…)`,
           );
+          return;
         }
 
-        // 🔥 Update status kalau sudah selesai
+        // ===== HANDLE FINISHED CALL =====
         if (!data.call_active) {
           if (data.call_state === "timeout") {
             setStatusMsg("⏱️ Call timeout");
-          } else if (data.call_state === "stopped") {
+          } else if (data.call_state === "stopped_by_user") {
             setStatusMsg("🛑 Stopped by user");
+
+            // balik idle setelah 2 detik
+            setTimeout(() => {
+              setStatusMsg("Idle");
+            }, 2000);
           } else if (data.call_state === "rejected") {
             setStatusMsg("❌ Call rejected");
+
+            setTimeout(() => {
+              setStatusMsg("Idle");
+            }, 2000);
           } else {
             setStatusMsg("Idle");
           }
