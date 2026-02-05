@@ -4,16 +4,16 @@ import React, { useState, useEffect } from "react";
 export default function CallControl({
   apiBase,
   isCalling,
-  autoCallRunning,
+  autoCallRunning, // ⬅️ BARU
   onCallStateChange,
 }) {
   const [number, setNumber] = useState("");
   const [callSeconds, setCallSeconds] = useState("");
-  const [statusMsg, setStatusMsg] = useState("Idle");
+  const [statusMsg, setStatusMsg] = useState("");
   const [stopping, setStopping] = useState(false);
 
   // =========================
-  // POLL BACKEND STATUS
+  // Poll backend status
   // =========================
   useEffect(() => {
     const poll = setInterval(async () => {
@@ -24,48 +24,33 @@ export default function CallControl({
 
         const data = await res.json();
 
-        // ===== SYNC CALL STATE =====
+        // 🔥 Sync calling state
         if (data.call_active !== isCalling) {
           onCallStateChange(data.call_active);
         }
 
-        // ===== RESTORE FORM IF CALLING =====
-        if (data.call_active && data.last_manual_call) {
-          setNumber(data.last_manual_call.number || "");
-          setCallSeconds(data.last_manual_call.duration || "");
+        // 🔥 RESTORE FORM SAAT MASIH CALLING
+        if (data.call_active && data.active_call) {
+          setNumber(data.active_call.number || "");
+          setCallSeconds(data.active_call.duration || "");
 
           setStatusMsg(
-            `📞 Calling ${data.last_manual_call.number} (waiting for connection…)`
+            `📞 Calling ${data.active_call.number} (waiting for connection…)`,
           );
-          return;
         }
 
-        // ===== HANDLE FINISHED CALL =====
+        // 🔥 Update status kalau sudah selesai
         if (!data.call_active) {
-
           if (data.call_state === "timeout") {
             setStatusMsg("⏱️ Call timeout");
-          }
-          else if (data.call_state === "stopped_by_user") {
+          } else if (data.call_state === "stopped") {
             setStatusMsg("🛑 Stopped by user");
-
-            // balik idle setelah 2 detik
-            setTimeout(() => {
-              setStatusMsg("Idle");
-            }, 2000);
-          }
-          else if (data.call_state === "rejected") {
+          } else if (data.call_state === "rejected") {
             setStatusMsg("❌ Call rejected");
-
-            setTimeout(() => {
-              setStatusMsg("Idle");
-            }, 2000);
-          }
-          else {
+          } else {
             setStatusMsg("Idle");
           }
         }
-
       } catch (err) {
         console.error("Failed to fetch call status", err);
       }
@@ -75,7 +60,7 @@ export default function CallControl({
   }, [apiBase, isCalling, onCallStateChange]);
 
   // =========================
-  // HELPERS
+  // Helpers
   // =========================
   const resetForm = () => {
     setNumber("");
@@ -83,7 +68,7 @@ export default function CallControl({
   };
 
   // =========================
-  // CALL HANDLER
+  // Handlers
   // =========================
   const handleCall = async () => {
     if (autoCallRunning) return;
@@ -98,18 +83,20 @@ export default function CallControl({
 
     try {
       await fetch(
-        `${apiBase}/call?number=${encodeURIComponent(number)}&secs=${callSeconds}`,
-        { headers: { "ngrok-skip-browser-warning": "true" } }
+        `${apiBase}/call?number=${encodeURIComponent(
+          number,
+        )}&secs=${callSeconds}`,
+        {
+          headers: { "ngrok-skip-browser-warning": "true" },
+        },
       );
-    } catch {
+    } catch (err) {
+      console.error(err);
       setStatusMsg("❌ Unable to connect");
       onCallStateChange(false);
     }
   };
 
-  // =========================
-  // STOP HANDLER
-  // =========================
   const handleStop = async () => {
     if (!isCalling) return;
 
@@ -121,9 +108,12 @@ export default function CallControl({
         method: "POST",
         headers: { "ngrok-skip-browser-warning": "true" },
       });
+    } catch (err) {
+      console.error(err);
     } finally {
       setStopping(false);
       onCallStateChange(false);
+      setStatusMsg("🛑 Call stopped by user");
       resetForm();
     }
   };
@@ -133,8 +123,33 @@ export default function CallControl({
   // =========================
   return (
     <div style={{ padding: "12px 16px" }}>
-      <h3 style={{ marginBottom: 16 }}>📞 Call Control</h3>
+      {/* HEADER */}
+      <div style={{ marginBottom: 16 }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            color: "#111",
+          }}
+        >
+          📞 Call Control
+        </h3>
+        <div
+          style={{
+            width: 48,
+            height: 3,
+            background: "#dc2626",
+            borderRadius: 2,
+            marginTop: 6,
+          }}
+        />
+      </div>
 
+      {/* FORM */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <input
           placeholder="Destination number"
@@ -162,6 +177,7 @@ export default function CallControl({
             style={{
               ...btnStyle,
               background: autoCallRunning ? "#9ca3af" : "#16a34a",
+              cursor: autoCallRunning ? "not-allowed" : "pointer",
             }}
           >
             Call
@@ -176,15 +192,24 @@ export default function CallControl({
           </button>
         </div>
 
+        {/* INFO AUTO CALL */}
         {autoCallRunning && (
-          <div style={warnStyle}>
+          <div
+            style={{
+              fontSize: 12,
+              color: "#92400e",
+              background: "#fef3c7",
+              padding: "6px 10px",
+              borderRadius: 6,
+            }}
+          >
             ⚠️ Manual call disabled while auto call is running
           </div>
         )}
 
-        <div style={{ fontSize: 13, color: "#555" }}>
-          {statusMsg}
-        </div>
+        {statusMsg && (
+          <div style={{ fontSize: 13, color: "#555" }}>{statusMsg}</div>
+        )}
       </div>
     </div>
   );
@@ -204,12 +229,4 @@ const btnStyle = {
   border: "none",
   color: "white",
   fontWeight: 600,
-};
-
-const warnStyle = {
-  fontSize: 12,
-  color: "#92400e",
-  background: "#fef3c7",
-  padding: "6px 10px",
-  borderRadius: 6,
 };
