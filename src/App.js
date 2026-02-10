@@ -139,10 +139,6 @@ function App() {
             />
           </div>
         </div>
-
-        <div style={{ marginTop: "auto" }}>
-          <CallStats apiBase={apiBase} />
-        </div>
       </aside>
 
       {/* MAIN CONTENT */}
@@ -214,9 +210,28 @@ function App() {
           {/* Logs Table */}
           <div
             className="card"
-            style={{ maxHeight: 800, display: "flex", flexDirection: "column" }}
+            style={{
+              maxHeight: 800,
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+            }}
           >
             <div className="section-title">📋 Activity Logs</div>
+
+            {/* CALL PERFORMANCE DI DALAM CARD */}
+            <div
+              style={{
+                background: "#f9fafb",
+                border: "1px solid #e5e7eb",
+                borderRadius: 10,
+                padding: 16,
+              }}
+            >
+              <CallStats apiBase={apiBase} />
+            </div>
+
+            {/* LOG TABLE */}
             <div style={{ overflowY: "auto" }}>
               <CallLogTable apiBase={apiBase} />
             </div>
