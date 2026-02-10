@@ -128,17 +128,6 @@ function App() {
           </div>
         </div>
 
-        {/* SYSTEM STATUS */}
-        <div>
-          <label style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af" }}>
-            SYSTEM STATUS
-          </label>
-
-          <div style={{ marginTop: 12 }}>
-            <SystemStatusCard status={systemStatus} />
-          </div>
-        </div>
-
         {/* INTERVAL */}
         <div>
           <label style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af" }}>
@@ -153,6 +142,19 @@ function App() {
             />
           </div>
         </div>
+
+        {/* SYSTEM STATUS */}
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af" }}>
+            SYSTEM STATUS
+          </label>
+
+          <div style={{ marginTop: 12 }}>
+            <SystemStatusCard status={systemStatus} />
+          </div>
+        </div>
+
+        
       </aside>
 
       {/* MAIN CONTENT */}
