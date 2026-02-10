@@ -82,144 +82,117 @@ function App() {
     return () => window.clearInterval(timer);
   }, [apiBase]);
 
-  // UI Theme Colors
+
+
+  // Ganti bagian return di App.js kamu
   const colors = {
     bg: "#f4f7fa",
     sidebar: "#ffffff",
     border: "#e1e4e8",
     accent: "#0052cc",
     textMain: "#172b4d",
-    textMuted: "#5e6c84",
+    textMuted: "#5e6c84"
   };
 
-  // Ganti bagian return di App.js kamu
   return (
-    <>
-      <style>{`
-        :root {
-          --bg-sidebar: #ffffff;
-          --bg-main: #f8fafc;
-          --primary: #2563eb;
-          --border: #e2e8f0;
-          --text-dark: #1e293b;
-          --text-muted: #64748b;
-          --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-        body { margin: 0; background: var(--bg-main); font-family: 'Inter', system-ui, sans-serif; }
-        .dashboard-container { display: flex; min-height: 100vh; }
-        
-        /* Sidebar Professional */
-        .sidebar { 
-          width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border);
-          padding: 2rem; display: flex; flex-direction: column; gap: 2rem; position: sticky; top: 0; height: 100vh; box-sizing: border-box;
-        }
-        .sidebar-title { font-size: 1.25rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.025em; display: flex; align-items: center; gap: 10px; }
-        .sidebar-section-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: colors.bg, fontFamily: "'Inter', sans-serif", color: colors.textMain }}>
+      
+      {/* LEFT SIDEBAR - Fixed Status & Config */}
+      <aside style={{ 
+        width: "320px", 
+        backgroundColor: colors.sidebar, 
+        borderRight: `1px solid ${colors.border}`, 
+        padding: "24px", 
+        display: "flex", 
+        flexDirection: "column",
+        gap: "24px",
+        position: "sticky",
+        top: 0,
+        height: "100vh"
+      }}>
+        <div>
+          <h1 style={{ fontSize: "20px", fontWeight: "800", marginBottom: "4px", display: "flex", alignItems: "center", gap: "8px" }}>
+            📡 IsatPhone
+          </h1>
+          <p style={{ fontSize: "12px", color: colors.textMuted, margin: 0 }}>Terminal Monitoring System</p>
+        </div>
 
-        /* Main Content */
-        .main-content { flex: 1; padding: 2.5rem; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
-        .glass-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; box-shadow: var(--card-shadow); transition: all 0.2s; }
-        
-        /* Layout Grid */
-        .grid-kpi { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; }
-        .grid-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-        
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .section-title { font-size: 1rem; font-weight: 700; color: var(--text-dark); margin: 0; display: flex; align-items: center; gap: 8px; }
-        
-        /* Form Inputs Reset */
-        input, select, textarea { 
-          border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; width: 100%; box-sizing: border-box; margin-top: 5px;
-          background: #fcfcfd; transition: border-color 0.2s;
-        }
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-      `}</style>
-
-      <div className="dashboard-container">
-        {/* SIDEBAR */}
-        <aside className="sidebar">
-          <div className="sidebar-title">📡 IsatMonitor <span style={{fontSize: '0.6rem', padding: '2px 6px', background: '#eff6ff', color: '#2563eb', borderRadius: '4px'}}>PRO</span></div>
-          
-          <div>
-            <div className="sidebar-section-label">Device Connectivity</div>
+        <div className="sidebar-group">
+          <label style={{ fontSize: "11px", fontWeight: "bold", color: colors.textMuted, textTransform: "uppercase", letterSpacing: "1px" }}>Device Status</label>
+          <div style={{ marginTop: "12px" }}>
             <SystemStatusCard status={systemStatus} />
           </div>
+        </div>
 
-          <div>
-            <div className="sidebar-section-label">System Preferences</div>
+        <div className="sidebar-group">
+          <label style={{ fontSize: "11px", fontWeight: "bold", color: colors.textMuted, textTransform: "uppercase", letterSpacing: "1px" }}>Reporting Rate</label>
+          <div style={{ marginTop: "12px" }}>
             <IntervalControl apiBase={apiBase} interval={signalInterval} onIntervalChange={setSignalInterval} />
           </div>
+        </div>
 
-          <div style={{marginTop: 'auto'}}>
-            <div className="glass-card" style={{padding: '1rem', background: '#1e293b', color: 'white', border: 'none'}}>
-              <CallStats apiBase={apiBase} />
-            </div>
+        <div className="sidebar-group" style={{ marginTop: "auto" }}>
+          <div style={{ padding: "16px", backgroundColor: "#f9fafb", borderRadius: "8px", border: `1px solid ${colors.border}` }}>
+            <CallStats apiBase={apiBase} />
           </div>
-        </aside>
+          <p style={{ fontSize: "10px", textAlign: "center", marginTop: "16px", color: "#a1a1a1" }}>© 2026 Velanie Dashboard</p>
+        </div>
+      </aside>
 
-        {/* MAIN AREA */}
-        <main className="main-content">
+      {/* MAIN CONTENT AREA */}
+      <main style={{ flex: 1, padding: "32px", overflowY: "auto" }}>
+        
+        {/* TOP ROW: Realtime KPI Cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px", marginBottom: "24px" }}>
+          <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)", border: `1px solid ${colors.border}` }}>
+            <RealtimeSignal apiBase={apiBase} />
+          </div>
+        </div>
+
+        {/* MIDDLE ROW: History Chart (Large) */}
+        <div style={{ backgroundColor: "#fff", padding: "24px", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)", border: `1px solid ${colors.border}`, marginBottom: "24px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <h3 style={{ fontSize: "16px", fontWeight: "600", margin: 0 }}>Signal Level Trend</h3>
+            <span style={{ fontSize: "12px", color: colors.textMuted }}>Updated: {new Date().toLocaleTimeString()}</span>
+          </div>
+          <HistoryChart apiBase={apiBase} refreshInterval={signalInterval} />
+        </div>
+
+        {/* BOTTOM ROW: Controls & Logs (Grid 2 Kolom) */}
+        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "24px" }}>
           
-          {/* Header Dashboard */}
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <h2 style={{margin: 0, fontWeight: 800, fontSize: '1.75rem'}}>Network Overview</h2>
-            <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>Last sync: {new Date().toLocaleTimeString()}</div>
-          </div>
-
-          {/* Row 1: Signal Strength & Performance */}
-          <div className="grid-kpi">
-            <div className="glass-card">
-              <div className="section-header">
-                <h3 className="section-title">📶 Realtime Signal Strength</h3>
-                <div style={{width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e'}}></div>
+          {/* Action Column */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            {/* Call Control Box */}
+            <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "12px", border: `1px solid ${colors.border}` }}>
+              <h3 style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>📞 Voice Command</h3>
+              <CallControl apiBase={apiBase} isCalling={isCalling} autoCallRunning={autoCall.enabled} onCallStateChange={setIsCalling} />
+              <div style={{ marginTop: "16px", padding: "16px", backgroundColor: "#f8f9fa", borderRadius: "8px", border: "1px dashed #d1d5db" }}>
+                <AutoCallControl apiBase={apiBase} autoCall={autoCall} onChange={setAutoCall} />
               </div>
-              <RealtimeSignal apiBase={apiBase} />
             </div>
-            
-            <div className="glass-card" style={{background: 'linear-gradient(to bottom right, #ffffff, #f8fafc)'}}>
-              <h3 className="section-title" style={{marginBottom: '1rem'}}>📊 Performance KPI</h3>
-              {/* Tempatkan CallPerformanceToday di sini */}
-              <div style={{height: '100%', display: 'flex', alignItems: 'center'}}>
-                 <CallStats /> 
+
+            {/* SMS Control Box */}
+            <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "12px", border: `1px solid ${colors.border}` }}>
+              <h3 style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>✉️ SMS Messaging</h3>
+              <SmsControl apiBase={apiBase} autoSmsRunning={autoSms.enabled} />
+              <div style={{ marginTop: "16px", padding: "16px", backgroundColor: "#f8f9fa", borderRadius: "8px", border: "1px dashed #d1d5db" }}>
+                <AutoSmsControl apiBase={apiBase} autoSms={autoSms} onChange={setAutoSms} />
               </div>
             </div>
           </div>
 
-          {/* Row 2: Visual Chart */}
-          <div className="glass-card">
-            <h3 className="section-title">📈 Signal Level Trend (RSSI & BER)</h3>
-            <div style={{marginTop: '1.5rem', height: '350px'}}>
-              <HistoryChart apiBase={apiBase} refreshInterval={signalInterval} />
+          {/* Logs Column */}
+          <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "12px", border: `1px solid ${colors.border}`, maxHeight: "800px", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            <h3 style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "16px" }}>Recent Activity Logs</h3>
+            <div style={{ overflowY: "auto", flex: 1 }}>
+              <CallLogTable apiBase={apiBase} />
             </div>
           </div>
 
-          {/* Row 3: Action & Logs */}
-          <div className="grid-controls">
-            <div className="glass-card">
-              <h3 className="section-title">⚡ Quick Actions</h3>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '1.5rem'}}>
-                <div style={{padding: '1.25rem', border: '1px solid #f1f5f9', borderRadius: '12px', background: '#f8fafc'}}>
-                  <CallControl apiBase={apiBase} isCalling={isCalling} autoCallRunning={autoCall.enabled} onCallStateChange={setIsCalling} />
-                  <AutoCallControl apiBase={apiBase} autoCall={autoCall} onChange={setAutoCall} />
-                </div>
-                <div style={{padding: '1.25rem', border: '1px solid #f1f5f9', borderRadius: '12px', background: '#f8fafc'}}>
-                  <SmsControl apiBase={apiBase} autoSmsRunning={autoSms.enabled} />
-                  <AutoSmsControl apiBase={apiBase} autoSms={autoSms} onChange={setAutoSms} />
-                </div>
-              </div>
-            </div>
-
-            <div className="glass-card" style={{display: 'flex', flexDirection: 'column'}}>
-              <h3 className="section-title">📑 Recent Activity Logs</h3>
-              <div style={{marginTop: '1.5rem', flex: 1, overflowY: 'auto', maxHeight: '500px'}}>
-                <CallLogTable apiBase={apiBase} />
-              </div>
-            </div>
-          </div>
-
-        </main>
-      </div>
-    </>
+        </div>
+      </main>
+    </div>
   );
 }
 
