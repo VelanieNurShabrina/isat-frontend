@@ -10,6 +10,7 @@ import AutoSmsControl from "./AutoSmsControl";
 import SystemStatusCard from "./SystemStatusCard";
 import CallStats from "./CallStats";
 import CallLogTable from "./CallLogTable";
+import SidebarSignal from "./SidebarSignal";
 
 function App() {
   const apiBase = "https://heterophoric-franco-unplumbed.ngrok-free.dev";
@@ -102,6 +103,7 @@ function App() {
           height: "100vh",
         }}
       >
+        {/* TITLE */}
         <div>
           <h2
             style={{
@@ -115,13 +117,34 @@ function App() {
           </h2>
         </div>
 
+        {/* ✅ LIVE SIGNAL (BARU) */}
         <div>
+          <label style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af" }}>
+            LIVE SIGNAL
+          </label>
+
+          <div style={{ marginTop: 12 }}>
+            <SidebarSignal apiBase={apiBase} />
+          </div>
+        </div>
+
+        {/* SYSTEM STATUS */}
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af" }}>
+            SYSTEM STATUS
+          </label>
+
           <div style={{ marginTop: 12 }}>
             <SystemStatusCard status={systemStatus} />
           </div>
         </div>
 
+        {/* INTERVAL */}
         <div>
+          <label style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af" }}>
+            SIGNAL INTERVAL
+          </label>
+
           <div style={{ marginTop: 12 }}>
             <IntervalControl
               apiBase={apiBase}
@@ -134,11 +157,6 @@ function App() {
 
       {/* MAIN CONTENT */}
       <main style={{ flex: 1, marginLeft: 280, padding: 40 }}>
-        {/* ROW 1: Realtime KPI */}
-        <div style={{ marginBottom: 24 }} className="card">
-          <RealtimeSignal apiBase={apiBase} />
-        </div>
-
         {/* ROW 2: History Chart */}
         <div style={{ marginBottom: 24 }} className="card">
           <HistoryChart apiBase={apiBase} refreshInterval={signalInterval} />
