@@ -27,27 +27,41 @@ function StatCard({ title, value, subtitle, accent = "#2563eb" }) {
       style={{
         flex: 1,
         background: "#fff",
-        padding: "14px 16px",
-        borderRadius: "12px",
-        border: "1px solid #eee",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+        padding: "16px",
+        borderRadius: "10px",
+        border: "1px solid #f1f5f9",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
       }}
     >
-      <div style={{ fontSize: 12, color: "#666" }}>{title}</div>
-
       <div
         style={{
-          fontSize: 28,
-          fontWeight: 700,
+          fontSize: "11px",
+          fontWeight: "700",
+          color: "#64748b",
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
+        }}
+      >
+        {title}
+      </div>
+      <div
+        style={{
+          fontSize: "24px",
+          fontWeight: "800",
           color: accent,
-          marginTop: 4,
+          margin: "4px 0",
+          fontFamily: "monospace",
         }}
       >
         {value}
       </div>
-
       {subtitle && (
-        <div style={{ fontSize: 11, color: "#888" }}>{subtitle}</div>
+        <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: "500" }}>
+          {subtitle}
+        </div>
       )}
     </div>
   );
@@ -97,74 +111,33 @@ export default function RealtimeSignal({ apiBase }) {
   }, []);
 
   return (
-    <div>
-      {/* SECTION HEADER */}
-      <div style={{ marginBottom: 16 }}>
-        <h3
-          style={{
-            margin: 0,
-            fontSize: 20,
-            fontWeight: 700,
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            color: "#111",
-          }}
-        >
-          📶 Realtime Signal
-        </h3>
-
-        <div
-          style={{
-            width: 48,
-            height: 3,
-            background: "#2563eb",
-            borderRadius: 2,
-            marginTop: 6,
-          }}
-        />
-      </div>
-
-      {/* STAT CARDS */}
-      <div style={{ display: "flex", gap: 12 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      {/* Container Grid buat Card */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+          gap: "16px",
+        }}
+      >
         <StatCard
-          title="RSSI"
+          title="RSSI Raw"
           value={signal.rssi}
-          subtitle="bars"
-          accent="#2563eb"
+          subtitle="Signal Index"
+          accent="#6366f1"
         />
-
         <StatCard
-          title="Signal Power"
-          value={signal.dbm}
-          subtitle="dBm"
-          accent="#16a34a"
+          title="Signal Strength"
+          value={`${signal.dbm} dBm`}
+          subtitle="Power Level"
+          accent="#10b981"
         />
-
         <StatCard
-          title="BER"
+          title="Error Rate (BER)"
           value={signal.ber}
           subtitle={berText}
-          accent={signal.ber > 5 ? "#dc2626" : "#f59e0b"}
+          accent="#f59e0b"
         />
-      </div>
-
-      {/* MODE & SOURCE */}
-      <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
-        <span
-          style={{
-            padding: "4px 10px",
-            borderRadius: 20,
-            fontSize: 12,
-            background: mode === "idle" ? "#e0f2fe" : "#fee2e2",
-            color: mode === "idle" ? "#0369a1" : "#991b1b",
-            fontWeight: 500,
-          }}
-        >
-          {mode.toUpperCase()}
-        </span>
-
-        <span style={{ fontSize: 12, color: "#777" }}>📍 {source}</span>
       </div>
     </div>
   );

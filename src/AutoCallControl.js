@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 export default function AutoCallControl({ apiBase, autoCall, onChange }) {
-
   const [enabled, setEnabled] = useState(false);
   const [interval, setInterval] = useState("30");
   const [number, setNumber] = useState("");
@@ -19,7 +18,6 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
       setNumber(autoCall.number || "");
       setDuration(String(autoCall.duration || 15));
     }
-
   }, [autoCall.enabled]); // ← kunci fix di sini
 
   const saveConfig = async (newEnabled) => {
@@ -48,37 +46,45 @@ export default function AutoCallControl({ apiBase, autoCall, onChange }) {
   };
 
   return (
-    <div>
-      <h3>🔁 Auto Call</h3>
-
-      <label>
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <input
           type="checkbox"
           checked={enabled}
           onChange={toggleAutoCall}
-        /> Enable
-      </label>
+          style={{ width: "auto" }}
+        />
+        <span style={{ fontSize: "13px", fontWeight: "600" }}>
+          Enable Auto Call Cycle
+        </span>
+      </div>
 
-      <input
-        disabled={enabled}
-        value={interval}
-        onChange={(e) => setInterval(e.target.value)}
-        placeholder="Interval (s)"
-      />
-
-      <input
-        disabled={enabled}
-        value={number}
-        onChange={(e) => setNumber(e.target.value)}
-        placeholder="+8707xxxxxxx"
-      />
-
-      <input
-        disabled={enabled}
-        value={duration}
-        onChange={(e) => setDuration(e.target.value)}
-        placeholder="Duration (s)"
-      />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "8px",
+        }}
+      >
+        <input
+          value={interval}
+          onChange={(e) => setInterval(e.target.value)}
+          placeholder="Interval (s)"
+          disabled={enabled}
+        />
+        <input
+          value={number}
+          onChange={(e) => setNumber(e.target.value)}
+          placeholder="Phone Number"
+          disabled={enabled}
+        />
+        <input
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          placeholder="Duration (s)"
+          disabled={enabled}
+        />
+      </div>
     </div>
   );
 }

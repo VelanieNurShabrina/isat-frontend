@@ -19,33 +19,73 @@ export default function CallLogTable({ apiBase }) {
   }, []);
 
   return (
-    <div style={card}>
-      <h3>📋 Call Logs</h3>
-
-      <table width="100%">
+    <div style={{ width: "100%" }}>
+      <table
+        style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}
+      >
         <thead>
-          <tr>
-            <th>Time</th>
-            <th>Number</th>
-            <th>Status</th>
+          <tr style={{ borderBottom: "2px solid #f1f5f9", textAlign: "left" }}>
+            <th
+              style={{
+                padding: "12px 8px",
+                color: "#64748b",
+                fontWeight: "600",
+              }}
+            >
+              TIME
+            </th>
+            <th
+              style={{
+                padding: "12px 8px",
+                color: "#64748b",
+                fontWeight: "600",
+              }}
+            >
+              NUMBER
+            </th>
+            <th
+              style={{
+                padding: "12px 8px",
+                color: "#64748b",
+                fontWeight: "600",
+              }}
+            >
+              STATUS
+            </th>
           </tr>
         </thead>
-
         <tbody>
           {logs.map((l, i) => (
-            <tr key={i}>
-              <td>
-                {new Date(l.time * 1000).toLocaleTimeString()}
+            <tr key={i} style={{ borderBottom: "1px solid #f1f5f9" }}>
+              <td
+                style={{
+                  padding: "12px 8px",
+                  color: "#1e293b",
+                  fontFamily: "monospace",
+                }}
+              >
+                {new Date(l.time * 1000).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </td>
-
-              <td>{l.number}</td>
-
-              <td style={{
-                color: l.status === "success"
-                  ? "green"
-                  : "red"
-              }}>
-                {l.status}
+              <td style={{ padding: "12px 8px", fontWeight: "500" }}>
+                {l.number}
+              </td>
+              <td style={{ padding: "12px 8px" }}>
+                <span
+                  style={{
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    background: l.status === "success" ? "#dcfce7" : "#fee2e2",
+                    color: l.status === "success" ? "#166534" : "#991b1b",
+                  }}
+                >
+                  {l.status}
+                </span>
               </td>
             </tr>
           ))}

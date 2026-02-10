@@ -11,31 +11,29 @@ export default function SmsControl({ apiBase }) {
 
   // 🔥 Poll backend status
   // 🔥 Poll backend status
-useEffect(() => {
-  const fetchStatus = async () => {
-    try {
-      const res = await fetch(`${apiBase}/status`, {
-        headers: { "ngrok-skip-browser-warning": "true" }
-      });
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(`${apiBase}/status`, {
+          headers: { "ngrok-skip-browser-warning": "true" },
+        });
 
-      const json = await res.json();
+        const json = await res.json();
 
-      setAutoSmsRunning(json.auto_sms?.enabled);
+        setAutoSmsRunning(json.auto_sms?.enabled);
 
-      // ✅ FIX: cek source juga
-      setManualSmsProcessing(
-        json.current_task?.type === "SMS" &&
-        json.current_task?.source === "manual"
-      );
+        // ✅ FIX: cek source juga
+        setManualSmsProcessing(
+          json.current_task?.type === "SMS" &&
+            json.current_task?.source === "manual",
+        );
+      } catch {}
+    };
 
-    } catch {}
-  };
-
-  fetchStatus();
-  const t = setInterval(fetchStatus, 1000);
-  return () => clearInterval(t);
-}, [apiBase]);
-
+    fetchStatus();
+    const t = setInterval(fetchStatus, 1000);
+    return () => clearInterval(t);
+  }, [apiBase]);
 
   async function sendSMS() {
     if (!number || !message) {
@@ -75,57 +73,66 @@ useEffect(() => {
     setLoading(false);
   }
 
-  const disabled =
-    loading ||
-    autoSmsRunning ||
-    manualSmsProcessing;
+  const disabled = loading || autoSmsRunning || manualSmsProcessing;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <h3>📨 Send SMS</h3>
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      {/* Baris Pertama: Nomor & Button */}
+      <div style={{ display: "flex", gap: "10px" }}>
+        <input
+          style={{ flex: 2 }} // Input nomor lebih lebar
+          placeholder="Phone Number (+62...)"
+          value={number}
+          disabled={disabled}
+          onChange={(e) => setNumber(e.target.value)}
+        />
+        <button
+          onClick={sendSMS}
+          disabled={disabled}
+          style={{
+            flex: 1,
+            background: disabled ? "#cbd5e1" : "#2563eb",
+            color: "white",
+            border: "none",
+            fontSize: "13px",
+          }}
+        >
+          {loading ? "Sending..." : "🚀 Send SMS"}
+        </button>
+      </div>
 
-      <input
-        placeholder="+628xxxx"
-        value={number}
-        disabled={disabled}
-        onChange={(e) => setNumber(e.target.value)}
-      />
-
+      {/* Baris Kedua: Pesan */}
       <textarea
-        placeholder="Message"
+        placeholder="Type message here..."
         value={message}
         disabled={disabled}
         onChange={(e) => setMessage(e.target.value)}
+        style={{ minHeight: "80px", resize: "none", padding: "10px" }}
       />
 
-      <button onClick={sendSMS} disabled={disabled}>
-        {loading ? "Sending..." : "Send SMS"}
-      </button>
-
-      {/* WARNINGS */}
-      {autoSmsRunning && (
-        <div style={{
-          background: "#fef3c7",
-          padding: 8,
-          borderRadius: 6,
-          fontSize: 12
-        }}>
-          ⚠️ Manual SMS disabled while Auto SMS is running
+      {/* Baris Ketiga: Status/Warning (Kecil & Rapih) */}
+      {(autoSmsRunning || manualSmsProcessing) && (
+        <div
+          style={{
+            background: autoSmsRunning ? "#fffbeb" : "#eff6ff",
+            padding: "8px",
+            borderRadius: "6px",
+            fontSize: "11px",
+            color: autoSmsRunning ? "#92400e" : "#1e40af",
+            border: `1px solid ${autoSmsRunning ? "#fef3c7" : "#dbeafe"}`,
+          }}
+        >
+          {autoSmsRunning
+            ? "⚠️ Auto SMS Mode Active"
+            : "⏳ System is processing manual SMS..."}
         </div>
       )}
 
-      {manualSmsProcessing && (
-        <div style={{
-          background: "#dbeafe",
-          padding: 8,
-          borderRadius: 6,
-          fontSize: 12
-        }}>
-          ⏳ Manual SMS processing...
-        </div>
+      {response && (
+        <pre style={{ fontSize: "11px", margin: 0, color: "#64748b" }}>
+          {response}
+        </pre>
       )}
-
-      {response && <pre>{response}</pre>}
     </div>
   );
 }
