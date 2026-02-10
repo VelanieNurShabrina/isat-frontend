@@ -16,18 +16,8 @@ function App() {
 
   const [signalInterval, setSignalInterval] = useState(10);
   const [isCalling, setIsCalling] = useState(false);
-  const [autoCall, setAutoCall] = useState({
-    enabled: false,
-    interval: 30,
-    number: "",
-    duration: 15,
-  });
-  const [autoSms, setAutoSms] = useState({
-    enabled: false,
-    interval: 300,
-    number: "",
-    message: "",
-  });
+  const [autoCall, setAutoCall] = useState({});
+  const [autoSms, setAutoSms] = useState({});
   const [systemStatus, setSystemStatus] = useState(null);
 
   useEffect(() => {
@@ -36,16 +26,12 @@ function App() {
         const res = await fetch(`${apiBase}/status`, {
           headers: { "ngrok-skip-browser-warning": "true" },
         });
-        if (!res.ok) return;
-
         const json = await res.json();
+
         setSystemStatus(json);
-
-        if (typeof json.interval === "number") setSignalInterval(json.interval);
-
+        if (json.interval) setSignalInterval(json.interval);
         if (json.auto_call) setAutoCall(json.auto_call);
         if (json.auto_sms) setAutoSms(json.auto_sms);
-
         if (typeof json.call_active === "boolean") setIsCalling(json.call_active);
       } catch {}
     };
@@ -55,48 +41,53 @@ function App() {
     return () => clearInterval(t);
   }, []);
 
-  const colors = {
-    bg: "#f4f6f9",
-    card: "#ffffff",
-    border: "#e5e7eb",
-    text: "#111827",
-    muted: "#6b7280",
+  // 🎯 NOC THEME
+  const theme = {
+    bg: "#0f172a",
+    card: "#111827",
+    border: "#1f2933",
+    text: "#e5e7eb",
+    muted: "#9ca3af",
+    accent: "#22c55e",
   };
 
-  const cardStyle = {
-    background: colors.card,
-    padding: 20,
-    borderRadius: 12,
-    border: `1px solid ${colors.border}`,
+  const card = {
+    background: theme.card,
+    border: `1px solid ${theme.border}`,
+    borderRadius: 10,
+    padding: 18,
+    color: theme.text,
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: colors.bg, fontFamily: "Inter, sans-serif" }}>
+    <div style={{
+      display: "flex",
+      minHeight: "100vh",
+      background: theme.bg,
+      color: theme.text,
+      fontFamily: "Segoe UI, sans-serif"
+    }}>
 
       {/* SIDEBAR */}
       <aside style={{
-        width: 280,
-        background: "#fff",
-        borderRight: `1px solid ${colors.border}`,
-        padding: 24,
+        width: 240,
+        background: "#020617",
+        borderRight: `1px solid ${theme.border}`,
+        padding: 20,
         display: "flex",
         flexDirection: "column",
-        gap: 24
+        gap: 20
       }}>
-        <div>
-          <h2 style={{ margin: 0 }}>📡 IsatPhone</h2>
-          <p style={{ fontSize: 12, color: colors.muted }}>Monitoring System</p>
-        </div>
+        <h2 style={{ margin: 0, color: theme.accent }}>
+          🛰 NOC PANEL
+        </h2>
 
-        <div>
-          <small style={{ color: colors.muted }}>SYSTEM STATUS</small>
-          <SystemStatusCard status={systemStatus} />
-        </div>
-
-        <div>
-          <small style={{ color: colors.muted }}>INTERVAL</small>
-          <IntervalControl apiBase={apiBase} interval={signalInterval} onIntervalChange={setSignalInterval}/>
-        </div>
+        <SystemStatusCard status={systemStatus}/>
+        <IntervalControl
+          apiBase={apiBase}
+          interval={signalInterval}
+          onIntervalChange={setSignalInterval}
+        />
 
         <div style={{ marginTop: "auto" }}>
           <CallStats apiBase={apiBase}/>
@@ -104,39 +95,65 @@ function App() {
       </aside>
 
       {/* MAIN */}
-      <main style={{ flex: 1, padding: 30, display: "flex", flexDirection: "column", gap: 24 }}>
+      <main style={{
+        flex: 1,
+        padding: 24,
+        display: "flex",
+        flexDirection: "column",
+        gap: 20
+      }}>
 
-        {/* Realtime */}
-        <div style={cardStyle}>
+        {/* KPI */}
+        <div style={card}>
           <RealtimeSignal apiBase={apiBase}/>
         </div>
 
-        {/* Chart */}
-        <div style={cardStyle}>
-          <HistoryChart apiBase={apiBase} refreshInterval={signalInterval}/>
+        {/* BIG CHART */}
+        <div style={{ ...card, height: 360 }}>
+          <HistoryChart
+            apiBase={apiBase}
+            refreshInterval={signalInterval}
+          />
         </div>
 
-        {/* Bottom Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        {/* BOTTOM GRID */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 20
+        }}>
 
-          {/* LEFT */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            <div style={cardStyle}>
-              <h3>📞 Call</h3>
-              <CallControl apiBase={apiBase} isCalling={isCalling} autoCallRunning={autoCall.enabled} onCallStateChange={setIsCalling}/>
-              <AutoCallControl apiBase={apiBase} autoCall={autoCall} onChange={setAutoCall}/>
+          {/* LEFT CONTROLS */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <div style={card}>
+              <h3 style={{ marginTop: 0 }}>📞 CALL CONTROL</h3>
+              <CallControl
+                apiBase={apiBase}
+                isCalling={isCalling}
+                autoCallRunning={autoCall.enabled}
+                onCallStateChange={setIsCalling}
+              />
+              <AutoCallControl
+                apiBase={apiBase}
+                autoCall={autoCall}
+                onChange={setAutoCall}
+              />
             </div>
 
-            <div style={cardStyle}>
-              <h3>✉️ SMS</h3>
+            <div style={card}>
+              <h3 style={{ marginTop: 0 }}>✉️ SMS CONTROL</h3>
               <SmsControl apiBase={apiBase}/>
-              <AutoSmsControl apiBase={apiBase} autoSms={autoSms} onChange={setAutoSms}/>
+              <AutoSmsControl
+                apiBase={apiBase}
+                autoSms={autoSms}
+                onChange={setAutoSms}
+              />
             </div>
           </div>
 
-          {/* RIGHT */}
-          <div style={cardStyle}>
-            <h3>📋 Call Logs</h3>
+          {/* RIGHT LOGS */}
+          <div style={card}>
+            <h3 style={{ marginTop: 0 }}>📋 CALL LOGS</h3>
             <div style={{ maxHeight: 500, overflowY: "auto" }}>
               <CallLogTable apiBase={apiBase}/>
             </div>
