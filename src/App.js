@@ -111,26 +111,17 @@ function App() {
               fontWeight: 800,
             }}
           >
-            📡 ISAT-HQ
+            📡 ISATPHONE MONITORING
           </h2>
-          <p style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>
-            Satellite Terminal Manager
-          </p>
         </div>
 
         <div>
-          <label style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af" }}>
-            SYSTEM HEALTH
-          </label>
           <div style={{ marginTop: 12 }}>
             <SystemStatusCard status={systemStatus} />
           </div>
         </div>
 
         <div>
-          <label style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af" }}>
-            READING RATE
-          </label>
           <div style={{ marginTop: 12 }}>
             <IntervalControl
               apiBase={apiBase}
