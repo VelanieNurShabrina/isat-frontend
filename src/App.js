@@ -8,6 +8,8 @@ import SmsControl from "./SmsControl";
 import AutoCallControl from "./AutoCallControl";
 import AutoSmsControl from "./AutoSmsControl";
 import SystemStatusCard from "./SystemStatusCard";
+import CallStats from "./CallStats";
+import CallLogTable from "./CallLogTable";
 
 function App() {
   // Semua request lewat Vercel -> /api -> proxy -> ngrok -> Flask
@@ -255,6 +257,19 @@ function App() {
           />
         </div>
       </div>
+      {/* ===== KPI ROW ===== */}
+      <div
+        style={{
+          display: "flex",
+          gap: 20,
+          marginBottom: 30,
+        }}
+      >
+        <CallStats apiBase={apiBase} />
+      </div>
+
+      {/* ===== LOG TABLE ===== */}
+      <CallLogTable apiBase={apiBase} />
 
       {/* ===== HISTORY CHART ===== */}
       <div
