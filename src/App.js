@@ -82,176 +82,299 @@ function App() {
     return () => window.clearInterval(timer);
   }, [apiBase]);
 
-  const cardStyle = {
-    background: "#fff",
-    padding: "20px",
-    borderRadius: "12px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-    border: "1px solid #eef0f2",
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
+  // UI Theme Colors
+  const colors = {
+    bg: "#f4f7fa",
+    sidebar: "#ffffff",
+    border: "#e1e4e8",
+    accent: "#0052cc",
+    textMain: "#172b4d",
+    textMuted: "#5e6c84",
   };
 
   // Ganti bagian return di App.js kamu
   return (
     <div
       style={{
-        backgroundColor: "#f4f7f9",
+        display: "flex",
         minHeight: "100vh",
-        padding: "32px",
-        fontFamily: "Segoe UI, Roboto, sans-serif",
+        backgroundColor: colors.bg,
+        fontFamily: "'Inter', sans-serif",
+        color: colors.textMain,
       }}
     >
-      {/* 1. HEADER SECTION */}
-      <div
+      {/* LEFT SIDEBAR - Fixed Status & Config */}
+      <aside
         style={{
-          marginBottom: "30px",
+          width: "320px",
+          backgroundColor: colors.sidebar,
+          borderRight: `1px solid ${colors.border}`,
+          padding: "24px",
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
+          flexDirection: "column",
+          gap: "24px",
+          position: "sticky",
+          top: 0,
+          height: "100vh",
         }}
       >
         <div>
           <h1
             style={{
-              margin: 0,
-              fontSize: "26px",
+              fontSize: "20px",
               fontWeight: "800",
-              color: "#1a1f36",
+              marginBottom: "4px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
             }}
           >
-            📡 IsatPhone Monitoring
+            📡 IsatPhone
           </h1>
-          <p style={{ color: "#697386", margin: "5px 0 0 0" }}>
-            Satellite Communication Real-time Dashboard
+          <p style={{ fontSize: "12px", color: colors.textMuted, margin: 0 }}>
+            Terminal Monitoring System
           </p>
         </div>
 
-        {/* Quick Status di pojok kanan atas */}
-        <div style={{ display: "flex", gap: "15px" }}>
-          <SystemStatusCard status={systemStatus} />
-          <IntervalControl
-            apiBase={apiBase}
-            interval={signalInterval}
-            onIntervalChange={setSignalInterval}
-          />
+        <div className="sidebar-group">
+          <label
+            style={{
+              fontSize: "11px",
+              fontWeight: "bold",
+              color: colors.textMuted,
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+            }}
+          >
+            Device Status
+          </label>
+          <div style={{ marginTop: "12px" }}>
+            <SystemStatusCard status={systemStatus} />
+          </div>
         </div>
-      </div>
 
-      {/* 2. MAIN GRID (3 Kolom untuk Controls) */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "24px",
-          marginBottom: "24px",
-        }}
-      >
-        {/* Kolom 1: Signal & Stats */}
-        <div style={cardStyle}>
-          <h3 style={{ margin: 0, fontSize: "16px", color: "#4f5b76" }}>
-            Signal Performance
-          </h3>
-          <RealtimeSignal apiBase={apiBase} />
+        <div className="sidebar-group">
+          <label
+            style={{
+              fontSize: "11px",
+              fontWeight: "bold",
+              color: colors.textMuted,
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+            }}
+          >
+            Reporting Rate
+          </label>
+          <div style={{ marginTop: "12px" }}>
+            <IntervalControl
+              apiBase={apiBase}
+              interval={signalInterval}
+              onIntervalChange={setSignalInterval}
+            />
+          </div>
+        </div>
+
+        <div className="sidebar-group" style={{ marginTop: "auto" }}>
           <div
             style={{
-              marginTop: "auto",
-              paddingTop: "15px",
-              borderTop: "1px solid #eee",
+              padding: "16px",
+              backgroundColor: "#f9fafb",
+              borderRadius: "8px",
+              border: `1px solid ${colors.border}`,
             }}
           >
             <CallStats apiBase={apiBase} />
           </div>
-        </div>
-
-        {/* Kolom 2: Call Control (Manual & Auto) */}
-        <div style={cardStyle}>
-          <h3 style={{ margin: 0, fontSize: "16px", color: "#4f5b76" }}>
-            Call Management
-          </h3>
-          <CallControl
-            apiBase={apiBase}
-            isCalling={isCalling}
-            autoCallRunning={autoCall.enabled}
-            onCallStateChange={setIsCalling}
-          />
-          <div
+          <p
             style={{
-              padding: "15px",
-              background: "#f8f9fc",
-              borderRadius: "8px",
+              fontSize: "10px",
+              textAlign: "center",
+              marginTop: "16px",
+              color: "#a1a1a1",
             }}
           >
-            <AutoCallControl
-              apiBase={apiBase}
-              autoCall={autoCall}
-              onChange={setAutoCall}
-            />
+            © 2026 Velanie Dashboard
+          </p>
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT AREA */}
+      <main style={{ flex: 1, padding: "32px", overflowY: "auto" }}>
+        {/* TOP ROW: Realtime KPI Cards */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            gap: "24px",
+            marginBottom: "24px",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "20px",
+              borderRadius: "12px",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+              border: `1px solid ${colors.border}`,
+            }}
+          >
+            <RealtimeSignal apiBase={apiBase} />
           </div>
         </div>
 
-        {/* Kolom 3: SMS Control (Manual & Auto) */}
-        <div style={cardStyle}>
-          <h3 style={{ margin: 0, fontSize: "16px", color: "#4f5b76" }}>
-            SMS Messaging
-          </h3>
-          <SmsControl apiBase={apiBase} autoSmsRunning={autoSms.enabled} />
+        {/* MIDDLE ROW: History Chart (Large) */}
+        <div
+          style={{
+            backgroundColor: "#fff",
+            padding: "24px",
+            borderRadius: "12px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+            border: `1px solid ${colors.border}`,
+            marginBottom: "24px",
+          }}
+        >
           <div
             style={{
-              padding: "15px",
-              background: "#f8f9fc",
-              borderRadius: "8px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "16px",
             }}
           >
-            <AutoSmsControl
-              apiBase={apiBase}
-              autoSms={autoSms}
-              onChange={setAutoSms}
-            />
+            <h3 style={{ fontSize: "16px", fontWeight: "600", margin: 0 }}>
+              Signal Level Trend
+            </h3>
+            <span style={{ fontSize: "12px", color: colors.textMuted }}>
+              Updated: {new Date().toLocaleTimeString()}
+            </span>
           </div>
-        </div>
-      </div>
-
-      {/* 3. BOTTOM SECTION (Chart Lebar & Log di Samping) */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "2fr 1fr",
-          gap: "24px",
-          alignItems: "start",
-        }}
-      >
-        {/* Chart History */}
-        <div style={cardStyle}>
-          <h3 style={{ margin: 0, fontSize: "16px", color: "#4f5b76" }}>
-            Signal History (dBm & BER)
-          </h3>
           <HistoryChart apiBase={apiBase} refreshInterval={signalInterval} />
         </div>
 
-        {/* Recent Logs */}
-        <div style={{ ...cardStyle, maxHeight: "550px", overflow: "hidden" }}>
-          <h3 style={{ margin: 0, fontSize: "16px", color: "#4f5b76" }}>
-            Recent Activity Logs
-          </h3>
-          <div style={{ overflowY: "auto" }}>
-            <CallLogTable apiBase={apiBase} />
+        {/* BOTTOM ROW: Controls & Logs (Grid 2 Kolom) */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.2fr 1fr",
+            gap: "24px",
+          }}
+        >
+          {/* Action Column */}
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "24px" }}
+          >
+            {/* Call Control Box */}
+            <div
+              style={{
+                backgroundColor: "#fff",
+                padding: "20px",
+                borderRadius: "12px",
+                border: `1px solid ${colors.border}`,
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  marginBottom: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                📞 Voice Command
+              </h3>
+              <CallControl
+                apiBase={apiBase}
+                isCalling={isCalling}
+                autoCallRunning={autoCall.enabled}
+                onCallStateChange={setIsCalling}
+              />
+              <div
+                style={{
+                  marginTop: "16px",
+                  padding: "16px",
+                  backgroundColor: "#f8f9fa",
+                  borderRadius: "8px",
+                  border: "1px dashed #d1d5db",
+                }}
+              >
+                <AutoCallControl
+                  apiBase={apiBase}
+                  autoCall={autoCall}
+                  onChange={setAutoCall}
+                />
+              </div>
+            </div>
+
+            {/* SMS Control Box */}
+            <div
+              style={{
+                backgroundColor: "#fff",
+                padding: "20px",
+                borderRadius: "12px",
+                border: `1px solid ${colors.border}`,
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  marginBottom: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                ✉️ SMS Messaging
+              </h3>
+              <SmsControl apiBase={apiBase} autoSmsRunning={autoSms.enabled} />
+              <div
+                style={{
+                  marginTop: "16px",
+                  padding: "16px",
+                  backgroundColor: "#f8f9fa",
+                  borderRadius: "8px",
+                  border: "1px dashed #d1d5db",
+                }}
+              >
+                <AutoSmsControl
+                  apiBase={apiBase}
+                  autoSms={autoSms}
+                  onChange={setAutoSms}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Logs Column */}
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "20px",
+              borderRadius: "12px",
+              border: `1px solid ${colors.border}`,
+              maxHeight: "800px",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <h3
+              style={{
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "16px",
+              }}
+            >
+              Recent Activity Logs
+            </h3>
+            <div style={{ overflowY: "auto", flex: 1 }}>
+              <CallLogTable apiBase={apiBase} />
+            </div>
           </div>
         </div>
-      </div>
-
-      <footer
-        style={{
-          marginTop: "40px",
-          textAlign: "center",
-          color: "#a3acb9",
-          fontSize: "13px",
-        }}
-      >
-        © {new Date().getFullYear()} IsatPhone Monitoring Dashboard • Powered by
-        Velanie
-      </footer>
+      </main>
     </div>
   );
 }
