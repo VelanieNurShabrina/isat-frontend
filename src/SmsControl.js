@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useRef } from "react";
 
 export default function SmsControl({ apiBase }) {
   const [number, setNumber] = useState("");
@@ -25,7 +26,7 @@ export default function SmsControl({ apiBase }) {
 
         setManualSmsProcessing(
           json.current_task?.type === "SMS" &&
-          json.current_task?.source === "manual"
+            json.current_task?.source === "manual",
         );
       } catch {}
     };
@@ -36,12 +37,18 @@ export default function SmsControl({ apiBase }) {
   }, [apiBase]);
 
   // ==============================
-  // DETECT SUCCESS
+  // DETECT SUCCESS (FIXED)
   // ==============================
+  const prevProcessing = useRef(false);
+
   useEffect(() => {
-    if (!loading && !manualSmsProcessing && number && message) {
+    // kalau sebelumnya lagi proses,
+    // sekarang sudah tidak ➜ berarti selesai
+    if (prevProcessing.current && !manualSmsProcessing) {
       setResponse("✅ SMS sent successfully");
     }
+
+    prevProcessing.current = manualSmsProcessing;
   }, [manualSmsProcessing]);
 
   // ==============================
@@ -86,7 +93,6 @@ export default function SmsControl({ apiBase }) {
       if (data.status !== "ok") {
         setResponse("❌ Failed to send SMS");
       }
-
     } catch (err) {
       setResponse("❌ Error: " + err.message);
     }
@@ -101,7 +107,6 @@ export default function SmsControl({ apiBase }) {
   // ==============================
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-
       {/* NUMBER + BUTTON */}
       <div style={{ display: "flex", gap: "10px" }}>
         <input
@@ -138,41 +143,46 @@ export default function SmsControl({ apiBase }) {
 
       {/* STATUS */}
       {manualSmsProcessing && (
-        <div style={{
-          fontSize: "11px",
-          color: "#1e40af",
-          background: "#eff6ff",
-          padding: "8px",
-          borderRadius: "6px",
-          border: "1px solid #dbeafe"
-        }}>
+        <div
+          style={{
+            fontSize: "11px",
+            color: "#1e40af",
+            background: "#eff6ff",
+            padding: "8px",
+            borderRadius: "6px",
+            border: "1px solid #dbeafe",
+          }}
+        >
           ⏳ Sending SMS...
         </div>
       )}
 
       {!manualSmsProcessing && response && (
-        <div style={{
-          fontSize: "11px",
-          color: response.includes("❌") ? "#dc2626" : "#16a34a",
-        }}>
+        <div
+          style={{
+            fontSize: "11px",
+            color: response.includes("❌") ? "#dc2626" : "#16a34a",
+          }}
+        >
           {response}
         </div>
       )}
 
       {/* AUTO SMS WARNING */}
       {autoSmsRunning && (
-        <div style={{
-          background: "#fffbeb",
-          padding: "8px",
-          borderRadius: "6px",
-          fontSize: "11px",
-          color: "#92400e",
-          border: "1px solid #fef3c7"
-        }}>
+        <div
+          style={{
+            background: "#fffbeb",
+            padding: "8px",
+            borderRadius: "6px",
+            fontSize: "11px",
+            color: "#92400e",
+            border: "1px solid #fef3c7",
+          }}
+        >
           ⚠️ Auto SMS Mode Active
         </div>
       )}
-
     </div>
   );
 }
