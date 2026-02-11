@@ -153,8 +153,6 @@ function App() {
             <SystemStatusCard status={systemStatus} />
           </div>
         </div>
-
-        
       </aside>
 
       {/* MAIN CONTENT */}
@@ -176,7 +174,30 @@ function App() {
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             {/* Call Action Group */}
             <div className="card">
-              <div className="section-title">📞 Voice Management</div>
+              <div style={{ marginBottom: 16 }}>
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: 20,
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    color: "#111",
+                  }}
+                >
+                  📞 Call Control
+                </h3>
+                <div
+                  style={{
+                    width: 48,
+                    height: 3,
+                    background: "#dc2626",
+                    borderRadius: 2,
+                    marginTop: 6,
+                  }}
+                />
+              </div>
               <CallControl
                 apiBase={apiBase}
                 isCalling={isCalling}
