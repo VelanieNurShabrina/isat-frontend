@@ -6,17 +6,22 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
   const [lastValidInterval, setLastValidInterval] = useState("300");
   const [number, setNumber] = useState("");
   const [message, setMessage] = useState("");
+  const [initialized, setInitialized] = useState(false);
 
-  // ✅ SYNC FULL DARI BACKEND
   useEffect(() => {
     if (!autoSms) return;
 
+    // Sync hanya jika status enabled beda
     setEnabled(autoSms.enabled);
-    setIntervalValue(String(autoSms.interval));
-    setLastValidInterval(String(autoSms.interval));
-    setNumber(autoSms.number || "");
-    setMessage(autoSms.message || "");
-  }, [autoSms]); // 🔥 INI KUNCINYA
+
+    if (!initialized) {
+      setIntervalValue(String(autoSms.interval));
+      setLastValidInterval(String(autoSms.interval));
+      setNumber(autoSms.number || "");
+      setMessage(autoSms.message || "");
+      setInitialized(true);
+    }
+  }, [autoSms]);
 
   const saveConfig = async (newEnabled, newInterval) => {
     try {
@@ -64,11 +69,7 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
       <h3>📩 Auto SMS</h3>
 
       <label>
-        <input
-          type="checkbox"
-          checked={enabled}
-          onChange={toggleAutoSms}
-        />
+        <input type="checkbox" checked={enabled} onChange={toggleAutoSms} />
         Enable
       </label>
 
