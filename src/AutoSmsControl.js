@@ -11,15 +11,21 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
   useEffect(() => {
     if (!autoSms) return;
 
-    // Sync hanya jika status enabled beda
     setEnabled(autoSms.enabled);
 
+    // Sync awal saja
     if (!initialized) {
       setIntervalValue(String(autoSms.interval));
       setLastValidInterval(String(autoSms.interval));
       setNumber(autoSms.number || "");
       setMessage(autoSms.message || "");
       setInitialized(true);
+      return;
+    }
+
+    // Sync hanya jika backend message berubah
+    if (autoSms.message !== message) {
+      setMessage(autoSms.message || "");
     }
   }, [autoSms]);
 
