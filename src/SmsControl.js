@@ -106,6 +106,35 @@ export default function SmsControl({ apiBase }) {
   // UI
   // ==============================
   return (
+  <div style={{ padding: "12px 16px" }}>
+    {/* HEADER — SAMA KAYA CALL CONTROL */}
+    <div style={{ marginBottom: 16 }}>
+      <h3
+        style={{
+          margin: 0,
+          fontSize: 20,
+          fontWeight: 700,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          color: "#111",
+        }}
+      >
+        ✉️ SMS Control
+      </h3>
+
+      <div
+        style={{
+          width: 48,
+          height: 3,
+          background: "#2563eb",
+          borderRadius: 2,
+          marginTop: 6,
+        }}
+      />
+    </div>
+
+    {/* CONTENT */}
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
       {/* NUMBER + BUTTON */}
       <div style={{ display: "flex", gap: "10px" }}>
@@ -126,6 +155,9 @@ export default function SmsControl({ apiBase }) {
             color: "white",
             border: "none",
             fontSize: "13px",
+            fontWeight: 600,
+            borderRadius: 8,
+            padding: "8px 0",
           }}
         >
           {manualSmsProcessing ? "Sending..." : "Send SMS"}
@@ -138,18 +170,23 @@ export default function SmsControl({ apiBase }) {
         value={message}
         disabled={disabled}
         onChange={(e) => setMessage(e.target.value)}
-        style={{ minHeight: "80px", resize: "none", padding: "10px" }}
+        style={{
+          minHeight: "80px",
+          resize: "none",
+          padding: "10px",
+          borderRadius: 8,
+        }}
       />
 
       {/* STATUS */}
       {manualSmsProcessing && (
         <div
           style={{
-            fontSize: "11px",
+            fontSize: 13,
             color: "#1e40af",
             background: "#eff6ff",
-            padding: "8px",
-            borderRadius: "6px",
+            padding: "8px 12px",
+            borderRadius: 8,
             border: "1px solid #dbeafe",
           }}
         >
@@ -160,7 +197,7 @@ export default function SmsControl({ apiBase }) {
       {!manualSmsProcessing && response && (
         <div
           style={{
-            fontSize: "11px",
+            fontSize: 13,
             color: response.includes("❌") ? "#dc2626" : "#16a34a",
           }}
         >
@@ -172,17 +209,18 @@ export default function SmsControl({ apiBase }) {
       {autoSmsRunning && (
         <div
           style={{
-            background: "#fffbeb",
-            padding: "8px",
-            borderRadius: "6px",
-            fontSize: "11px",
+            background: "#fef3c7",
+            padding: "8px 12px",
+            borderRadius: 8,
+            fontSize: 13,
             color: "#92400e",
-            border: "1px solid #fef3c7",
           }}
         >
           ⚠️ Auto SMS Mode Active
         </div>
       )}
     </div>
-  );
+  </div>
+);
+
 }
