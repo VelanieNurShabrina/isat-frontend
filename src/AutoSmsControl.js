@@ -63,8 +63,6 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
 
   return (
     <div>
-      <h3>📩 Auto SMS</h3>
-
       <label>
         <input type="checkbox" checked={enabled} onChange={toggleAutoSms} />
         Enable
