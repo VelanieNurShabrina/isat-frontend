@@ -129,31 +129,7 @@ export default function CallControl({
   return (
     <div style={{ padding: "12px 16px" }}>
       {/* HEADER */}
-      <div style={{ marginBottom: 16 }}>
-        <h3
-          style={{
-            margin: 0,
-            fontSize: 20,
-            fontWeight: 700,
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            color: "#111",
-          }}
-        >
-          📞 Call Control
-        </h3>
-        <div
-          style={{
-            width: 48,
-            height: 3,
-            background: "#dc2626",
-            borderRadius: 2,
-            marginTop: 6,
-          }}
-        />
-      </div>
-
+      
       {/* FORM */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <input
