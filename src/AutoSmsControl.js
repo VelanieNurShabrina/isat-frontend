@@ -9,25 +9,16 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!autoSms) return;
+    if (!autoSms || initialized) return;
 
     setEnabled(autoSms.enabled);
+    setIntervalValue(String(autoSms.interval));
+    setLastValidInterval(String(autoSms.interval));
+    setNumber(autoSms.number || "");
+    setMessage(autoSms.message || "");
 
-    // Sync awal saja
-    if (!initialized) {
-      setIntervalValue(String(autoSms.interval));
-      setLastValidInterval(String(autoSms.interval));
-      setNumber(autoSms.number || "");
-      setMessage(autoSms.message || "");
-      setInitialized(true);
-      return;
-    }
-
-    // Sync hanya jika backend message berubah
-    if (autoSms.message !== message) {
-      setMessage(autoSms.message || "");
-    }
-  }, [autoSms]);
+    setInitialized(true);
+  }, [autoSms, initialized]);
 
   const saveConfig = async (newEnabled, newInterval) => {
     try {
