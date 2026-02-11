@@ -128,7 +128,7 @@ export default function SmsControl({ apiBase }) {
             fontSize: "13px",
           }}
         >
-          {manualSmsProcessing ? "Sending..." : "🚀 Send SMS"}
+          {manualSmsProcessing ? "Sending..." : "Send SMS"}
         </button>
       </div>
 
