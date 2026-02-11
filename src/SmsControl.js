@@ -108,31 +108,7 @@ export default function SmsControl({ apiBase }) {
   return (
   <div style={{ padding: "12px 16px" }}>
     {/* HEADER — SAMA KAYA CALL CONTROL */}
-    <div style={{ marginBottom: 16 }}>
-      <h3
-        style={{
-          margin: 0,
-          fontSize: 20,
-          fontWeight: 700,
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          color: "#111",
-        }}
-      >
-        ✉️ SMS Control
-      </h3>
-
-      <div
-        style={{
-          width: 48,
-          height: 3,
-          background: "#2563eb",
-          borderRadius: 2,
-          marginTop: 6,
-        }}
-      />
-    </div>
+    
 
     {/* CONTENT */}
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
