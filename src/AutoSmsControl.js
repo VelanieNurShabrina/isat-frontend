@@ -62,11 +62,19 @@ export default function AutoSmsControl({ apiBase, autoSms, onChange }) {
   };
 
   return (
-    <div>
-      <label>
-        <input type="checkbox" checked={enabled} onChange={toggleAutoSms} />
-        Enable Auto SMS Cycle
-      </label>
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      {/* ENABLE TOGGLE — FIX POSISI */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={toggleAutoSms}
+          style={{ width: "auto" }}
+        />
+        <span style={{ fontSize: "13px", fontWeight: "600" }}>
+          Enable Auto SMS Cycle
+        </span>
+      </div>
 
       {/* INTERVAL */}
       <input
