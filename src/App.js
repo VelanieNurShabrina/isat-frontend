@@ -156,7 +156,7 @@ function App() {
       </aside>
 
       {/* MAIN CONTENT */}
-      <main style={{ flex: 1, marginLeft: 280, padding: 40 }}>
+      <main style={{ flex: 1, marginLeft: 300, padding: 40 }}>
         {/* ROW 2: History Chart */}
         <div style={{ marginBottom: 24 }} className="card">
           <HistoryChart apiBase={apiBase} refreshInterval={signalInterval} />
