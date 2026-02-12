@@ -95,7 +95,7 @@ export default function HistoryChart({ apiBase, refreshInterval = 10 }) {
             color: "#111",
           }}
         >
-          📈 Signal History (dBm & BER)
+          📈 SIGNAL HISTORY (dBm & BER)
         </h3>
 
         <div
