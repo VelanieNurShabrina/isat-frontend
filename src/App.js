@@ -108,18 +108,25 @@ function App() {
           <h2
             style={{
               margin: 0,
-              color: "#2563eb",
               fontSize: 18,
-              fontWeight: 800,
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              whiteSpace: "nowrap",
+              fontWeight: 900,
+              letterSpacing: 1.5,
+              color: "#1e3a8a",
             }}
           >
-            <span>📡</span>
-            <span>ISATPHONE MONITORING</span>
+            📡 ISATPHONE NOC
           </h2>
+
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: "#64748b",
+              marginTop: 2,
+            }}
+          >
+            Network Monitoring System
+          </div>
         </div>
 
         {/* ✅ LIVE SIGNAL (BARU) */}
