@@ -273,7 +273,31 @@ function App() {
               gap: 16,
             }}
           >
-            <div className="section-title">📋 Activity Logs</div>
+            <div style={{ marginBottom: 16 }}>
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: 20,
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  color: "#111",
+                }}
+              >
+                📋 ACTIVITY LOGS
+              </h3>
+
+              <div
+                style={{
+                  width: 48,
+                  height: 3,
+                  background: "#b4701e",
+                  borderRadius: 2,
+                  marginTop: 6,
+                }}
+              />
+            </div>
 
             {/* CALL PERFORMANCE DI DALAM CARD */}
             <div
