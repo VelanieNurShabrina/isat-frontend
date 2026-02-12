@@ -114,12 +114,12 @@ function App() {
               color: "#1e3a8a",
             }}
           >
-            📡 ISATPHONE
+            ISATPHONE
           </h2>
 
           <div
             style={{
-              fontSize: 25,
+              fontSize: 20,
               fontWeight: 600,
               color: "#64748b",
               marginTop: 2,
