@@ -109,11 +109,16 @@ function App() {
             style={{
               margin: 0,
               color: "#2563eb",
-              fontSize: 22,
+              fontSize: 18,
               fontWeight: 800,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              whiteSpace: "nowrap",
             }}
           >
-            📡 ISATPHONE MONITORING
+            <span>📡</span>
+            <span>ISATPHONE MONITORING</span>
           </h2>
         </div>
 
