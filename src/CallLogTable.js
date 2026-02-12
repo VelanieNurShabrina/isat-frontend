@@ -64,11 +64,14 @@ export default function CallLogTable({ apiBase }) {
                   fontFamily: "monospace",
                 }}
               >
-                {new Date(l.time * 1000).toLocaleTimeString([], {
+                {new Date(l.time * 1000).toLocaleString("id-ID", {
+                  day: "2-digit",
+                  month: "short",
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
               </td>
+
               <td style={{ padding: "12px 8px", fontWeight: "500" }}>
                 {l.number}
               </td>
