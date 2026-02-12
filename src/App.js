@@ -186,7 +186,7 @@ function App() {
                     color: "#111",
                   }}
                 >
-                  📞 Call CONTROL
+                  📞 CALL CONTROL
                 </h3>
                 <div
                   style={{
