@@ -11,6 +11,8 @@ import SystemStatusCard from "./SystemStatusCard";
 import CallStats from "./CallStats";
 import CallLogTable from "./CallLogTable";
 import SidebarSignal from "./SidebarSignal";
+import SmsStats from "./SmsStats";
+import SmsLogTable from "./SmsLogTable";
 
 function App() {
   const apiBase = "https://heterophoric-franco-unplumbed.ngrok-free.dev";
@@ -297,7 +299,7 @@ function App() {
                   color: "#111",
                 }}
               >
-                📋 ACTIVITY LOGS
+                📋CALL ACTIVITY LOGS
               </h3>
 
               <div
@@ -326,6 +328,61 @@ function App() {
             {/* LOG TABLE */}
             <div style={{ overflowY: "auto" }}>
               <CallLogTable apiBase={apiBase} />
+            </div>
+          </div>
+
+          {/* SMS LOG CARD */}
+          <div
+            className="card"
+            style={{
+              maxHeight: 800,
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+              marginTop: 24,
+            }}
+          >
+            <div style={{ marginBottom: 16 }}>
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: 20,
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  color: "#111",
+                }}
+              >
+                ✉️ SMS ACTIVITY LOGS
+              </h3>
+
+              <div
+                style={{
+                  width: 48,
+                  height: 3,
+                  background: "#2563eb",
+                  borderRadius: 2,
+                  marginTop: 6,
+                }}
+              />
+            </div>
+
+            {/* SMS PERFORMANCE */}
+            <div
+              style={{
+                background: "#f9fafb",
+                border: "1px solid #e5e7eb",
+                borderRadius: 10,
+                padding: 16,
+              }}
+            >
+              <SmsStats apiBase={apiBase} />
+            </div>
+
+            {/* SMS LOG TABLE */}
+            <div style={{ overflowY: "auto" }}>
+              <SmsLogTable apiBase={apiBase} />
             </div>
           </div>
         </div>
