@@ -18,8 +18,8 @@ export default function CallLogTable({ apiBase }) {
     return () => clearInterval(t);
   }, []);
 
-  return (
-    <div style={{ width: "100%" }}>
+ return (
+  <div style={{ width: "100%", overflowY: "auto", flex: 1 }}>
       <table
         style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}
       >

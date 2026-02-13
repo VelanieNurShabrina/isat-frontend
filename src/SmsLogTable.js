@@ -19,7 +19,7 @@ export default function SmsLogTable({ apiBase }) {
   }, []);
 
   return (
-    <div style={{ width: "100%" }}>
+  <div style={{ width: "100%", overflowY: "auto", flex: 1 }}>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
         <thead>
           <tr style={{ borderBottom: "2px solid #f1f5f9", textAlign: "left" }}>

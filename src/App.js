@@ -58,13 +58,14 @@ function App() {
   }, []);
 
   return (
-    <div style={{
-      display: "flex",
-      minHeight: "100vh",
-      background: "#f0f2f5",
-      fontFamily: "'Inter', sans-serif",
-    }}>
-
+    <div
+      style={{
+        display: "flex",
+        minHeight: "100vh",
+        background: "#f0f2f5",
+        fontFamily: "'Inter', sans-serif",
+      }}
+    >
       <style>{`
         .card { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         input, select, textarea { border: 1px solid #d1d5db !important; border-radius: 6px !important; padding: 8px 12px !important; font-size: 13px !important; width: 100%; box-sizing: border-box; }
@@ -72,19 +73,28 @@ function App() {
       `}</style>
 
       {/* SIDEBAR */}
-      <aside style={{
-        width: 280,
-        background: "#fff",
-        borderRight: "1px solid #e5e7eb",
-        padding: "30px 24px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 32,
-        position: "fixed",
-        height: "100vh",
-      }}>
+      <aside
+        style={{
+          width: 280,
+          background: "#fff",
+          borderRight: "1px solid #e5e7eb",
+          padding: "30px 24px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 32,
+          position: "fixed",
+          height: "100vh",
+        }}
+      >
         <div>
-          <h2 style={{ margin: 0, fontSize: 30, fontWeight: 900, color: "#1e3a8a" }}>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: 30,
+              fontWeight: 900,
+              color: "#1e3a8a",
+            }}
+          >
             ISATPHONE
           </h2>
           <div style={{ fontSize: 20, fontWeight: 600, color: "#64748b" }}>
@@ -120,22 +130,21 @@ function App() {
 
       {/* MAIN */}
       <main style={{ flex: 1, marginLeft: 300, padding: 40 }}>
-
         <div className="card" style={{ marginBottom: 24 }}>
           <HistoryChart apiBase={apiBase} refreshInterval={signalInterval} />
         </div>
 
         {/* GRID */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1.2fr 1fr",
-          gap: 24,
-          alignItems: "start",
-        }}>
-
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.2fr 1fr",
+            gap: 24,
+            alignItems: "start",
+          }}
+        >
           {/* LEFT COLUMN */}
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-
             <div className="card">
               <h3>📞 CALL CONTROL</h3>
               <CallControl
@@ -160,26 +169,35 @@ function App() {
                 onChange={setAutoSms}
               />
             </div>
-
           </div>
 
           {/* RIGHT COLUMN (LOGS STACK) */}
-          <div style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 24
-          }}>
-
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 24,
+            }}
+          >
             {/* CALL LOGS */}
-            <div className="card">
+            <div
+              className="card"
+              style={{
+                height: 420,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               <h3>📋 CALL ACTIVITY LOGS</h3>
 
-              <div style={{
-                background: "#f9fafb",
-                border: "1px solid #e5e7eb",
-                borderRadius: 10,
-                padding: 16,
-              }}>
+              <div
+                style={{
+                  background: "#f9fafb",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 10,
+                  padding: 16,
+                }}
+              >
                 <CallStats apiBase={apiBase} />
               </div>
 
@@ -187,23 +205,30 @@ function App() {
             </div>
 
             {/* SMS LOGS */}
-            <div className="card">
+            <div
+              className="card"
+              style={{
+                height: 420,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               <h3>✉️ SMS ACTIVITY LOGS</h3>
 
-              <div style={{
-                background: "#f9fafb",
-                border: "1px solid #e5e7eb",
-                borderRadius: 10,
-                padding: 16,
-              }}>
+              <div
+                style={{
+                  background: "#f9fafb",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 10,
+                  padding: 16,
+                }}
+              >
                 <SmsStats apiBase={apiBase} />
               </div>
 
               <SmsLogTable apiBase={apiBase} />
             </div>
-
           </div>
-
         </div>
       </main>
     </div>
