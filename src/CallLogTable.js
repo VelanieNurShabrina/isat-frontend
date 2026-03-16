@@ -18,8 +18,8 @@ export default function CallLogTable({ apiBase }) {
     return () => clearInterval(t);
   }, []);
 
- return (
-  <div style={{ width: "100%", overflowY: "auto", flex: 1 }}>
+  return (
+    <div style={{ width: "100%", overflowY: "auto", flex: 1 }}>
       <table
         style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}
       >
@@ -51,6 +51,15 @@ export default function CallLogTable({ apiBase }) {
               }}
             >
               STATUS
+            </th>
+            <th
+              style={{
+                padding: "12px 8px",
+                color: "#64748b",
+                fontWeight: "600",
+              }}
+            >
+              CAUSE
             </th>
           </tr>
         </thead>
@@ -89,6 +98,17 @@ export default function CallLogTable({ apiBase }) {
                 >
                   {l.status}
                 </span>
+              </td>
+              <td
+                style={{
+                  padding: "12px 8px",
+                  fontFamily: "monospace",
+                  color: "#475569",
+                }}
+              >
+                {l.cause_code
+                  ? `${l.cause_code} (${l.cause_desc || ""})`
+                  : "-"}
               </td>
             </tr>
           ))}
