@@ -1,70 +1,117 @@
-# Getting Started with Create React App
+# ISATPHONE Monitoring Dashboard (Frontend)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a web-based dashboard for monitoring ISATPhone communication system, including signal, call, and SMS activity.
+It provides real-time visualization and control through integration with a backend service.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🌐 Live Demo
 
-### `npm start`
+https://isat-frontend.vercel.app
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Features
 
-### `npm test`
+### 📶 Signal Monitoring
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* Real-time RSSI and BER display
+* Signal strength conversion to dBm
+* Signal history chart (RSSI & BER)
+* Configurable signal reading interval
 
-### `npm run build`
+### 📞 Call Monitoring
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* Manual call control (call & stop)
+* Auto call cycle configuration
+* Call performance summary:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+  * Attempt
+  * Success
+  * CSSR (Call Success Rate)
+* Call activity logs:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  * Phone number
+  * Status (success / failed)
+  * Cause code
 
-### `npm run eject`
+### 💬 SMS Monitoring
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* Send SMS manually
+* Auto SMS cycle configuration
+* SMS performance summary:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+  * Attempt
+  * Success rate
+* SMS activity logs
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 📊 Dashboard
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+* Real-time data updates
+* Interactive charts
+* System status monitoring
+* Clean and responsive UI layout
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## ⚙️ Tech Stack
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+* React.js
+* Bootstrap
+* Fetch API (HTTP communication)
+* Chart library (for signal visualization)
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🔗 Backend Integration
 
-### Analyzing the Bundle Size
+This frontend communicates with the backend via REST API.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Integrated features include:
 
-### Making a Progressive Web App
+* System status monitoring (`/status`)
+* Call control & monitoring
+* SMS sending & monitoring
+* Signal polling & history
+* Call & SMS logs
+* Performance statistics (CSSR)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+During development, the backend is accessed via ngrok tunnel.
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## ▶️ How to Run Locally
 
-### Deployment
+```bash
+npm install
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Open in browser:
 
-### `npm run build` fails to minify
+```
+http://localhost:3000
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## 📁 Project Structure
+
+* `src/` → Main application logic
+* `components/` → UI components (charts, controls, logs)
+* `services/` → API communication
+* `public/` → Static assets
+
+---
+
+## 📌 Notes
+
+* Requires backend service to function properly
+* Ensure backend is running before using the dashboard
+* Designed for ISATPhone modem monitoring system
+
+---
+
+## 👩‍💻 Author
+
+Velanie Nur Shabrina
