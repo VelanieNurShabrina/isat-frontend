@@ -5,22 +5,22 @@ It provides real-time visualization and control through integration with a backe
 
 ---
 
-## 🌐 Live Demo
+## Live Demo
 
 https://isat-frontend.vercel.app
 
 ---
 
-## 🚀 Features
+## Features
 
-### 📶 Signal Monitoring
+### Signal Monitoring
 
 * Real-time RSSI and BER display
 * Signal strength conversion to dBm
 * Signal history chart (RSSI & BER)
 * Configurable signal reading interval
 
-### 📞 Call Monitoring
+### Call Monitoring
 
 * Manual call control (call & stop)
 * Auto call cycle configuration
@@ -35,7 +35,7 @@ https://isat-frontend.vercel.app
   * Status (success / failed)
   * Cause code
 
-### 💬 SMS Monitoring
+### SMS Monitoring
 
 * Send SMS manually
 * Auto SMS cycle configuration
@@ -45,7 +45,7 @@ https://isat-frontend.vercel.app
   * Success rate
 * SMS activity logs
 
-### 📊 Dashboard
+### Dashboard
 
 * Real-time data updates
 * Interactive charts
@@ -54,7 +54,7 @@ https://isat-frontend.vercel.app
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 * React.js
 * Bootstrap
@@ -63,7 +63,7 @@ https://isat-frontend.vercel.app
 
 ---
 
-## 🔗 Backend Integration
+## Backend Integration
 
 This frontend communicates with the backend via REST API.
 
@@ -80,7 +80,7 @@ During development, the backend is accessed via ngrok tunnel.
 
 ---
 
-## ▶️ How to Run Locally
+## How to Run Locally
 
 ```bash
 npm install
@@ -95,7 +95,7 @@ http://localhost:3000
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 * `src/` → Main application logic
 * `components/` → UI components (charts, controls, logs)
@@ -104,7 +104,7 @@ http://localhost:3000
 
 ---
 
-## 📌 Notes
+## Notes
 
 * Requires backend service to function properly
 * Ensure backend is running before using the dashboard
@@ -112,6 +112,6 @@ http://localhost:3000
 
 ---
 
-## 👩‍💻 Author
+## Author
 
 Velanie Nur Shabrina
