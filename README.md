@@ -11,6 +11,10 @@ https://isat-frontend.vercel.app
 
 ---
 
+## Dashboard Preview
+
+![ISATPhone Dashboard](./Dashboard isat.jpeg)
+
 ## Features
 
 ### Signal Monitoring
