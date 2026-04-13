@@ -13,7 +13,9 @@ https://isat-frontend.vercel.app
 
 ## Dashboard Preview
 
-![ISATPhone Dashboard](./Dashboard isat.jpeg)
+<p align="center">
+  <img src="Dashboard IsatPhone.jpeg" width="800"/>
+</p>
 
 ## Features
 
