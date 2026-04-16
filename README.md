@@ -103,10 +103,10 @@ http://localhost:3000
 
 ## Project Structure
 
-* `src/` → Main application logic
-* `components/` → UI components (charts, controls, logs)
-* `services/` → API communication
-* `public/` → Static assets
+- `src/` → Main application logic (components, services, pages)
+- `public/` → Static assets
+- `package.json` → Dependencies & scripts
+- `vercel.json` → Deployment configuration
 
 ---
 
